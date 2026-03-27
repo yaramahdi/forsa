@@ -1,0 +1,1009 @@
+/* الإعدادات العامة والألوان */
+:root {
+    --forsa-blue: #1B3D5F;    /* الأزرق الكحلي */
+    --forsa-green: #28a745;   /* الأخضر لزر اختر */
+    --forsa-yellow: #F9C52E;  /* الأصفر للتحويلات */
+    --forsa-bg: #FDFCF0;     /* الخلفية الكريمية الفاتحة */
+}
+
+* { 
+    box-sizing: border-box; 
+}
+/* أضف هذا الكود في ملف CSS */
+section[id] {
+  scroll-margin-top: 80px; /* قم بتغيير الرقم 80 حسب ارتفاع الشريط العلوي لديك */
+}
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--forsa-bg);
+    margin: 0;
+    direction: rtl; /* لضمان الاتجاه العربي من اليمين لليسار */
+    overflow-x: hidden;
+}
+
+.container { 
+    width: 90%; 
+    max-width: 1200px; 
+    
+    margin: auto; 
+}
+
+/* Header: الشعار يمين والروابط في المنتصف والأزرار شمال */
+header.navbar-sticky {
+    padding: 12px 0; 
+    height: 80px; 
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-flex {
+display: flex;
+  align-items: center;
+  justify-content: space-between; /* يوزع الأجزاء الثلاثة: يمين، وسط، يسار */
+  width: 100%;
+}
+
+/* تنسيق حاوية اللوجو */
+.logo-container {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    order: 1;
+    
+}
+
+.main-logo-img {
+    height: 50px;
+    width: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.main-logo-img:hover {
+    transform: scale(1.05);
+}
+
+/* قائمة الروابط في المنتصف */
+.nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    flex: 1;
+    order: 2;
+}
+
+.nav-link {
+    background: none;
+    border: none;
+    color: var(--forsa-blue);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Cairo', sans-serif;
+    padding: 6px 0;
+    position: relative;
+    text-decoration: none;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--forsa-yellow);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--forsa-yellow);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.auth-group { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    flex-shrink: 0;
+    order: 3;
+}
+
+/* زر Primary - إنشاء حساب */
+.btn-primary {
+    background: linear-gradient(135deg, #1B3D5F 0%, #2E5A8C 100%);
+    color: white;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 8px 20px rgba(27, 61, 95, 0.25);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2E5A8C 0%, #3F7FBE 100%);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(27, 61, 95, 0.35);
+}
+
+.btn-primary:active {
+    transform: translateY(-2px);
+}
+
+/* زر Secondary - تسجيل الدخول */
+.btn-secondary {
+    background-color: transparent;
+    color: #1B3D5F;
+    border: 2px solid #1B3D5F;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-secondary:hover {
+    background-color: #1B3D5F;
+    color: white;
+    box-shadow: 0 8px 20px rgba(27, 61, 95, 0.2);
+}
+
+.btn-secondary:active {
+    transform: scale(0.98);
+}
+
+/* زر اللغة */
+.btn-language {
+    background-color: transparent;
+    color: #1B3D5F;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}
+
+.btn-language .lang-text {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.btn-language:hover {
+    color: var(--forsa-yellow);
+    transform: scale(1.1);
+}
+
+.btn-language:active {
+    transform: scale(0.95);
+}
+
+/* الزر الأزرق القديم للعناصرالأخرى */
+.btn-blue {
+    background-color: var(--forsa-blue);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+}
+
+.btn-blue:hover { 
+    transform: scale(1.05); 
+    background-color: var(--forsa-green); 
+}
+
+.contact-link {
+    color: var(--forsa-blue);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/images/1.png');
+    background-size: cover;
+    background-position: center;
+    height: 500px;
+    width: 100%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+     
+}
+
+.hero-overlay { 
+    color: white; 
+    text-align: center; 
+}
+
+/* تأثير ظهور الكلمات للعنوان */
+.animated-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    white-space: nowrap;
+}
+
+.word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+    margin-left: 10px;
+}
+
+.word.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.highlight-word {
+    color: var(--forsa-yellow);
+}
+
+.hero-sub { 
+    font-size: 1.2rem; 
+    margin-bottom: 30px; 
+}
+
+/* البحث الشفاف وزر ابحث */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+    flex-direction: row-reverse; /* الزر على اليسار */
+    background: rgba(255, 255, 255, 0.050); /* زيادة شفافية الخلفية */
+    backdrop-filter: blur(15px); /* زيادة الطمس للخلفية */
+    border: 2px solid rgba(255, 255, 255, 0.050); /* إطار أكبر وأكثر وضوح */
+    border-radius: 15px; /* جعله أكثر استدارة */
+    padding: 20px 25px; /* مساحة أكبر حول المحتوى */
+    width: fit-content;
+
+}
+
+.action-btn-green {
+    background-color: var(--forsa-blue);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Cairo', sans-serif;
+    margin-left: 8px;
+    margin-right: 8px; /* يضع مسافة بين الزر والمدخل */
+}
+
+.action-btn-green:hover {
+    background-color: #2E5A8C;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(27, 61, 95, 0.3);
+}
+
+.action-btn-green:active {
+    transform: translateY(0);
+}
+
+.search-container-transparent {
+    background: white;
+    border: none;
+    border-radius: 30px; /* بيضاوي طويل */
+    padding: 0 10px; /* تمديد الصندوق */
+    display: flex;
+    align-items: center;
+    width: 450px; /* بيضاوي طويل */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.800); /* ظل أكثر وضوح */
+}
+
+.search-input {
+    background: transparent;
+    border: none;
+    color: var(--forsa-blue);
+    outline: none;
+    width: 100%;
+    padding: 10px 0; /* تكبير ارتفاع الكتابة */
+    text-align: right;
+    font-size: 15px;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 500;
+    border-radius: 30px; /* لتكون الكتابة داخل بيضاوي */
+}
+
+.search-input::placeholder { 
+    color: #bbb; 
+}
+
+.search-icon {
+    margin-right: 15px;
+    font-size: 18px;
+    color: #999;
+}
+
+/* الأقسام الأخرى */
+.categories {
+    width: 100%; /* اجعلها 100% بدلاً من auto */
+    margin: 0;   /* إلغاء الهوامش الجانبية */
+}
+
+.white-card-bg {
+background: white;
+    width: 100vw;           /* عرض الشاشة بالكامل */
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;     /* سحب العنصر لليسار حتى الحافة */
+    margin-right: -50vw;    /* سحب العنصر لليمن حتى الحافة */
+    padding: 50px 0 100px 0;
+    margin-top: 0px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    z-index: 10;
+}
+
+.section-title {
+    text-align: center;
+    color: var(--forsa-blue);
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.grid-categories { 
+display: flex;
+    flex-wrap: nowrap; 
+    justify-content: center; 
+    gap: 25px; 
+    max-width: 1200px; /* هذا يضمن بقاء الكروت داخل مساحة الـ container الأصلية */
+    margin: 0 auto;    /* لتوسيط مجموعة الكروت داخل الخلفية البيضاء */
+}
+
+.cat-item {
+    background: white;
+    /* إزالة العرض الثابت (width: 240px) ليأخذ مساحة الخلية في الجريد */
+    width: 100%; 
+    border-radius: 25px;
+    overflow: hidden;
+    text-align: center;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+}
+
+.cat-item:hover { 
+transform: translateY(-10px); 
+    box-shadow: 0 20px 40px rgba(27, 61, 95, 0.15);
+    border-color: var(--forsa-yellow);
+    transform: scale(1.1); /* تأثير زووم بسيط عند المرور */
+}
+
+/* تنسيق الدائرة أو الصندوق المحيط بالصورة */
+.icon-box {
+width: 100%;
+    height: 200px; /* يمكنك التحكم في ارتفاع الصورة من هنا */
+    background: #f4f8fb;
+    overflow: hidden;
+}
+.icon-box img {
+width: 100%;      /* العرض كاملاً */
+    height: 100%;     /* الارتفاع كاملاً */
+    object-fit: cover; /* لضمان ملء المساحة بدون تشويه الصورة */
+    transition: transform 0.5s ease;
+    transform: scale(1.1); /* تأثير زووم بسيط عند المرور */
+}
+
+.cat-item p {
+padding: 20px 10px; /* مساحة للنص في الأسفل */
+    font-weight: 800;
+    color: var(--forsa-blue);
+    font-size: 1.2rem;
+    margin: 0;
+    background: white;
+}
+
+/* Specialists Section */
+.specialists { 
+    padding: 60px 0; 
+}
+
+/* لماذا منصة فرصة - Why Forsa Section */
+.why-forsa-section {
+padding: 30px 0;
+color: white; 
+
+}
+
+.why-forsa-title {
+text-align: center;
+    /* تغيير لون الخط للأبيض */
+    color: #1B3D5F; 
+    font-weight: 900;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+/* إضافة خط صغير تحت العنوان لجمالية أكثر */
+.why-forsa-title::after {
+content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    color: #1B3D5F; 
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+.why-forsa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.why-forsa-card {
+/* لون أزرق أفتح قليلاً من الخلفية لتمييز البطاقات */
+    background: rgba(255, 255, 255, 0.05); 
+    padding: 10px 20px;
+    border-radius: 30px;
+    text-align: center;
+    transition: all 0.4s ease;
+    /* إطار خفيف جداً */
+    border: 1px solid rgba(6, 5, 41, 0.1); 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.why-forsa-card:hover {
+background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-10px);
+    border-color: var(--forsa-yellow);
+}
+
+.why-forsa-icon {
+width: 70px;
+    height: 70px;
+    /* جعل الدائرة باللون الأصفر لتبرز فوق الأزرق */
+    background: #1B3D5F; 
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    /* أيقونة باللون الأزرق الغامق */
+    color: white; 
+    transition: 0.3s;
+}
+
+.why-forsa-card:hover .why-forsa-icon {
+transform: scale(1.1);
+ 
+}
+
+.why-forsa-card-title {
+color: #1B3D5F; /* العنوان باللون الأبيض */
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.why-forsa-card-desc {
+color: #4b4c4d; /* رمادي فاتح جداً للنص ليكون مريحاً للعين */
+    font-size: 1rem;
+    line-height: 1.7;
+}
+/* ============================= */
+/* قسم الحرفيين - Craftsmen Section */
+/* ============================= */
+
+.craftsmen-section {
+    padding: 5px 50px;
+    background-color: var(--forsa-blue);
+    margin-top: 80px;
+}
+
+/* الحاوية الرئيسية */
+.craftsmen-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* البطاقة الرئيسية */
+.craftsmen-cta-card.full-width {
+    width: 100%;
+    height: 500px; /* ارتفاع مناسب */
+    position: relative; /* المرجع للنص والصورة */
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+/* واجهة العرض الرئيسية */
+.cta-main-view {
+    width: 100%;
+    height: 100%;
+    position: relative; /* المرجع للنص والصورة */
+}
+
+/* النص على اليمين */
+.cta-text-side {
+    position: absolute;
+    top: 100px;       /* المسافة من الأعلى */
+    right: 50px;     /* المسافة من اليمين */
+    width: 40%;      /* حجم النص */
+    text-align: right;
+    color: #ffffff;
+    font-family: 'Cairo', sans-serif;
+    z-index: 10; /* فوق الصورة */
+}
+
+/* العنوان */
+.cta-text-side .cta-title {
+    font-size: 2.4rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+}
+
+/* الوصف */
+.cta-text-side .cta-desc {
+    font-size: 1.1rem;
+    line-height: 2;
+    margin-bottom: 25px;
+    white-space: nowrap;      /* يمنع اللف */
+}
+
+/* الزر */
+.cta-text-side .modern-glow-btn {
+    display: inline-block;
+    background: var(--forsa-yellow);
+    color: var(--forsa-blue);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(249, 197, 46, 0.3);
+    transition: all 0.3s ease;
+}
+
+.cta-text-side .modern-glow-btn:hover {
+    background: #fff5b3;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(249, 197, 46, 0.4);
+}
+
+/* الصورة على اليسار */
+.cta-floating-img-v2 {
+    position: absolute;
+    top: 50px;       /* من الأعلى */
+    left: 20px;      /* من اليسار */
+    width:550px;
+    height: 550px;
+    z-index: 5;      /* خلف النص */
+}
+
+.cta-floating-img-v2 img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255,255,255,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.form-img-mini {
+      width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255,255,255,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: absolute;
+    top: 50px;       /* من الأعلى */
+    left: 20px;      /* من اليسار */
+    width:550px;
+    height: 550px;
+    z-index: 5;      /* خلف النص */
+
+}
+/* responsive */
+@media (max-width: 768px) {
+    .cta-main-view {
+        height: auto;
+    }
+    .cta-text-side,
+    .cta-floating-img-v2 {
+        position: static;
+        width: 100%;
+        text-align: center;
+        margin: 0 auto;
+    }
+    .cta-floating-img-v2 img {
+        width: 160px;
+        height: 160px;
+    }
+    .image-side-small img.form-img-mini {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* إجبار النصوص على الأبيض */
+.craftsmen-section,
+.craftsmen-section h2,
+.craftsmen-section p {
+    color: #ffffff !important;
+}
+.grid-workers { 
+    display: flex;
+    justify-content: space-evenly;  /* بدلاً من center */
+    gap: 25px;                
+    flex-wrap: wrap;           
+    padding: 20px 0;    
+}
+
+.worker-card {
+    width: 250px;             /* عرض ثابت للبطاقة */
+    background: white;
+    padding: 30px;
+    border-radius: 35px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+    border-bottom: 5px solid transparent;
+    transition: 0.3s;
+    
+}
+
+.worker-card:hover { 
+    border-bottom-color: var(--forsa-yellow); 
+    transform: translateY(-5px);
+}
+
+.worker-img img {
+    width: 100px;      /* عرض الصورة */
+    height: 100px;     /* ارتفاع الصورة */
+    border-radius: 50%; /* لتصبح دائرية */
+    object-fit: cover;  /* يغطي الصندوق مع الحفاظ على النسب */
+}
+.worker-card h3 {
+    color: var(--forsa-blue);
+    margin: 15px 0 5px 0;
+    font-weight: bold;
+}
+
+.worker-card p {
+    color: #666;
+    margin: 5px 0 10px 0;
+    font-size: 0.95rem;
+}
+
+.stars {
+    font-size: 1.2rem;
+}
+
+.btn-more {
+    background: var(--forsa-blue);
+    color: white;
+    border: none;
+    padding: 12px 60px;
+    border-radius: 15px;
+    font-weight: bold;
+    margin-top: 40px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+}
+
+.center { 
+    text-align: center; 
+}
+
+/* Footer */
+footer { 
+    background: var(--forsa-blue); 
+    padding: 20px 0; 
+    text-align: center; 
+    color: #f4f8fb; 
+    margin-top: 40px;
+    border-top: 1px solid #ffffff;
+}
+.footer-col:first-child {
+  text-align: right; /* محاذاة كل المحتوى لليمين */
+}
+
+.footer-col:first-child h3 {
+  margin-bottom: 5px; /* مسافة صغيرة بين الاسم والفقرة */
+}
+
+.footer-col:first-child p {
+  white-space: nowrap;  /* النص على سطر واحد */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+.footer-col h3 {
+  font-size: 28px; /* تكبير اسم المنصة */
+  margin-bottom: 10px;
+}
+
+.footer-col h4 {
+  font-size: 20px; /* تكبير العناوين الفرعية */
+  margin-bottom: 15px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.footer-col h3,
+.footer-col h4 {
+  margin-bottom: 15px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-col ul li {
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.social-icons i {
+    margin-left: 10px;
+    font-size: 18px;
+    cursor: pointer;
+
+}
+
+.footer-col p {
+
+    white-space: nowrap;
+    /* يمنع النص من الانكسار */
+    overflow: hidden;
+    /* يخفّي أي نص زائد */
+    text-overflow: ellipsis;
+    /* يظهر "..." لو النص طويل */
+}
+
+.footer-bottom {
+    border-top: 1px solid #ffffff;
+    margin-top: 30px;
+    padding-top: 15px;
+    text-align: center;
+}
+.footer-col ul li a {
+  color: inherit;       /* يستخدم نفس لون الـ li الحالي */
+  text-decoration: none; /* يزيل الخط السفلي الافتراضي */
+  cursor: pointer;       /* يظهر المؤشر عند المرور */
+}
+
+.footer-col ul li a:hover {
+  color: #ffd700;       /* إذا تحبي لون عند hover فقط */
+}
+.social-icons img {
+  width: 35px;  /* حجم الأيقونة */
+  height: 35px;
+  margin-left: 15px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.social-icons img:hover {
+  transform: scale(1.2);
+}
+/* Responsive للموبايل والتابلت */
+@media (max-width: 1024px) {
+    .grid-categories { 
+    display: grid;
+    /* هذا السطر يجبر المتصفح على وضع 5 عناصر في صف واحد دائماً */
+    grid-template-columns: repeat(5, 1fr); 
+    gap: 15px; /* تقليل المسافة قليلاً لضمان عدم الزحام */
+    margin: 0 auto;
+    width: 100%;
+    
+    }
+    
+    .search-container-transparent {
+        width: 300px;
+    }
+
+    .nav-links {
+        gap: 20px;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .animated-title { 
+        font-size: 2rem; 
+        white-space: normal; 
+    }
+    
+    .search-wrapper { 
+        flex-direction: row;
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .search-container-transparent { 
+        width: 100%; 
+        flex: 1;
+    }
+    
+    .grid-categories { 
+        grid-template-columns: repeat(2, 1fr); 
+    }
+    
+    .main-logo-img { 
+        height: 45px; 
+    }
+    
+    .white-card-bg {
+        padding: 30px;
+        margin-top: -30px;
+    }
+    
+    .hero-section {
+        height: 350px;
+        margin: 10px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .why-forsa-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    .why-forsa-grid {
+        gap: 20px;
+    }
+
+    .nav-flex {
+        gap: 20px;
+    }
+
+    .nav-links {
+        gap: 15px;
+        flex: none;
+    }
+
+    .nav-link {
+        font-size: 0.85rem;
+        padding: 5px 0;
+    }
+
+    .auth-group {
+        gap: 12px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary svg,
+    .btn-secondary svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .animated-title { 
+        font-size: 1.5rem; 
+    }
+    
+    .grid-categories { 
+        grid-template-columns: 1fr; 
+    }
+    
+    .hero-sub { 
+        font-size: 1rem; 
+    }
+    
+    .action-btn-green {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        margin-left: 5px;
+    }
+
+    .why-forsa-title {
+        font-size: 1.5rem;
+        margin-bottom: 25px;
+    }
+
+    .why-forsa-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .why-forsa-card {
+        padding: 10px;
+    }
+    
+    .auth-group { 
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        padding: 8px 14px;
+        font-size: 0.75rem;
+    }
+
+    .btn-primary svg,
+    .btn-secondary svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .nav-flex {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .nav-links {
+        gap: 10px;
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .nav-link {
+        font-size: 0.75rem;
+    }
+
+    .logo-container {
+        order: 1;
+    }
+
+    .auth-group {
+        order: 2;
+    }
+} 
