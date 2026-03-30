@@ -2,8 +2,10 @@ import React from 'react'
 import { LogIn, UserPlus, Globe } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
+import { useNavigate } from 'react-router-dom'
 
 export default function Navbar() {
+  const navigate = useNavigate()
   const { language, toggleLanguage } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
 
@@ -54,7 +56,7 @@ export default function Navbar() {
             <LogIn size={18} />
             <span>{t('login')}</span>
           </button>
-          <button className="btn-primary" onClick={() => setShowSignUp(true)}>
+          <button className="btn-primary" onClick={() => navigate('/signup')}>
             <UserPlus size={18} />
             <span>{t('signup')}</span>
           </button>
