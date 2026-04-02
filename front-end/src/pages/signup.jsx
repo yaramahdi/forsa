@@ -8,7 +8,8 @@ import {
   Phone,
   MapPin,
   Hammer,
-  Briefcase
+  Briefcase,
+  X
 } from 'lucide-react';
 
 export default function Signup() {
@@ -20,74 +21,217 @@ export default function Signup() {
     email: '',
     password: '',
     confirmPassword: '',
-    phonenumber: '',
+    phone: '',
     yearsOfExperience: '',
-    area: '',
-    address: '',
+    city: '',
+    neighborhood: '',
     profession: '',
     customProfession: '',
-    images: []
+    workImages: []
   });
 
   const [previewImages, setPreviewImages] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
-    const urls = formData.images.map((file) => URL.createObjectURL(file));
+    const urls = formData.workImages.map((file) => URL.createObjectURL(file));
     setPreviewImages(urls);
 
     return () => {
       urls.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [formData.images]);
+  }, [formData.workImages]);
+
+  // تحويل الأرقام العربية إلى إنجليزية
+  const convertArabicNumbersToEnglish = (value) => {
+    return value.replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+  };
+
+  // التحقق من الحقول وإرجاع الأخطاء
+  const validateForm = (data) => {
+    const newErrors = {};
+
+    if (!data.firstName.trim()) {
+      newErrors.firstName = 'الاسم الأول مطلوب';
+    }
+
+    if (!data.lastName.trim()) {
+      newErrors.lastName = 'الاسم الثاني مطلوب';
+    }
+
+    if (!data.email.trim()) {
+      newErrors.email = 'البريد الإلكتروني مطلوب';
+    } else if (!data.email.toLowerCase().endsWith('@gmail.com')) {
+      newErrors.email = 'يجب أن يحتوي الإيميل على @gmail.com';
+    }
+
+    if (!data.password) {
+      newErrors.password = 'كلمة المرور مطلوبة';
+    } else if (data.password.length < 8) {
+      newErrors.password = 'كلمة المرور يجب أن تكون 8 أحرف على الأقل';
+    } else if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(data.password)) {
+      newErrors.password = 'يجب أن تحتوي على أحرف وأرقام ورمز خاص';
+    }
+
+    if (!data.confirmPassword) {
+      newErrors.confirmPassword = 'تأكيد كلمة المرور مطلوب';
+    } else if (data.password !== data.confirmPassword) {
+      newErrors.confirmPassword = 'كلمتا المرور غير متطابقتين';
+    }
+
+    if (!data.phone.trim()) {
+      newErrors.phone = 'رقم الهاتف مطلوب';
+    } else if (!data.phone.startsWith('059') || data.phone.length !== 10) {
+      newErrors.phone = 'رقم الهاتف يجب أن يبدأ بـ 059 ويتكون من 10 أرقام';
+    }
+
+    if (!data.yearsOfExperience.trim()) {
+      newErrors.yearsOfExperience = 'عدد سنين الخبرة مطلوب';
+    }
+
+    if (!data.city.trim()) {
+      newErrors.city = 'المنطقة مطلوبة';
+    }
+
+    if (!data.neighborhood.trim()) {
+      newErrors.neighborhood = 'عنوان السكن مطلوب';
+    }
+
+    if (!data.profession) {
+      newErrors.profession = 'المهنة مطلوبة';
+    }
+
+    if (data.profession === 'other' && !data.customProfession.trim()) {
+      newErrors.customProfession = 'يرجى كتابة مهنتك';
+    }
+
+    if (data.workImages.length !== 3) {
+      newErrors.workImages = 'يجب إضافة 3 صور أعمال بالضبط';
+    }
+
+    return newErrors;
+  };
 
   const handleChange = (e) => {
     let { name, value } = e.target;
 
-    value = value.trimStart();
-    value = value.replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+    // ما بنقصش من الباسورد الفراغات
+    if (name !== 'password' && name !== 'confirmPassword') {
+      value = value.trimStart();
+    }
 
-    if (name === 'phonenumber') {
+    value = convertArabicNumbersToEnglish(value);
+
+    // رقم الهاتف: أرقام فقط وبحد أقصى 10
+    if (name === 'phone') {
       if (!/^\d*$/.test(value)) return;
       if (value.length > 10) return;
     }
 
+    // سنوات الخبرة: أرقام فقط
     if (name === 'yearsOfExperience') {
       if (!/^\d*$/.test(value)) return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
+    const updatedData = {
+      ...formData,
       [name]: value
+    };
+
+    // إذا غيّر المهنة من "أخرى" لشيء آخر، نفرغ الحقل الإضافي
+    if (name === 'profession' && value !== 'other') {
+      updatedData.customProfession = '';
+    }
+
+    setFormData(updatedData);
+    setErrors(validateForm(updatedData));
+    setSuccessMessage('');
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+
+    setTouched((prev) => ({
+      ...prev,
+      [name]: true
     }));
+
+    setErrors(validateForm(formData));
   };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files || []);
+    let updatedImages = [...formData.workImages];
 
-    const validFiles = files.filter((file) => file.type.startsWith('image/'));
-    if (validFiles.length !== files.length) {
-      alert('يسمح فقط برفع صور');
-    }
-
-    const filteredBySize = validFiles.filter(
-      (file) => file.size <= 2 * 1024 * 1024
-    );
-    if (filteredBySize.length !== validFiles.length) {
-      alert('حجم الصورة يجب أن يكون أقل من 2MB');
-    }
-
-    setFormData((prev) => {
-      const combinedImages = [...prev.images, ...filteredBySize];
-
-      if (combinedImages.length > 5) {
-        alert('يمكنك رفع 5 صور فقط');
-      }
-
-      return {
+    // فحص النوع
+    const invalidTypeExists = files.some((file) => !file.type.startsWith('image/'));
+    if (invalidTypeExists) {
+      setErrors((prev) => ({
         ...prev,
-        images: combinedImages.slice(0, 5)
-      };
-    });
+        workImages: 'يسمح فقط برفع صور'
+      }));
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // فحص الحجم
+    const invalidSizeExists = files.some((file) => file.size > 2 * 1024 * 1024);
+    if (invalidSizeExists) {
+      setErrors((prev) => ({
+        ...prev,
+        workImages: 'حجم كل صورة يجب أن يكون أقل من 2MB'
+      }));
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    updatedImages = [...updatedImages, ...files];
+
+    // منع أكثر من 3 صور
+    if (updatedImages.length > 3) {
+      updatedImages = updatedImages.slice(0, 3);
+      setErrors((prev) => ({
+        ...prev,
+        workImages: 'يمكنك رفع 3 صور فقط'
+      }));
+    }
+
+    const updatedData = {
+      ...formData,
+      workImages: updatedImages
+    };
+
+    setFormData(updatedData);
+    setTouched((prev) => ({
+      ...prev,
+      workImages: true
+    }));
+    setErrors(validateForm(updatedData));
+    setSuccessMessage('');
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveImage = (index) => {
+    const updatedImages = formData.workImages.filter((_, i) => i !== index);
+
+    const updatedData = {
+      ...formData,
+      workImages: updatedImages
+    };
+
+    setFormData(updatedData);
+    setTouched((prev) => ({
+      ...prev,
+      workImages: true
+    }));
+    setErrors(validateForm(updatedData));
+    setSuccessMessage('');
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -97,73 +241,35 @@ export default function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-      phonenumber,
-      yearsOfExperience,
-      area,
-      address,
-      profession,
-      customProfession,
-      images
-    } = formData;
+    setSubmitAttempted(true);
 
-    if (
-      !firstName.trim() ||
-      !lastName.trim() ||
-      !email.trim() ||
-      !password.trim() ||
-      !confirmPassword.trim() ||
-      !phonenumber.trim() ||
-      !yearsOfExperience.trim() ||
-      !area.trim() ||
-      !address.trim() ||
-      !profession
-    ) {
-      alert('يرجى تعبئة جميع الحقول');
+    const validationErrors = validateForm(formData);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
       return;
     }
 
-    if (!email.toLowerCase().endsWith('@gmail.com')) {
-      alert('يجب أن يحتوي الإيميل على @gmail.com');
-      return;
-    }
+    // تجهيز البيانات للإرسال للباك
+    const payload = {
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+      phone: formData.phone.trim(),
+      yearsOfExperience: Number(formData.yearsOfExperience),
+      city: formData.city.trim(),
+      neighborhood: formData.neighborhood.trim(),
+      profession:
+        formData.profession === 'other'
+          ? formData.customProfession.trim()
+          : formData.profession,
+      workImages: formData.workImages
+    };
 
-    if (password.length < 8) {
-      alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
-      return;
-    }
+    console.log('Payload to backend:', payload);
 
-    if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
-      alert('كلمة المرور يجب أن تحتوي على أحرف وأرقام ورمز خاص');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert('كلمتا المرور غير متطابقتين');
-      return;
-    }
-
-    if (!phonenumber.startsWith('059') || phonenumber.length !== 10) {
-      alert('رقم الهاتف يجب أن يبدأ بـ 059 ويتكون من 10 أرقام');
-      return;
-    }
-
-    if (profession === 'other' && !customProfession.trim()) {
-      alert('يرجى كتابة مهنتك');
-      return;
-    }
-
-    if (images.length === 0) {
-      alert('يرجى إضافة صورة واحدة على الأقل');
-      return;
-    }
-
-    alert('تم إنشاء الحساب بنجاح 🎉');
+    setSuccessMessage('تم التحقق من البيانات بنجاح، والفورم جاهز للربط مع الباك 🎉');
 
     setFormData({
       firstName: '',
@@ -171,18 +277,26 @@ export default function Signup() {
       email: '',
       password: '',
       confirmPassword: '',
-      phonenumber: '',
+      phone: '',
       yearsOfExperience: '',
-      area: '',
-      address: '',
+      city: '',
+      neighborhood: '',
       profession: '',
       customProfession: '',
-      images: []
+      workImages: []
     });
+
+    setErrors({});
+    setTouched({});
+    setSubmitAttempted(false);
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const showError = (fieldName) => {
+    return (touched[fieldName] || submitAttempted) && errors[fieldName];
   };
 
   return (
@@ -194,7 +308,7 @@ export default function Signup() {
           <div className="form-row">
             <div className="form-group">
               <label className="signup-label">الاسم الأول</label>
-              <div className="input-box">
+              <div className={`input-box ${showError('firstName') ? 'input-box-error' : ''}`}>
                 <input
                   type="text"
                   name="firstName"
@@ -202,16 +316,18 @@ export default function Signup() {
                   className="signup-form-control"
                   value={formData.firstName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <span className="icon">
                   <User size={18} />
                 </span>
               </div>
+              {showError('firstName') && <p className="field-error">{errors.firstName}</p>}
             </div>
 
             <div className="form-group">
               <label className="signup-label">الاسم الثاني</label>
-              <div className="input-box">
+              <div className={`input-box ${showError('lastName') ? 'input-box-error' : ''}`}>
                 <input
                   type="text"
                   name="lastName"
@@ -219,16 +335,18 @@ export default function Signup() {
                   className="signup-form-control"
                   value={formData.lastName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <span className="icon">
                   <User size={18} />
                 </span>
               </div>
+              {showError('lastName') && <p className="field-error">{errors.lastName}</p>}
             </div>
           </div>
 
           <label className="signup-label">البريد الإلكتروني</label>
-          <div className="input-box">
+          <div className={`input-box ${showError('email') ? 'input-box-error' : ''}`}>
             <input
               type="email"
               name="email"
@@ -236,16 +354,18 @@ export default function Signup() {
               className="signup-form-control"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
             />
             <span className="icon">
               <Mail size={18} />
             </span>
           </div>
+          {showError('email') && <p className="field-error">{errors.email}</p>}
 
           <div className="form-row">
             <div className="form-group">
               <label className="signup-label">كلمة المرور</label>
-              <div className="input-box">
+              <div className={`input-box ${showError('password') ? 'input-box-error' : ''}`}>
                 <input
                   type="password"
                   name="password"
@@ -253,16 +373,18 @@ export default function Signup() {
                   className="signup-form-control"
                   value={formData.password}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <span className="icon">
                   <Lock size={18} />
                 </span>
               </div>
+              {showError('password') && <p className="field-error">{errors.password}</p>}
             </div>
 
             <div className="form-group">
               <label className="signup-label">تأكيد كلمة المرور</label>
-              <div className="input-box">
+              <div className={`input-box ${showError('confirmPassword') ? 'input-box-error' : ''}`}>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -270,35 +392,43 @@ export default function Signup() {
                   className="signup-form-control"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <span className="icon">
                   <Lock size={18} />
                 </span>
               </div>
+              {showError('confirmPassword') && (
+                <p className="field-error">{errors.confirmPassword}</p>
+              )}
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label className="signup-label">رقم الهاتف</label>
-              <div className="input-box">
+              <div className={`input-box ${showError('phone') ? 'input-box-error' : ''}`}>
                 <input
                   type="text"
-                  name="phonenumber"
+                  name="phone"
                   placeholder="059XXXXXXXX"
                   className="signup-form-control"
-                  value={formData.phonenumber}
+                  value={formData.phone}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <span className="icon">
                   <Phone size={18} />
                 </span>
               </div>
+              {showError('phone') && <p className="field-error">{errors.phone}</p>}
             </div>
 
             <div className="form-group">
               <label className="signup-label">عدد سنين الخبرة</label>
-              <div className="input-box">
+              <div
+                className={`input-box ${showError('yearsOfExperience') ? 'input-box-error' : ''}`}
+              >
                 <input
                   type="text"
                   name="yearsOfExperience"
@@ -306,22 +436,27 @@ export default function Signup() {
                   className="signup-form-control"
                   value={formData.yearsOfExperience}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <span className="icon">
                   <Hammer size={18} />
                 </span>
               </div>
+              {showError('yearsOfExperience') && (
+                <p className="field-error">{errors.yearsOfExperience}</p>
+              )}
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label className="signup-label">المنطقة</label>
-              <div className="input-box">
+              <div className={`input-box ${showError('city') ? 'input-box-error' : ''}`}>
                 <select
-                  name="area"
-                  value={formData.area}
+                  name="city"
+                  value={formData.city}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="signup-form-control"
                 >
                   <option value="" disabled hidden>
@@ -336,32 +471,38 @@ export default function Signup() {
                   <MapPin size={18} />
                 </span>
               </div>
+              {showError('city') && <p className="field-error">{errors.city}</p>}
             </div>
 
             <div className="form-group">
               <label className="signup-label">عنوان السكن في غزة</label>
-              <div className="input-box">
+              <div className={`input-box ${showError('neighborhood') ? 'input-box-error' : ''}`}>
                 <input
                   type="text"
-                  name="address"
+                  name="neighborhood"
                   placeholder="ادخل عنوانك بالتفصيل"
                   className="signup-form-control"
-                  value={formData.address}
+                  value={formData.neighborhood}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <span className="icon">
                   <MapPin size={18} />
                 </span>
               </div>
+              {showError('neighborhood') && (
+                <p className="field-error">{errors.neighborhood}</p>
+              )}
             </div>
           </div>
 
           <label className="signup-label">المهنة</label>
-          <div className="input-box">
+          <div className={`input-box ${showError('profession') ? 'input-box-error' : ''}`}>
             <select
               name="profession"
               value={formData.profession}
               onChange={handleChange}
+              onBlur={handleBlur}
               className="signup-form-control"
             >
               <option value="" disabled hidden>
@@ -381,16 +522,29 @@ export default function Signup() {
               <Briefcase size={18} />
             </span>
           </div>
+          {showError('profession') && <p className="field-error">{errors.profession}</p>}
 
           {formData.profession === 'other' && (
-            <input
-              type="text"
-              name="customProfession"
-              placeholder="اكتب مهنتك"
-              className="signup-form-control"
-              value={formData.customProfession}
-              onChange={handleChange}
-            />
+            <>
+              <div
+                className={`input-box extra-field ${
+                  showError('customProfession') ? 'input-box-error' : ''
+                }`}
+              >
+                <input
+                  type="text"
+                  name="customProfession"
+                  placeholder="اكتب مهنتك"
+                  className="signup-form-control"
+                  value={formData.customProfession}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+              </div>
+              {showError('customProfession') && (
+                <p className="field-error">{errors.customProfession}</p>
+              )}
+            </>
           )}
 
           <label className="signup-label">صور أعمالك</label>
@@ -405,14 +559,28 @@ export default function Signup() {
               style={{ display: 'none' }}
             />
 
-            {[...Array(5)].map((_, index) => (
+            {[...Array(3)].map((_, index) => (
               <div
                 key={index}
-                className="upload-box"
+                className={`upload-box ${
+                  showError('workImages') ? 'upload-box-error' : ''
+                }`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 {previewImages[index] ? (
-                  <img src={previewImages[index]} alt={`preview-${index}`} />
+                  <div className="preview-wrapper">
+                    <img src={previewImages[index]} alt={`preview-${index}`} />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveImage(index);
+                      }}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
                 ) : (
                   <span>+</span>
                 )}
@@ -420,9 +588,13 @@ export default function Signup() {
             ))}
           </div>
 
+          {showError('workImages') && <p className="field-error">{errors.workImages}</p>}
+
           <button type="submit" className="signup-btn">
             انشاء حسابي
           </button>
+
+          {successMessage && <p className="success-message">{successMessage}</p>}
 
           <p className="login-text">
             هل لديك حساب بالفعل؟{' '}

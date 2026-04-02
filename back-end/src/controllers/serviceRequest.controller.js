@@ -22,7 +22,7 @@ const createServiceRequest = async (req, res, next) => {
       craftsmanId,
     });
 
-    // نرجع رد منظم + رقم واتساب/جوال الحرفي حتى يُستخدم لاحقًا في صفحة الشكر
+    // نرجع رد منظم + رقم الحرفي حتى يستخدم لاحقًا في صفحة الشكر
     return global.returnJson(
       res,
       201,
@@ -38,6 +38,31 @@ const createServiceRequest = async (req, res, next) => {
   }
 };
 
+// هذه الدالة تجلب كل الطلبات الخاصة بالحرفي الحالي من خلال الـ token
+const getMyServiceRequests = async (req, res, next) => {
+  try {
+    // نأخذ id الحرفي الحالي من التوكن
+    const craftsmanId = req.user.id;
+
+    // نبحث عن كل الطلبات التي تخص هذا الحرفي
+    // sort({ createdAt: -1 }) يعني الأحدث أولًا
+    const serviceRequests = await ServiceRequest.find({ craftsmanId })
+      .sort({ createdAt: -1 });
+
+    // نرجع الطلبات بشكل منظم
+    return global.returnJson(
+      res,
+      200,
+      true,
+      "My service requests fetched successfully",
+      serviceRequests
+    );
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
 module.exports = {
   createServiceRequest,
+  getMyServiceRequests,
 };
