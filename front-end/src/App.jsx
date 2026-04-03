@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { LanguageProvider } from './context/LanguageContext'
 import Navbar from './components/Navbar'
@@ -11,12 +11,14 @@ import Footer from './components/Footer'
 import Signup from './pages/signup'
 
 function HomePage() {
+  const [searchProfession, setSearchProfession] = useState(null)
+
   return (
     <div className="app">
       <Navbar />
 
       <section id="hero">
-        <Hero />
+        <Hero onProfessionSelect={setSearchProfession} />
       </section>
       <section id="categories">
         <Categories />
@@ -28,7 +30,7 @@ function HomePage() {
         <Craftsmen />
       </section>
       <section id="specialists">
-        <Specialists />
+        <Specialists searchProfession={searchProfession} />
       </section>
       <section id="contact">
         <Footer />

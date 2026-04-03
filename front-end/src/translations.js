@@ -23,6 +23,9 @@ export const translations = {
     painter: 'دهان',
     carpenter: 'نجار',
     electrician: 'كهربائي',
+    acTechnician: 'فني تكييف',
+    tiler: 'بلاط',
+    construction: 'بناء',
 
     // Why Forsa
     whyForsaTitle: 'لماذا فرصة؟',
@@ -49,9 +52,40 @@ export const translations = {
     footerDesc: 'المنصة الاولى للعثور على الحرفيين في قطاع غزة',
     links: 'روابط',
     about: 'من نحن',
-    craftsmen: 'الحرفيون',
+    footerCraftsmen: 'الحرفيون',
     followUs: 'تابعنا',
-    footer: '© 2026 جميع الحقوق محفوظة لمنصة فُرصة'
+    footer: '© 2026 جميع الحقوق محفوظة لمنصة فُرصة',
+    platformName: 'منصة فرصة',
+    facebook: 'فيسبوك',
+    instagram: 'إنستغرام',
+    
+    // Search & Results
+    searchSuggestions: 'الاقتراحات',
+    noResults: 'لم يتم العثور على نتائج',
+    requestService: 'اطلب خدمة',
+    location: 'الموقع',
+    rating: 'التقييم',
+    rating5Stars: 'تقييم ممتاز',
+    searchResults: 'نتائج البحث',
+
+    // Locations
+    gaza: 'غزة',
+    ramla: 'الرمال',
+    shjaiya: 'الشجاعية',
+    zaytoun: 'الزيتون',
+    beitLahia: 'بيت لاهيا',
+    khanyounis: 'خانيونس',
+
+    // Specialist Names
+    mutasem: 'معتصم السعدي',
+    ahmad: 'أحمد الحلو',
+    said: 'سعيد محمد',
+    ashraf: 'اشرف عادل',
+    mahmoud1: 'محمود الأشرم',
+    mahmoud2: 'محمود أبو عيشة',
+    rami: 'رامي النجار',
+    khaled: 'خالد مصطفى',
+    youssef: 'يوسف عبدالله'
   },
   en: {
     // Navbar
@@ -77,6 +111,9 @@ export const translations = {
     painter: 'Painter',
     carpenter: 'Carpenter',
     electrician: 'Electrician',
+    acTechnician: 'AC Technician',
+    tiler: 'Tiler',
+    construction: 'Construction',
 
     // Why Forsa
     whyForsaTitle: 'Why Forsa Platform?',
@@ -100,7 +137,43 @@ export const translations = {
     registerNow: 'Register Now',
 
     // Footer
-    footer: '© 2026 All rights reserved for Forsa Platform'
+    footerDesc: 'The first platform to find craftsmen in the Gaza Strip',
+    links: 'Links',
+    about: 'About Us',
+    footerCraftsmen: 'Craftsmen',
+    followUs: 'Follow Us',
+    footer: '© 2026 All rights reserved for Forsa Platform',
+    platformName: 'Forsa Platform',
+    facebook: 'Facebook',
+    instagram: 'Instagram',
+    
+    // Search & Results
+    searchSuggestions: 'Suggestions',
+    noResults: 'No results found',
+    requestService: 'Request Service',
+    location: 'Location',
+    rating: 'Rating',
+    rating5Stars: 'Excellent Rating',
+    searchResults: 'Search Results',
+
+    // Locations
+    gaza: 'Gaza',
+    ramla: 'Ramla',
+    shjaiya: 'Shjaiya',
+    zaytoun: 'Zaytoun',
+    beitLahia: 'Beit Lahia',
+    khanyounis: 'Khan Yunis',
+
+    // Specialist Names
+    mutasem: 'Mutasem Al-Saadi',
+    ahmad: 'Ahmad Al-Hallo',
+    said: 'Said Muhammad',
+    ashraf: 'Ashraf Adel',
+    mahmoud1: 'Mahmoud Al-Ashram',
+    mahmoud2: 'Mahmoud Abu Aisha',
+    rami: 'Rami Al-Najar',
+    khaled: 'Khaled Mustafa',
+    youssef: 'Youssef Abdullah'
   }
 }
 

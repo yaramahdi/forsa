@@ -240,12 +240,17 @@ display: flex;
     display: flex;
     justify-content: center;
     align-items: center;
-     
+    overflow: visible;
+    position: relative;
+    z-index: 100;
 }
 
 .hero-overlay { 
     color: white; 
-    text-align: center; 
+    text-align: center;
+    overflow: visible;
+    position: relative;
+    z-index: 100;
 }
 
 /* تأثير ظهور الكلمات للعنوان */
@@ -291,7 +296,6 @@ display: flex;
     border-radius: 15px; /* جعله أكثر استدارة */
     padding: 20px 25px; /* مساحة أكبر حول المحتوى */
     width: fit-content;
-
 }
 
 .action-btn-green {
@@ -328,6 +332,8 @@ display: flex;
     align-items: center;
     width: 450px; /* بيضاوي طويل */
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.800); /* ظل أكثر وضوح */
+    position: relative;
+    z-index: 100;
 }
 
 .search-input {
@@ -351,7 +357,17 @@ display: flex;
 .search-icon {
     margin-right: 15px;
     font-size: 18px;
-    color: #999;
+    color: var(--forsa-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.search-icon:hover {
+    color: var(--forsa-green);
+    transform: scale(1.1);
 }
 
 /* الأقسام الأخرى */
@@ -672,10 +688,79 @@ color: #4b4c4d; /* رمادي فاتح جداً للنص ليكون مريحاً
 }
 .grid-workers { 
     display: flex;
-    justify-content: space-evenly;  /* بدلاً من center */
-    gap: 25px;                
-    flex-wrap: wrap;           
-    padding: 20px 0;    
+    gap: 15px;                
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 20px 0;
+    scroll-behavior: smooth;
+    flex: 1;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.grid-workers::-webkit-scrollbar {
+    height: 6px;
+}
+
+.grid-workers::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.grid-workers::-webkit-scrollbar-thumb {
+    background: var(--forsa-blue);
+    border-radius: 10px;
+}
+
+.grid-workers::-webkit-scrollbar-thumb:hover {
+    background: #2E5A8C;
+}
+
+/* حاوية التمرير مع الأسهم */
+.scroll-container-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* أسهم التمرير */
+.scroll-arrow {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--forsa-blue) 0%, #2E5A8C 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(27, 61, 95, 0.3);
+    z-index: 50;
+    position: relative;
+}
+
+.scroll-arrow:hover {
+    transform: scale(1.15);
+    box-shadow: 0 8px 20px rgba(27, 61, 95, 0.5);
+    background: linear-gradient(135deg, #2E5A8C 0%, #1B3D5F 100%);
+}
+
+.scroll-arrow:active {
+    transform: scale(0.9);
+}
+
+.scroll-arrow svg {
+    stroke-width: 2;
+}
+
+.scroll-left-arrow {
+    order: -1;
 }
 
 .worker-card {
@@ -1007,4 +1092,541 @@ footer {
         order: 2;
     }
     
+}
+
+/* ===== تنسيقات الاقتراحات والبطاقات ===== */
+
+/* قائمة الاقتراحات */
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(27, 61, 95, 0.25);
+    z-index: 99999;
+    overflow: visible;
+    animation: slideDown 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    min-width: 100%;
+    border: 1px solid #e8e8e8;
+    pointer-events: auto;
+    margin-top: 8px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.suggestions-label {
+    padding: 12px 14px;
+    margin: 0;
+    font-weight: 700;
+    color: var(--forsa-blue);
+    font-size: 0.8rem;
+    border-bottom: 2px solid #f0f0f0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: right;
+}
+
+.suggestions-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+    font-weight: 500;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-icon {
+    display: none;
+}
+
+.suggestion-name {
+    flex: 1;
+    text-align: right;
+}
+
+.suggestion-item:hover {
+    background-color: #f5f9ff;
+    color: var(--forsa-blue);
+    font-weight: 600;
+}
+
+.no-suggestions {
+    padding: 20px 14px;
+    text-align: center;
+    color: #999;
+    margin: 0;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* قائمة التمرير - تصميم مخصص */
+.suggestions-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.suggestions-list::-webkit-scrollbar-track {
+    background: #f8f8f8;
+    border-radius: 3px;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #bbb 0%, #999 100%);
+    border-radius: 3px;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #999 0%, #777 100%);
+}
+
+/* ===== أنماط البطاقات المحسّنة ===== */
+
+.worker-card-enhanced {
+    width: 220px;
+    flex-shrink: 0;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+}
+
+.worker-card-enhanced:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    border-color: var(--forsa-yellow);
+}
+
+/* صورة الحرفي - دائرية مع شارة التحقق */
+.worker-avatar {
+    position: relative;
+    margin: 0 auto 12px;
+    width: 80px;
+    height: 80px;
+}
+
+.avatar-circle {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef7 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 12px rgba(27, 61, 95, 0.1);
+    border: 3px solid white;
+    transition: all 0.3s ease;
+}
+
+.worker-card-enhanced:hover .avatar-circle {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(27, 61, 95, 0.15);
+}
+
+.verified-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--forsa-green) 0%, #228e3b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* معلومات الحرفي */
+.worker-info {
+    text-align: center;
+}
+
+.worker-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--forsa-blue);
+    margin: 10px 0 4px;
+    letter-spacing: 0.3px;
+}
+
+.worker-profession {
+    font-size: 0.85rem;
+    color: var(--forsa-green);
+    font-weight: 600;
+    margin: 4px 0 8px;
+    text-transform: capitalize;
+}
+
+/* الموقع الجغرافي */
+.worker-location {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #666;
+    font-size: 0.8rem;
+    margin: 8px 0;
+}
+
+.worker-location svg {
+    color: var(--forsa-green);
+    width: 16px;
+    height: 16px;
+}
+
+/* التقييم */
+.worker-rating {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 10px 0;
+    align-items: center;
+}
+
+.rating-text {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.stars {
+    font-size: 1rem;
+    letter-spacing: 2px;
+}
+
+/* زر الطلب - عصري وحديث */
+.request-service-btn {
+    width: auto;
+    background: linear-gradient(135deg, var(--forsa-blue) 0%, #2E5A8C 100%);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 12px auto 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(27, 61, 95, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.request-service-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: left 0.5s ease;
+}
+
+.request-service-btn:hover {
+    background: linear-gradient(135deg, #2E5A8C 0%, #1B3D5F 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(27, 61, 95, 0.3);
+}
+
+.request-service-btn:hover::before {
+    left: 100%;
+}
+
+.request-service-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(27, 61, 95, 0.2);
+}
+
+.request-service-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========== MODERN SPECIALIST CARD STYLES ========== */
+
+/* البطاقة الحديثة */
+.worker-card-modern {
+    width: 280px;
+    flex-shrink: 0;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.worker-card-modern:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* قسم صورة المهنة - الجزء العلوي */
+.profession-image-section {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef7 100%);
+}
+
+.profession-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profession-label {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(27, 61, 95, 0.85);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: capitalize;
+    backdrop-filter: blur(10px);
+}
+
+/* الجزء السفلي - البيانات والصورة الدائرية */
+.worker-info-bottom {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    position: relative;
+}
+
+/* صورة الحرفي الدائرية - متداخلة مع الصورة العلوية */
+.profile-avatar-container {
+    position: absolute;
+    top: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 90px;
+    z-index: 10;
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: 0 6px 20px rgba(27, 61, 95, 0.2);
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #f0f4f8 0%, #d9e3f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--forsa-blue);
+}
+
+.worker-card-modern:hover .profile-avatar {
+    transform: scale(1.08);
+    box-shadow: 0 8px 28px rgba(27, 61, 95, 0.3);
+}
+
+.verified-badge-new {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--forsa-green) 0%, #228e3b 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 10px rgba(40, 167, 69, 0.4);
+    border: 3px solid white;
+}
+
+/* تفاصيل الحرفي */
+.specialist-details {
+    width: 100%;
+    padding: 50px 16px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.worker-name-modern {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--forsa-blue);
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+
+.worker-location-modern {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.worker-location-modern svg {
+    color: var(--forsa-green);
+    flex-shrink: 0;
+}
+
+.worker-rating-modern {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.worker-rating-modern .stars {
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+}
+
+/* زر الطلب الحديث */
+.request-service-btn-modern {
+    width: calc(100% - 20px);
+    background: linear-gradient(135deg, var(--forsa-blue) 0%, #2E5A8C 100%);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 8px 10px 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(27, 61, 95, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.request-service-btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: left 0.5s ease;
+}
+
+.request-service-btn-modern:hover {
+    background: linear-gradient(135deg, #2E5A8C 0%, #1B3D5F 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(27, 61, 95, 0.3);
+}
+
+.request-service-btn-modern:hover::before {
+    left: 100%;
+}
+
+/* Grid للبطاقات - HORIZONTAL SCROLL */
+.grid-workers {
+    display: flex;
+    gap: 15px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 20px 0;
+    scroll-behavior: smooth;
+}
+
+.grid-workers::-webkit-scrollbar {
+    display: none;
+}
+
+/* Responsive للبطاقات */
+@media (max-width: 768px) {
+    .worker-card-enhanced {
+        flex-shrink: 0;
+    }
+    
+    .suggestions-dropdown {
+        width: 90vw !important;
+        max-width: 90vw;
+    }
+    
+    .grid-workers {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .worker-card-enhanced {
+        flex-shrink: 0;
+        padding: 16px;
+    }
+    
+    .worker-name {
+        font-size: 1rem;
+    }
+    
+    .worker-profession {
+        font-size: 0.9rem;
+    }
+    
+    .request-service-btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
 } 

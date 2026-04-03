@@ -9,15 +9,15 @@ export default function Categories() {
 
   // قائمة الفئات مع صور لكل فئة
   const categories = [
-    { id: 1, image: "images/مهندس.png", name: t('engineer') },
-    { id: 2, image: "images/سباك.png", name: t('plumber') },
-    { id: 3, image: "images/دهان.png", name: t('painter') },
-    { id: 4, image: "images/نجار.png", name: t('carpenter') },
-    { id: 5, image: "images/كهربائي.png", name: t('electrician') }
+    { id: 1, image: "images/engineer.png", name: t('engineer') },
+    { id: 2, image: "images/plumber.png", name: t('plumber') },
+    { id: 3, image: "images/painter.png", name: t('painter') },
+    { id: 4, image: "images/carpenter.png", name: t('carpenter') },
+    { id: 5, image: "images/electrician.png", name: t('electrician') }
   ]
 
   return (
-    <section className="categories " id="categories">
+    <section className="categories">
       <div className="white-card-bg">
         <h2 className="section-title">{t('categoriesTitle')}</h2>
         <div className="grid-categories">
