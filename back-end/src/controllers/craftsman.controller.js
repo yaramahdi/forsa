@@ -2,6 +2,17 @@ const bcrypt = require("bcryptjs");
 const createError = require("http-errors");
 const Craftsman = require("../models/craftsman.model");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
+
+const deleteFiles = (files = []) => {
+  files.forEach((filePath) => {
+    const fullPath = path.join(__dirname, "..", filePath);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+    }
+  });
+};
 
 const registerCraftsman = async (req, res, next) => {
   try {
@@ -16,10 +27,31 @@ const registerCraftsman = async (req, res, next) => {
       phone,
       yearsOfExperience,
       bio,
-      workImages,
     } = req.body;
 
-    const existingCraftsman = await Craftsman.findOne({ email });
+    if (
+      !firstName?.trim() ||
+      !lastName?.trim() ||
+      !email?.trim() ||
+      !password?.trim() ||
+      !profession?.trim() ||
+      !city?.trim() ||
+      !neighborhood?.trim() ||
+      !phone?.trim() ||
+      yearsOfExperience === undefined ||
+      yearsOfExperience === null ||
+      yearsOfExperience === ""
+    ) {
+      return next(createError(400, "All required fields must be provided"));
+    }
+
+    if (!req.files || req.files.length !== 3) {
+      return next(createError(400, "Exactly 3 work images are required"));
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const existingCraftsman = await Craftsman.findOne({ email: normalizedEmail });
 
     if (existingCraftsman) {
       return next(createError(400, "This email is already registered"));
@@ -27,17 +59,19 @@ const registerCraftsman = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const workImages = req.files.map((file) => `/uploads/craftsmen/${file.filename}`);
+
     const savedCraftsman = await Craftsman.create({
-      firstName,
-      lastName,
-      email,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: normalizedEmail,
       password: hashedPassword,
-      profession,
-      city,
-      neighborhood,
-      phone,
-      yearsOfExperience,
-      bio,
+      profession: profession.trim(),
+      city: city.trim(),
+      neighborhood: neighborhood.trim(),
+      phone: phone.trim(),
+      yearsOfExperience: Number(yearsOfExperience),
+      bio: bio?.trim() || "",
       workImages,
     });
 
@@ -72,13 +106,13 @@ const registerCraftsman = async (req, res, next) => {
   }
 };
 
-
-
 const loginCraftsman = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const craftsman = await Craftsman.findOne({ email });
+    const craftsman = await Craftsman.findOne({
+      email: email?.toLowerCase().trim(),
+    });
 
     if (!craftsman) {
       return next(createError(400, "Invalid email or password"));
@@ -170,22 +204,17 @@ const getAllCraftsmen = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
-// هذه الدالة تجلب حرفي واحد حسب الـ id
+
 const getCraftsmanById = async (req, res, next) => {
   try {
-    // نأخذ الـ id من الرابط
     const { id } = req.params;
 
-    // نبحث عن الحرفي حسب الـ id
-    // select("-password") معناها لا ترجع كلمة المرور
     const craftsman = await Craftsman.findById(id).select("-password");
 
-    // إذا لم نجد الحرفي
     if (!craftsman) {
       return next(createError(404, "Craftsman not found"));
     }
 
-    // إذا وجدناه نرجعه بشكل منظم
     return global.returnJson(
       res,
       200,
@@ -198,23 +227,16 @@ const getCraftsmanById = async (req, res, next) => {
   }
 };
 
-// هذه الدالة تجلب بيانات الحرفي الحالي اعتمادًا على الـ token
 const getMyProfile = async (req, res, next) => {
   try {
-    // الـ verifyToken middleware يضع بيانات التوكن داخل req.user
-    // ونحن داخل التوكن خزّنا id و email
     const craftsmanId = req.user.id;
 
-    // نبحث عن الحرفي الحالي في قاعدة البيانات
-    // ونستثني password حتى لا ترجع في response
     const craftsman = await Craftsman.findById(craftsmanId).select("-password");
 
-    // إذا لم نجد الحرفي
     if (!craftsman) {
       return next(createError(404, "Craftsman not found"));
     }
 
-    // إذا وجدناه نرجع بياناته بشكل منظم
     return global.returnJson(
       res,
       200,
@@ -226,13 +248,11 @@ const getMyProfile = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
-// هذه الدالة تعدّل بيانات الحرفي الحالي اعتمادًا على الـ token
+
 const updateMyProfile = async (req, res, next) => {
   try {
-    // نأخذ id الحرفي الحالي من التوكن
     const craftsmanId = req.user.id;
 
-    // نأخذ الحقول المسموح تعديلها من body
     const {
       firstName,
       lastName,
@@ -242,25 +262,39 @@ const updateMyProfile = async (req, res, next) => {
       phone,
       yearsOfExperience,
       bio,
-      workImages,
     } = req.body;
 
-    // نجهز object يحتوي فقط على الحقول التي وصلتنا فعلًا
     const updateData = {};
 
-    if (firstName !== undefined) updateData.firstName = firstName;
-    if (lastName !== undefined) updateData.lastName = lastName;
-    if (profession !== undefined) updateData.profession = profession;
-    if (city !== undefined) updateData.city = city;
-    if (neighborhood !== undefined) updateData.neighborhood = neighborhood;
-    if (phone !== undefined) updateData.phone = phone;
-    if (yearsOfExperience !== undefined) updateData.yearsOfExperience = yearsOfExperience;
-    if (bio !== undefined) updateData.bio = bio;
-    if (workImages !== undefined) updateData.workImages = workImages;
+    if (firstName !== undefined) updateData.firstName = firstName.trim();
+    if (lastName !== undefined) updateData.lastName = lastName.trim();
+    if (profession !== undefined) updateData.profession = profession.trim();
+    if (city !== undefined) updateData.city = city.trim();
+    if (neighborhood !== undefined) updateData.neighborhood = neighborhood.trim();
+    if (phone !== undefined) updateData.phone = phone.trim();
+    if (yearsOfExperience !== undefined) {
+      updateData.yearsOfExperience = Number(yearsOfExperience);
+    }
+    if (bio !== undefined) updateData.bio = bio.trim();
 
-    // نبحث عن الحرفي الحالي ونحدّث بياناته
-    // new: true => يرجّع النسخة بعد التحديث
-    // runValidators: true => يطبّق validation الموجود في الـ model
+    if (req.files && req.files.length > 0) {
+      if (req.files.length !== 3) {
+        return next(createError(400, "Exactly 3 work images are required"));
+      }
+
+      const currentCraftsman = await Craftsman.findById(craftsmanId);
+
+      if (!currentCraftsman) {
+        return next(createError(404, "Craftsman not found"));
+      }
+
+      deleteFiles(currentCraftsman.workImages);
+
+      updateData.workImages = req.files.map(
+        (file) => `/uploads/craftsmen/${file.filename}`
+      );
+    }
+
     const updatedCraftsman = await Craftsman.findByIdAndUpdate(
       craftsmanId,
       updateData,
@@ -270,12 +304,10 @@ const updateMyProfile = async (req, res, next) => {
       }
     ).select("-password");
 
-    // إذا لم نجد الحرفي
     if (!updatedCraftsman) {
       return next(createError(404, "Craftsman not found"));
     }
 
-    // نرجّع البيانات بعد التحديث
     return global.returnJson(
       res,
       200,
@@ -294,5 +326,5 @@ module.exports = {
   getAllCraftsmen,
   getCraftsmanById,
   getMyProfile,
-  updateMyProfile
+  updateMyProfile,
 };
