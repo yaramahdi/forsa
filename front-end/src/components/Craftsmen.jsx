@@ -7,7 +7,7 @@ export default function Craftsmen() {
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
 
   return (
-    <section className="craftsmen-section" id="craftsmen">
+    <section className="craftsmen-section">
       <div className="container">
         <div className="craftsmen-single-wrapper">
           
@@ -21,9 +21,9 @@ export default function Craftsmen() {
               <div className="cta-main-view">
                 <div className="cta-text-side">
 
-                  <h2 className="cta-title">هل أنت حرفي؟</h2>
+                  <h2 className="cta-title">{t('areYouCraftsman')}</h2>
                   <p className="cta-desc">
-                    انضم إلى آلاف الحرفيين الذين يعملون عبر منصة فرصة ووسّع نطاق عملك
+                    {t('craftsmanSubtitle')}
                   </p>
 
                   <button className="modern-glow-btn">
@@ -34,7 +34,7 @@ export default function Craftsmen() {
 
                 {/* الصورة */}
                 <div className="cta-floating-img-v2">
-                  <img src="images/حرفيين.png" alt="Craftsman" />
+                  <img src="images/craftsman.png" alt="Craftsman" />
                 </div>
               </div>
 
