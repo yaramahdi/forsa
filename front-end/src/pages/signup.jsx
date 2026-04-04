@@ -35,6 +35,8 @@ export default function Signup() {
   const [touched, setTouched] = useState({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState('');
 
   useEffect(() => {
     const urls = formData.workImages.map((file) => URL.createObjectURL(file));
@@ -45,12 +47,10 @@ export default function Signup() {
     };
   }, [formData.workImages]);
 
-  // تحويل الأرقام العربية إلى إنجليزية
   const convertArabicNumbersToEnglish = (value) => {
     return value.replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
   };
 
-  // التحقق من الحقول وإرجاع الأخطاء
   const validateForm = (data) => {
     const newErrors = {};
 
@@ -118,20 +118,17 @@ export default function Signup() {
   const handleChange = (e) => {
     let { name, value } = e.target;
 
-    // ما بنقصش من الباسورد الفراغات
     if (name !== 'password' && name !== 'confirmPassword') {
       value = value.trimStart();
     }
 
     value = convertArabicNumbersToEnglish(value);
 
-    // رقم الهاتف: أرقام فقط وبحد أقصى 10
     if (name === 'phone') {
       if (!/^\d*$/.test(value)) return;
       if (value.length > 10) return;
     }
 
-    // سنوات الخبرة: أرقام فقط
     if (name === 'yearsOfExperience') {
       if (!/^\d*$/.test(value)) return;
     }
@@ -141,7 +138,6 @@ export default function Signup() {
       [name]: value
     };
 
-    // إذا غيّر المهنة من "أخرى" لشيء آخر، نفرغ الحقل الإضافي
     if (name === 'profession' && value !== 'other') {
       updatedData.customProfession = '';
     }
@@ -149,6 +145,7 @@ export default function Signup() {
     setFormData(updatedData);
     setErrors(validateForm(updatedData));
     setSuccessMessage('');
+    setServerError('');
   };
 
   const handleBlur = (e) => {
@@ -166,38 +163,42 @@ export default function Signup() {
     const files = Array.from(e.target.files || []);
     let updatedImages = [...formData.workImages];
 
-    // فحص النوع
     const invalidTypeExists = files.some((file) => !file.type.startsWith('image/'));
     if (invalidTypeExists) {
+      setTouched((prev) => ({
+        ...prev,
+        workImages: true
+      }));
       setErrors((prev) => ({
         ...prev,
         workImages: 'يسمح فقط برفع صور'
       }));
+      setSuccessMessage('');
+      setServerError('');
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
-    // فحص الحجم
     const invalidSizeExists = files.some((file) => file.size > 2 * 1024 * 1024);
     if (invalidSizeExists) {
+      setTouched((prev) => ({
+        ...prev,
+        workImages: true
+      }));
       setErrors((prev) => ({
         ...prev,
         workImages: 'حجم كل صورة يجب أن يكون أقل من 2MB'
       }));
+      setSuccessMessage('');
+      setServerError('');
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
-    updatedImages = [...updatedImages, ...files];
+    const totalImagesAfterAdd = updatedImages.length + files.length;
+    const exceededLimit = totalImagesAfterAdd > 3;
 
-    // منع أكثر من 3 صور
-    if (updatedImages.length > 3) {
-      updatedImages = updatedImages.slice(0, 3);
-      setErrors((prev) => ({
-        ...prev,
-        workImages: 'يمكنك رفع 3 صور فقط'
-      }));
-    }
+    updatedImages = [...updatedImages, ...files].slice(0, 3);
 
     const updatedData = {
       ...formData,
@@ -209,8 +210,16 @@ export default function Signup() {
       ...prev,
       workImages: true
     }));
-    setErrors(validateForm(updatedData));
+
+    const validationErrors = validateForm(updatedData);
+
+    if (exceededLimit) {
+      validationErrors.workImages = 'يمكنك رفع 3 صور فقط';
+    }
+
+    setErrors(validationErrors);
     setSuccessMessage('');
+    setServerError('');
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -232,16 +241,19 @@ export default function Signup() {
     }));
     setErrors(validateForm(updatedData));
     setSuccessMessage('');
+    setServerError('');
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setSubmitAttempted(true);
+    setSuccessMessage('');
+    setServerError('');
 
     const validationErrors = validateForm(formData);
     setErrors(validationErrors);
@@ -250,48 +262,79 @@ export default function Signup() {
       return;
     }
 
-    // تجهيز البيانات للإرسال للباك
-    const payload = {
-      firstName: formData.firstName.trim(),
-      lastName: formData.lastName.trim(),
-      email: formData.email.trim().toLowerCase(),
-      password: formData.password,
-      phone: formData.phone.trim(),
-      yearsOfExperience: Number(formData.yearsOfExperience),
-      city: formData.city.trim(),
-      neighborhood: formData.neighborhood.trim(),
-      profession:
+    try {
+      setIsSubmitting(true);
+
+      const submitData = new FormData();
+
+      submitData.append('firstName', formData.firstName.trim());
+      submitData.append('lastName', formData.lastName.trim());
+      submitData.append('email', formData.email.trim().toLowerCase());
+      submitData.append('password', formData.password);
+      submitData.append('phone', formData.phone.trim());
+      submitData.append('yearsOfExperience', formData.yearsOfExperience);
+      submitData.append('city', formData.city.trim());
+      submitData.append('neighborhood', formData.neighborhood.trim());
+      submitData.append(
+        'profession',
         formData.profession === 'other'
           ? formData.customProfession.trim()
-          : formData.profession,
-      workImages: formData.workImages
-    };
+          : formData.profession
+      );
+      submitData.append('bio', '');
 
-    console.log('Payload to backend:', payload);
+      formData.workImages.forEach((file) => {
+        submitData.append('workImages', file);
+      });
 
-    setSuccessMessage('تم التحقق من البيانات بنجاح، والفورم جاهز للربط مع الباك 🎉');
+      const response = await fetch('http://localhost:5000/api/craftsmen/register', {
+        method: 'POST',
+        body: submitData
+      });
 
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      phone: '',
-      yearsOfExperience: '',
-      city: '',
-      neighborhood: '',
-      profession: '',
-      customProfession: '',
-      workImages: []
-    });
+      const result = await response.json();
 
-    setErrors({});
-    setTouched({});
-    setSubmitAttempted(false);
+      const isSuccess =
+        response.ok &&
+        (result?.success === true || result?.status?.status === true);
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      if (!isSuccess) {
+        setServerError(
+          result?.message ||
+            result?.status?.message ||
+            'حدث خطأ أثناء إنشاء الحساب'
+        );
+        return;
+      }
+
+      setSuccessMessage('تم إنشاء الحساب بنجاح 🎉');
+
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        phone: '',
+        yearsOfExperience: '',
+        city: '',
+        neighborhood: '',
+        profession: '',
+        customProfession: '',
+        workImages: []
+      });
+
+      setErrors({});
+      setTouched({});
+      setSubmitAttempted(false);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error) {
+      setServerError('تعذر الاتصال بالسيرفر، تأكد أن الباك شغال');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -562,9 +605,7 @@ export default function Signup() {
             {[...Array(3)].map((_, index) => (
               <div
                 key={index}
-                className={`upload-box ${
-                  showError('workImages') ? 'upload-box-error' : ''
-                }`}
+                className={`upload-box ${showError('workImages') ? 'upload-box-error' : ''}`}
                 onClick={() => fileInputRef.current?.click()}
               >
                 {previewImages[index] ? (
@@ -590,9 +631,15 @@ export default function Signup() {
 
           {showError('workImages') && <p className="field-error">{errors.workImages}</p>}
 
-          <button type="submit" className="signup-btn">
-            انشاء حسابي
+          <button type="submit" className="signup-btn" disabled={isSubmitting}>
+            {isSubmitting ? 'جاري إنشاء الحساب...' : 'انشاء حسابي'}
           </button>
+
+          {serverError && (
+            <p className="field-error" style={{ textAlign: 'center' }}>
+              {serverError}
+            </p>
+          )}
 
           {successMessage && <p className="success-message">{successMessage}</p>}
 
