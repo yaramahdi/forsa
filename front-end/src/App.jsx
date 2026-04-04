@@ -9,6 +9,8 @@ import Craftsmen from './components/Craftsmen'
 import Specialists from './components/Specialists'
 import Footer from './components/Footer'
 import Signup from './pages/signup'
+import Login from './pages/login'
+import CreateNewPassword from "./pages/createNewPassword";
 
 function HomePage() {
   return (
@@ -44,6 +46,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/create-new-password" element={<CreateNewPassword />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

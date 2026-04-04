@@ -143,7 +143,7 @@ form {
   border: none;
   border-radius: 12px;
   background: #1B3D52;
-  color: white;
+  color: rgb(255, 255, 255);
   cursor: pointer;
   transition: 0.25s ease;
   box-shadow: 0 8px 18px rgba(23, 59, 104, 0.22);
@@ -160,6 +160,9 @@ form {
   margin-top: 5px;
   font-size: 13px;
   font-family: 'Tajawal', sans-serif;
+    color: #051c2b;
+    font-weight: 500;
+
 }
 
 .login-link {

@@ -9,25 +9,22 @@ export default function Navbar() {
   const { language, toggleLanguage } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
 
-  // دالة للتمرير السلس إلى القسم المطلوب
   const handleScroll = (elementId) => {
-    const element = document.getElementById(elementId);
+    const element = document.getElementById(elementId)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
   return (
     <header className="navbar-sticky">
       <div className="container nav-flex">
-        {/* اللوجو - جهة اليمين */}
         <div className="logo-container">
           <a href="#hero" onClick={() => handleScroll('hero')}>
             <img src="/images/logo2.png" alt="لوجو منصة فرصة" className="main-logo-img" />
           </a>
         </div>
 
-        {/* قائمة الروابط - المنتصف */}
         <nav className="nav-links">
           <button className="nav-link" onClick={() => handleScroll('hero')}>
             {t('home')}
@@ -38,7 +35,6 @@ export default function Navbar() {
           <button className="nav-link" onClick={() => handleScroll('why-forsa')}>
             {t('whyForsaTitle')}
           </button>
-
           <button className="nav-link" onClick={() => handleScroll('craftsmen')}>
             {t('iAmCraftsman')}
           </button>
@@ -50,16 +46,17 @@ export default function Navbar() {
           </button>
         </nav>
 
-        {/* أزرار المصادقة واللغة - جهة اليسار */}
         <div className="auth-group">
-          <button className="btn-secondary">
+          <button className="btn-secondary" onClick={() => navigate('/login')}>
             <LogIn size={18} />
             <span>{t('login')}</span>
           </button>
+
           <button className="btn-primary" onClick={() => navigate('/signup')}>
             <UserPlus size={18} />
             <span>{t('signup')}</span>
           </button>
+
           <button className="btn-language" onClick={toggleLanguage} title="تبديل اللغة">
             <Globe size={18} />
             <span className="lang-text">{language === 'ar' ? 'EN' : 'AR'}</span>
