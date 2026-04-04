@@ -262,3 +262,24 @@ form {
   justify-content: center;
   cursor: pointer;
 }
+.signup-top-bar {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+.back-home-btn {
+  background: transparent;
+  border: 1px solid #163d57;
+  color: #163d57;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.back-home-btn:hover {
+  background: #163d57;
+  color: #fff;
+}

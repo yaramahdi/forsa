@@ -9,6 +9,7 @@ import Craftsmen from './components/Craftsmen'
 import Specialists from './components/Specialists'
 import Footer from './components/Footer'
 import Signup from './pages/signup'
+import ProfessionCraftsmen from './pages/ProfessionCraftsmen'
 
 function HomePage() {
   const [searchProfession, setSearchProfession] = useState(null)
@@ -20,18 +21,23 @@ function HomePage() {
       <section id="hero">
         <Hero onProfessionSelect={setSearchProfession} />
       </section>
+
       <section id="categories">
         <Categories />
       </section>
+
       <section id="why-forsa">
         <WhyForsa />
       </section>
+
       <section id="craftsmen">
         <Craftsmen />
       </section>
+
       <section id="specialists">
         <Specialists searchProfession={searchProfession} />
       </section>
+
       <section id="contact">
         <Footer />
       </section>
@@ -46,6 +52,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/craftsmen/:profession" element={<ProfessionCraftsmen />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

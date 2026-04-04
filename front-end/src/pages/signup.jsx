@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './signup.css';
 
 import {
@@ -14,6 +15,7 @@ import {
 
 export default function Signup() {
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -267,6 +269,8 @@ export default function Signup() {
 
       const submitData = new FormData();
 
+      // نرسل قيمة profession النهائية:
+      // إذا اختار "أخرى" نرسل النص المكتوب في customProfession
       submitData.append('firstName', formData.firstName.trim());
       submitData.append('lastName', formData.lastName.trim());
       submitData.append('email', formData.email.trim().toLowerCase());
@@ -331,6 +335,11 @@ export default function Signup() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+
+      // بعد النجاح ننتقل للصفحة الرئيسية بعد مهلة قصيرة
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (error) {
       setServerError('تعذر الاتصال بالسيرفر، تأكد أن الباك شغال');
     } finally {
@@ -345,6 +354,16 @@ export default function Signup() {
   return (
     <div className="signup-page">
       <div className="signup-container">
+        <div className="signup-top-bar">
+          <button
+            type="button"
+            className="back-home-btn"
+            onClick={() => navigate('/')}
+          >
+            عودة إلى الرئيسية
+          </button>
+        </div>
+
         <h1 className="signup-title">انشاء حساب للحرفيين</h1>
 
         <form onSubmit={handleSubmit}>
