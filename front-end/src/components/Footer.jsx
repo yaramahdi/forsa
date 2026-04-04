@@ -12,7 +12,7 @@ export default function Footer() {
 
         {/* اسم المنصة */}
         <div className="footer-col">
-          <h3>منصة فرصة</h3>
+          <h3>{t('platformName')}</h3>
           <p>{t('footerDesc')}</p>
         </div>
 
@@ -22,7 +22,7 @@ export default function Footer() {
           <ul>
     <li><a href="#hero">{t('home')}</a></li>
     <li><a href="#why-forsa">{t('about')}</a></li>
-    <li><a href="#categories">{t('craftsmen')}</a></li>
+    <li><a href="#categories">{t('footerCraftsmen')}</a></li>
            
             
           </ul>
@@ -43,11 +43,11 @@ export default function Footer() {
         <div className="footer-col">
           <h4>{t('followUs')}</h4>
           <div className="social-icons">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-              <img src="icons/facebook.png" alt="Facebook" />
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label={t('facebook')}>
+              <img src="icons/facebook.png" alt={t('facebook')} />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <img src="icons/instagram.png" alt="Instagram" />
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label={t('instagram')}>
+              <img src="icons/instagram.png" alt={t('instagram')} />
             </a>
 
           </div>
