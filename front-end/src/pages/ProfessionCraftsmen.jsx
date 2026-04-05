@@ -2,13 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MapPin, Briefcase } from 'lucide-react';
 import './professionCraftsmen.css';
+import { getCraftsmanImage } from '../utils/getCraftsmanImage';
 
 export default function ProfessionCraftsmen() {
   const navigate = useNavigate();
   const { profession } = useParams();
 
   const [craftsmen, setCraftsmen] = useState([]);
-  const [selectedCity, setSelectedCity] = useState('غزة');
+  const [selectedCity, setSelectedCity] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -152,11 +153,7 @@ export default function ProfessionCraftsmen() {
 
                 <div className="craftsman-image-wrap">
                   <img
-                    src={
-                      craftsman.workImages?.[0]
-                        ? `http://localhost:5000${craftsman.workImages[0]}`
-                        : 'https://via.placeholder.com/180x180?text=Forsa'
-                    }
+                    src={getCraftsmanImage(craftsman)}
                     alt={`${craftsman.firstName} ${craftsman.lastName}`}
                     className="craftsman-image"
                   />

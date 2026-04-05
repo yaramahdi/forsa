@@ -7,6 +7,7 @@ const {
   getCraftsmanById,
   getMyProfile,
   updateMyProfile,
+  getFeaturedCraftsmen
 } = require("../controllers/craftsman.controller");
 
 const { verifyToken } = require("../middlewares/auth.middleware");
@@ -33,6 +34,7 @@ router.patch(
   ]),
   updateMyProfile
 );
+router.get("/featured", getFeaturedCraftsmen);
 
 router.get("/", getAllCraftsmen);
 router.get("/:id", getCraftsmanById);

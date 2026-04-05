@@ -107,64 +107,76 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const newErrors = validate();
-    setErrors(newErrors);
-    setServerError("");
+  const newErrors = validate();
+  setErrors(newErrors);
+  setServerError("");
 
-    if (newErrors.email || newErrors.password) return;
+  if (newErrors.email || newErrors.password) return;
 
-    setLoading(true);
+  const email = formData.email.trim().toLowerCase();
+  const password = formData.password;
 
-    try {
-      // إرسال بيانات الدخول للباك
-      const response = await fetch("http://localhost:5000/api/craftsmen/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email.trim().toLowerCase(),
-          password: formData.password,
-        }),
-      });
+  // دخول الأدمن المباشر
+  if (email === "admin@gmail.com" && password === "a123456@") {
+    localStorage.setItem("forsaAdmin", "true");
+    localStorage.setItem("forsaAdminEmail", email);
+    navigate("/admin");
+    return;
+  }
 
-      const result = await response.json();
+  setLoading(true);
 
-      const isSuccess =
-        response.ok &&
-        (result?.success === true || result?.status?.status === true);
+  try {
+    const response = await fetch("http://localhost:5000/api/craftsmen/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
 
-      if (!isSuccess) {
-        setServerError(
-          result?.message ||
-            result?.status?.message ||
-            "بيانات الدخول غير صحيحة"
-        );
-        return;
-      }
+    const result = await response.json();
 
-      // حفظ التوكن وبيانات الحرفي محليًا
-      const token = result?.data?.token || result?.token;
-      const craftsman = result?.data?.craftsman || result?.craftsman;
+    const isSuccess =
+      response.ok &&
+      (result?.success === true || result?.status?.status === true);
 
-      if (token) {
-        localStorage.setItem("forsaToken", token);
-      }
-
-      if (craftsman) {
-        localStorage.setItem("forsaCraftsman", JSON.stringify(craftsman));
-      }
-
-      // تحويل للصفحة الرئيسية مؤقتًا
-      navigate("/");
-    } catch (error) {
-      setServerError("تعذر الاتصال بالسيرفر");
-    } finally {
-      setLoading(false);
+    if (!isSuccess) {
+      setServerError(
+        result?.message ||
+          result?.status?.message ||
+          "بيانات الدخول غير صحيحة"
+      );
+      return;
     }
-  };
+
+    const token = result?.data?.token || result?.token;
+    const craftsman = result?.data?.craftsman || result?.craftsman;
+
+    if (token) {
+      localStorage.setItem("forsaToken", token);
+    }
+
+    if (craftsman) {
+      localStorage.setItem("forsaCraftsman", JSON.stringify(craftsman));
+    }
+
+    navigate("/");
+  } catch (error) {
+    setServerError("تعذر الاتصال بالسيرفر");
+  } finally {
+    setLoading(false);
+  }
+};
+  
+
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

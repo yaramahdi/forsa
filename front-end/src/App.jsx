@@ -13,6 +13,7 @@ import Login from './pages/login'
 import CreateNewPassword from "./pages/createNewPassword"
 import ProfessionCraftsmen from './pages/ProfessionCraftsmen'
 import ProfilePage from './pages/ProfilePage'
+import AdminPage from './pages/AdminPage'
 
 function HomePage() {
   const [searchProfession, setSearchProfession] = useState(null)
@@ -61,6 +62,7 @@ function App() {
 
           <Route path="/craftsmen/:profession" element={<ProfessionCraftsmen />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

@@ -13,6 +13,17 @@ import {
   X
 } from 'lucide-react';
 
+const PROFESSION_LABELS = {
+  engineer: 'مهندس',
+  plumber: 'سباك',
+  carpenter: 'نجار',
+  electrician: 'كهربائي',
+  painter: 'دهان',
+  technician: 'فني',
+  driver: 'سائق',
+  mechanic: 'ميكانيكي',
+};
+
 export default function Signup() {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -269,8 +280,11 @@ export default function Signup() {
 
       const submitData = new FormData();
 
-      // نرسل قيمة profession النهائية:
-      // إذا اختار "أخرى" نرسل النص المكتوب في customProfession
+      const professionToSend =
+        formData.profession === 'other'
+          ? formData.customProfession.trim()
+          : PROFESSION_LABELS[formData.profession] || formData.profession;
+
       submitData.append('firstName', formData.firstName.trim());
       submitData.append('lastName', formData.lastName.trim());
       submitData.append('email', formData.email.trim().toLowerCase());
@@ -279,12 +293,7 @@ export default function Signup() {
       submitData.append('yearsOfExperience', formData.yearsOfExperience);
       submitData.append('city', formData.city.trim());
       submitData.append('neighborhood', formData.neighborhood.trim());
-      submitData.append(
-        'profession',
-        formData.profession === 'other'
-          ? formData.customProfession.trim()
-          : formData.profession
-      );
+      submitData.append('profession', professionToSend);
       submitData.append('bio', '');
 
       formData.workImages.forEach((file) => {
@@ -336,7 +345,6 @@ export default function Signup() {
         fileInputRef.current.value = '';
       }
 
-      // بعد النجاح ننتقل للصفحة الرئيسية بعد مهلة قصيرة
       setTimeout(() => {
         navigate('/');
       }, 1000);
