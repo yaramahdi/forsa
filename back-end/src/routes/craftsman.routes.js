@@ -27,7 +27,10 @@ router.get("/me", verifyToken, getMyProfile);
 router.patch(
   "/me",
   verifyToken,
-  uploadCraftsmanImages.array("workImages", 3),
+  uploadCraftsmanImages.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "workImages", maxCount: 3 },
+  ]),
   updateMyProfile
 );
 

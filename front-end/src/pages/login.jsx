@@ -42,19 +42,17 @@ const AlertIcon = () => (
 function VisualPanel() {
   return (
     <div className="visual-panel">
-      {/* الصورة الجديدة */}
       <img
-        src="/images/workers.jpg"   // ← حط صورتك هون
+        src="/images/workers.jpg"
         alt="workers"
         className="visual-img"
       />
 
-      {/* النص فوق الصورة */}
       <div className="visual-content" dir="rtl">
         <h2 className="visual-title">
-اطلب… واحنا ننفذ
-          <br />أفضل الحرفيين بانتظارك لإنجاز أعمالك بسرعة وثقة.
-
+          اطلب… واحنا ننفذ
+          <br />
+          أفضل الحرفيين بانتظارك لإنجاز أعمالك بسرعة وثقة.
         </h2>
 
         <p className="visual-subtitle">
@@ -68,8 +66,6 @@ function VisualPanel() {
           <span>كهربائي 🔌</span>
           <span>سباك 🪠</span>
         </div>
-    
-        
       </div>
     </div>
   );
@@ -88,31 +84,23 @@ export default function LoginPage() {
     password: "",
   });
 
+  const [serverError, setServerError] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // في صفحة الدخول نتحقق فقط من وجود القيم
   const validate = () => {
     const newErrors = {
       email: "",
       password: "",
     };
 
-    // البريد الإلكتروني
     if (!formData.email.trim()) {
-      newErrors.email = " البريد الإلكتروني مطلوب";
-    } else if (!formData.email.endsWith("@gmail.com")) {
-      newErrors.email = "يجب أن ينتهي البريد الإلكتروني بـ @gmail.com";
+      newErrors.email = "البريد الإلكتروني مطلوب";
     }
 
-    // كلمة المرور
     if (!formData.password.trim()) {
       newErrors.password = "كلمة المرور مطلوبة";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "كلمة المرور يجب أن تكون 8 أحرف على الأقل";
-    } else if (
-      !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&_\-#^()+=]).{8,}$/.test(formData.password)
-    ) {
-      newErrors.password = "كلمة المرور يجب أن تحتوي على حروف وأرقام ورمز خاص";
     }
 
     return newErrors;
@@ -123,19 +111,62 @@ export default function LoginPage() {
 
     const newErrors = validate();
     setErrors(newErrors);
+    setServerError("");
 
     if (newErrors.email || newErrors.password) return;
 
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert("تم تسجيل الدخول بنجاح");
+      // إرسال بيانات الدخول للباك
+      const response = await fetch("http://localhost:5000/api/craftsmen/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+        }),
+      });
+
+      const result = await response.json();
+
+      const isSuccess =
+        response.ok &&
+        (result?.success === true || result?.status?.status === true);
+
+      if (!isSuccess) {
+        setServerError(
+          result?.message ||
+            result?.status?.message ||
+            "بيانات الدخول غير صحيحة"
+        );
+        return;
+      }
+
+      // حفظ التوكن وبيانات الحرفي محليًا
+      const token = result?.data?.token || result?.token;
+      const craftsman = result?.data?.craftsman || result?.craftsman;
+
+      if (token) {
+        localStorage.setItem("forsaToken", token);
+      }
+
+      if (craftsman) {
+        localStorage.setItem("forsaCraftsman", JSON.stringify(craftsman));
+      }
+
+      // تحويل للصفحة الرئيسية مؤقتًا
+      navigate("/");
+    } catch (error) {
+      setServerError("تعذر الاتصال بالسيرفر");
     } finally {
       setLoading(false);
     }
   };
-const handleChange = (e) => {
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -147,6 +178,8 @@ const handleChange = (e) => {
       ...prev,
       [name]: "",
     }));
+
+    setServerError("");
   };
 
   return (
@@ -222,6 +255,13 @@ const handleChange = (e) => {
                   </div>
                 )}
               </div>
+
+              {serverError && (
+                <div className="error-msg" style={{ marginBottom: "14px" }}>
+                  <AlertIcon />
+                  <span>{serverError}</span>
+                </div>
+              )}
 
               <div className="forgot-row">
                 <button

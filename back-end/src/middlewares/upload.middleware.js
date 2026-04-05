@@ -4,7 +4,6 @@ const fs = require("fs");
 
 const uploadDir = path.join(__dirname, "../uploads/craftsmen");
 
-// إنشاء المجلد إذا لم يكن موجودًا
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -34,8 +33,8 @@ const uploadCraftsmanImages = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 2 * 1024 * 1024, // 2MB
-    files: 3,
+    fileSize: 2 * 1024 * 1024,
+    files: 4,
   },
 });
 

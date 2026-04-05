@@ -5,14 +5,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 
-const deleteFiles = (files = []) => {
-  files.forEach((filePath) => {
-    const fullPath = path.join(__dirname, "..", filePath);
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-    }
-  });
-};
+
 
 const registerCraftsman = async (req, res, next) => {
   try {
@@ -89,6 +82,7 @@ const registerCraftsman = async (req, res, next) => {
       workImages: savedCraftsman.workImages,
       averageRating: savedCraftsman.averageRating,
       ratingsCount: savedCraftsman.ratingsCount,
+      profileImage: savedCraftsman.profileImage,
       isFeatured: savedCraftsman.isFeatured,
       createdAt: savedCraftsman.createdAt,
       updatedAt: savedCraftsman.updatedAt,
@@ -115,13 +109,13 @@ const loginCraftsman = async (req, res, next) => {
     });
 
     if (!craftsman) {
-      return next(createError(400, "Invalid email or password"));
+      return next(createError(400, "خطأ في كلمة المرور او الايميل"));
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, craftsman.password);
 
     if (!isPasswordCorrect) {
-      return next(createError(400, "Invalid email or password"));
+      return next(createError(400, "خطأ في كلمة المرور او الايميل"));
     }
 
     const token = jwt.sign(
@@ -147,6 +141,7 @@ const loginCraftsman = async (req, res, next) => {
       workImages: craftsman.workImages,
       averageRating: craftsman.averageRating,
       ratingsCount: craftsman.ratingsCount,
+      profileImage: craftsman.profileImage,
       isFeatured: craftsman.isFeatured,
       createdAt: craftsman.createdAt,
       updatedAt: craftsman.updatedAt,
@@ -249,6 +244,24 @@ const getMyProfile = async (req, res, next) => {
   }
 };
 
+const deleteFiles = (files = []) => {
+  files.forEach((filePath) => {
+    const fullPath = path.join(__dirname, "..", filePath);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+    }
+  });
+};
+
+const deleteSingleFile = (filePath) => {
+  if (!filePath) return;
+
+  const fullPath = path.join(__dirname, "..", filePath);
+  if (fs.existsSync(fullPath)) {
+    fs.unlinkSync(fullPath);
+  }
+};
+
 const updateMyProfile = async (req, res, next) => {
   try {
     const craftsmanId = req.user.id;
@@ -277,20 +290,33 @@ const updateMyProfile = async (req, res, next) => {
     }
     if (bio !== undefined) updateData.bio = bio.trim();
 
-    if (req.files && req.files.length > 0) {
-      if (req.files.length !== 3) {
-        return next(createError(400, "Exactly 3 work images are required"));
+    const currentCraftsman = await Craftsman.findById(craftsmanId);
+
+    if (!currentCraftsman) {
+      return next(createError(404, "Craftsman not found"));
+    }
+
+    const profileImageFile = req.files?.profileImage?.[0];
+    const workImageFiles = req.files?.workImages || [];
+
+    // تحديث صورة البروفايل
+    if (profileImageFile) {
+      if (currentCraftsman.profileImage) {
+        deleteSingleFile(currentCraftsman.profileImage);
       }
 
-      const currentCraftsman = await Craftsman.findById(craftsmanId);
+      updateData.profileImage = `/uploads/craftsmen/${profileImageFile.filename}`;
+    }
 
-      if (!currentCraftsman) {
-        return next(createError(404, "Craftsman not found"));
+    // استبدال صور الأعمال الثلاث كاملة
+    if (workImageFiles.length > 0) {
+      if (workImageFiles.length !== 3) {
+        return next(createError(400, "Exactly 3 work images are required"));
       }
 
       deleteFiles(currentCraftsman.workImages);
 
-      updateData.workImages = req.files.map(
+      updateData.workImages = workImageFiles.map(
         (file) => `/uploads/craftsmen/${file.filename}`
       );
     }
@@ -304,10 +330,6 @@ const updateMyProfile = async (req, res, next) => {
       }
     ).select("-password");
 
-    if (!updatedCraftsman) {
-      return next(createError(404, "Craftsman not found"));
-    }
-
     return global.returnJson(
       res,
       200,
@@ -319,7 +341,6 @@ const updateMyProfile = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
-
 module.exports = {
   registerCraftsman,
   loginCraftsman,
