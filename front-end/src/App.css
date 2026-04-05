@@ -1604,6 +1604,39 @@ footer {
     align-items: center;
 }
 
+.stars-container {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+}
+
+.star-icon {
+    color: var(--forsa-yellow);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 2px 4px rgba(249, 197, 46, 0.3));
+    animation: starPulse 0.6s ease-in-out;
+}
+
+@keyframes starPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.worker-card-modern:hover .star-icon {
+    transform: scale(1.15) rotate(15deg);
+    filter: drop-shadow(0 4px 8px rgba(249, 197, 46, 0.5));
+}
+
 .worker-rating-modern .stars {
     font-size: 0.95rem;
     letter-spacing: 1px;
