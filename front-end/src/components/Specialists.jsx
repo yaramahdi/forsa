@@ -218,7 +218,18 @@ export default function Specialists({ searchProfession }) {
   }
 
   const renderStars = (rating) => {
-    return Array(rating).fill('⭐').join('')
+    return (
+      <div className="stars-container">
+        {Array(rating).fill(null).map((_, index) => (
+          <Star
+            key={index}
+            size={18}
+            className="star-icon"
+            fill="currentColor"
+          />
+        ))}
+      </div>
+    )
   }
 
   const handleRequestService = (specialist) => {
@@ -287,7 +298,7 @@ export default function Specialists({ searchProfession }) {
 
                     {/* التقييم */}
                     <div className="worker-rating-modern">
-                      <span className="stars">{renderStars(specialist.rating)}</span>
+                      {renderStars(specialist.rating)}
                     </div>
 
                     {/* زر الطلب */}
