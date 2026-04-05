@@ -1,0 +1,243 @@
+.profession-page {
+  min-height: 100vh;
+  background: #f4f6fb;
+  padding: 18px 20px 60px;
+  direction: rtl;
+}
+
+.profession-page-container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.profession-page-topbar {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 14px;
+}
+
+.back-home-button {
+  background: #fff;
+  color: #1d4f89;
+  border: 1px solid #1d4f89;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.back-home-button:hover {
+  background: #1d4f89;
+  color: #fff;
+}
+
+.profession-hero {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 46px 24px 40px;
+  text-align: center;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px rgba(15, 47, 71, 0.06);
+}
+
+.profession-hero h1 {
+  margin: 0 0 12px;
+  font-size: 32px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.profession-hero p {
+  margin: 0;
+  color: #2f3f50;
+  font-size: 18px;
+}
+
+.filters-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px rgba(15, 47, 71, 0.06);
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.city-pill-box {
+  background: linear-gradient(135deg, #1f5f99, #2f7ec5);
+  border-radius: 18px;
+  color: #fff;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.pill-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.pill-value {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.city-select-box {
+  background: #ffffff;
+  border: 1px solid #dbe4ee;
+  border-radius: 18px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  min-height: 82px;
+}
+
+.filter-select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.craftsmen-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.craftsman-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 18px rgba(15, 47, 71, 0.06);
+  display: grid;
+  grid-template-columns: 160px 1fr 170px;
+  align-items: center;
+  gap: 22px;
+  min-height: 205px;
+}
+
+.craftsman-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.request-service-btn {
+  background: linear-gradient(135deg, #1f5f99, #2f7ec5);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 24px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(47, 126, 197, 0.2);
+  transition: 0.2s ease;
+}
+
+.request-service-btn:hover {
+  transform: translateY(-1px);
+}
+
+.craftsman-content {
+  text-align: right;
+}
+
+.craftsman-name {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.craftsman-job-line {
+  margin: 0 0 12px;
+  color: #1f2937;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.craftsman-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #66788a;
+  font-size: 16px;
+}
+
+.craftsman-image-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.craftsman-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+}
+
+.page-state {
+  text-align: center;
+  font-size: 18px;
+  color: #39556d;
+  margin-top: 26px;
+}
+
+.error-text {
+  color: #d64545;
+}
+
+@media (max-width: 900px) {
+  .filters-row {
+    grid-template-columns: 1fr;
+  }
+
+  .craftsman-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+    min-height: auto;
+  }
+
+  .craftsman-content {
+    text-align: center;
+  }
+
+  .craftsman-action {
+    justify-content: center;
+  }
+
+  .meta-row {
+    justify-content: center;
+  }
+
+  .profession-hero h1 {
+    font-size: 26px;
+  }
+
+  .profession-hero p {
+    font-size: 16px;
+  }
+}

@@ -9,6 +9,12 @@ import Craftsmen from './components/Craftsmen'
 import Specialists from './components/Specialists'
 import Footer from './components/Footer'
 import Signup from './pages/signup'
+<<<<<<< HEAD
+import Login from './pages/login'
+import CreateNewPassword from "./pages/createNewPassword";
+=======
+import ProfessionCraftsmen from './pages/ProfessionCraftsmen'
+>>>>>>> 978e78f350863285ac90a7c019d0f497f7582bc3
 
 function HomePage() {
   const [searchProfession, setSearchProfession] = useState(null)
@@ -20,18 +26,23 @@ function HomePage() {
       <section id="hero">
         <Hero onProfessionSelect={setSearchProfession} />
       </section>
+
       <section id="categories">
         <Categories />
       </section>
+
       <section id="why-forsa">
         <WhyForsa />
       </section>
+
       <section id="craftsmen">
         <Craftsmen />
       </section>
+
       <section id="specialists">
         <Specialists searchProfession={searchProfession} />
       </section>
+
       <section id="contact">
         <Footer />
       </section>
@@ -46,6 +57,12 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<Signup />} />
+<<<<<<< HEAD
+          <Route path="/login" element={<Login />} />
+          <Route path="/create-new-password" element={<CreateNewPassword />} />
+=======
+          <Route path="/craftsmen/:profession" element={<ProfessionCraftsmen />} />
+>>>>>>> 978e78f350863285ac90a7c019d0f497f7582bc3
         </Routes>
       </BrowserRouter>
     </LanguageProvider>
