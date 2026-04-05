@@ -5,7 +5,43 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 
+const deleteFiles = (files = []) => {
+  files.forEach((filePath) => {
+    const fullPath = path.join(__dirname, "..", filePath);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+    }
+  });
+};
 
+const deleteSingleFile = (filePath) => {
+  if (!filePath) return;
+
+  const fullPath = path.join(__dirname, "..", filePath);
+  if (fs.existsSync(fullPath)) {
+    fs.unlinkSync(fullPath);
+  }
+};
+
+const buildCraftsmanResponse = (craftsman) => ({
+  _id: craftsman._id,
+  firstName: craftsman.firstName,
+  lastName: craftsman.lastName,
+  email: craftsman.email,
+  profession: craftsman.profession,
+  city: craftsman.city,
+  neighborhood: craftsman.neighborhood,
+  phone: craftsman.phone,
+  yearsOfExperience: craftsman.yearsOfExperience,
+  bio: craftsman.bio,
+  profileImage: craftsman.profileImage,
+  workImages: craftsman.workImages,
+  averageRating: craftsman.averageRating,
+  ratingsCount: craftsman.ratingsCount,
+  isFeatured: craftsman.isFeatured,
+  createdAt: craftsman.createdAt,
+  updatedAt: craftsman.updatedAt,
+});
 
 const registerCraftsman = async (req, res, next) => {
   try {
@@ -52,7 +88,9 @@ const registerCraftsman = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const workImages = req.files.map((file) => `/uploads/craftsmen/${file.filename}`);
+    const workImages = req.files.map(
+      (file) => `/uploads/craftsmen/${file.filename}`
+    );
 
     const savedCraftsman = await Craftsman.create({
       firstName: firstName.trim(),
@@ -68,32 +106,12 @@ const registerCraftsman = async (req, res, next) => {
       workImages,
     });
 
-    const craftsmanResponse = {
-      _id: savedCraftsman._id,
-      firstName: savedCraftsman.firstName,
-      lastName: savedCraftsman.lastName,
-      email: savedCraftsman.email,
-      profession: savedCraftsman.profession,
-      city: savedCraftsman.city,
-      neighborhood: savedCraftsman.neighborhood,
-      phone: savedCraftsman.phone,
-      yearsOfExperience: savedCraftsman.yearsOfExperience,
-      bio: savedCraftsman.bio,
-      workImages: savedCraftsman.workImages,
-      averageRating: savedCraftsman.averageRating,
-      ratingsCount: savedCraftsman.ratingsCount,
-      profileImage: savedCraftsman.profileImage,
-      isFeatured: savedCraftsman.isFeatured,
-      createdAt: savedCraftsman.createdAt,
-      updatedAt: savedCraftsman.updatedAt,
-    };
-
     return global.returnJson(
       res,
       201,
       true,
       "Craftsman registered successfully",
-      craftsmanResponse
+      buildCraftsmanResponse(savedCraftsman)
     );
   } catch (error) {
     return next(createError(500, error.message));
@@ -127,36 +145,10 @@ const loginCraftsman = async (req, res, next) => {
       { expiresIn: "7d" }
     );
 
-    const craftsmanResponse = {
-      _id: craftsman._id,
-      firstName: craftsman.firstName,
-      lastName: craftsman.lastName,
-      email: craftsman.email,
-      profession: craftsman.profession,
-      city: craftsman.city,
-      neighborhood: craftsman.neighborhood,
-      phone: craftsman.phone,
-      yearsOfExperience: craftsman.yearsOfExperience,
-      bio: craftsman.bio,
-      workImages: craftsman.workImages,
-      averageRating: craftsman.averageRating,
-      ratingsCount: craftsman.ratingsCount,
-      profileImage: craftsman.profileImage,
-      isFeatured: craftsman.isFeatured,
-      createdAt: craftsman.createdAt,
-      updatedAt: craftsman.updatedAt,
-    };
-
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "Login successful",
-      {
-        token,
-        craftsman: craftsmanResponse,
-      }
-    );
+    return global.returnJson(res, 200, true, "Login successful", {
+      token,
+      craftsman: buildCraftsmanResponse(craftsman),
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -244,24 +236,6 @@ const getMyProfile = async (req, res, next) => {
   }
 };
 
-const deleteFiles = (files = []) => {
-  files.forEach((filePath) => {
-    const fullPath = path.join(__dirname, "..", filePath);
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-    }
-  });
-};
-
-const deleteSingleFile = (filePath) => {
-  if (!filePath) return;
-
-  const fullPath = path.join(__dirname, "..", filePath);
-  if (fs.existsSync(fullPath)) {
-    fs.unlinkSync(fullPath);
-  }
-};
-
 const updateMyProfile = async (req, res, next) => {
   try {
     const craftsmanId = req.user.id;
@@ -308,20 +282,23 @@ const updateMyProfile = async (req, res, next) => {
       updateData.profileImage = `/uploads/craftsmen/${profileImageFile.filename}`;
     }
 
-    // استبدال صور الأعمال الثلاث كاملة
+    // إضافة صور أعمال جديدة فوق الصور القديمة
     if (workImageFiles.length > 0) {
-      if (workImageFiles.length !== 3) {
-        return next(createError(400, "Exactly 3 work images are required"));
-      }
-
-      deleteFiles(currentCraftsman.workImages);
-
-      updateData.workImages = workImageFiles.map(
+      const newWorkImages = workImageFiles.map(
         (file) => `/uploads/craftsmen/${file.filename}`
       );
+
+      const mergedImages = [...(currentCraftsman.workImages || []), ...newWorkImages];
+
+      if (mergedImages.length > 12) {
+        deleteFiles(newWorkImages);
+        return next(createError(400, "You can upload up to 12 work images only"));
+      }
+
+      updateData.workImages = mergedImages;
     }
 
-    const updatedCraftsman = await Craftsman.findByIdAndUpdate(
+    const updatedProfile = await Craftsman.findByIdAndUpdate(
       craftsmanId,
       updateData,
       {
@@ -335,12 +312,13 @@ const updateMyProfile = async (req, res, next) => {
       200,
       true,
       "My profile updated successfully",
-      updatedCraftsman
+      updatedProfile
     );
   } catch (error) {
     return next(createError(500, error.message));
   }
 };
+
 module.exports = {
   registerCraftsman,
   loginCraftsman,

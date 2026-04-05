@@ -29,13 +29,12 @@ router.patch(
   verifyToken,
   uploadCraftsmanImages.fields([
     { name: "profileImage", maxCount: 1 },
-    { name: "workImages", maxCount: 3 },
+    { name: "workImages", maxCount: 9 },
   ]),
   updateMyProfile
 );
 
 router.get("/", getAllCraftsmen);
-
 router.get("/:id", getCraftsmanById);
 
 module.exports = router;

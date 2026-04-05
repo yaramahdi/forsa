@@ -178,7 +178,7 @@ export default function ProfilePage() {
   const [toast, setToast] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
-  const [replacingPhotos, setReplacingPhotos] = useState(false);
+  const [addingPhotos, setAddingPhotos] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [pageError, setPageError] = useState("");
 
@@ -245,7 +245,6 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchMyProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSave = async () => {
@@ -380,15 +379,11 @@ export default function ProfilePage() {
     }
   };
 
-  // الباك الحالي يسمح باستبدال workImages كاملة إذا أرسلنا 3 صور
-  const handleReplaceWorkImages = async (e) => {
+  const handleAddWorkImages = async (e) => {
     const files = Array.from(e.target.files || []);
     e.target.value = "";
 
-    if (files.length !== 3) {
-      showToast("حالياً يجب اختيار 3 صور معًا لاستبدال صور الأعمال", "⚠️");
-      return;
-    }
+    if (files.length === 0) return;
 
     const invalidType = files.some((file) => !file.type.startsWith("image/"));
     if (invalidType) {
@@ -409,7 +404,7 @@ export default function ProfilePage() {
     }
 
     try {
-      setReplacingPhotos(true);
+      setAddingPhotos(true);
 
       const submitData = new FormData();
       files.forEach((file) => {
@@ -434,7 +429,7 @@ export default function ProfilePage() {
         showToast(
           result?.message ||
             result?.status?.message ||
-            "فشل تحديث صور الأعمال",
+            "فشل إضافة صور الأعمال",
           "⚠️"
         );
         return;
@@ -447,11 +442,11 @@ export default function ProfilePage() {
       setDraft(normalized);
 
       localStorage.setItem("forsaCraftsman", JSON.stringify(updatedCraftsman));
-      showToast("تم استبدال صور الأعمال بنجاح");
+      showToast("تمت إضافة صور الأعمال بنجاح");
     } catch (error) {
       showToast("تعذر الاتصال بالسيرفر", "⚠️");
     } finally {
-      setReplacingPhotos(false);
+      setAddingPhotos(false);
     }
   };
 
@@ -486,7 +481,9 @@ export default function ProfilePage() {
           onChange={(e) => setDraft((d) => ({ ...d, [key_]: e.target.value }))}
         />
       ) : (
-        <div className="fval">{form?.[key_] || <span style={{ color: "var(--gray-text)" }}>—</span>}</div>
+        <div className="fval">
+          {form?.[key_] || <span style={{ color: "var(--gray-text)" }}>—</span>}
+        </div>
       )}
     </div>
   );
@@ -546,7 +543,7 @@ export default function ProfilePage() {
         multiple
         accept="image/*"
         style={{ display: "none" }}
-        onChange={handleReplaceWorkImages}
+        onChange={handleAddWorkImages}
       />
 
       <div className="app">
@@ -590,7 +587,7 @@ export default function ProfilePage() {
               <div
                 className="avatar-edit-btn"
                 onClick={() => avatarRef.current?.click()}
-                title="تغيير الصورة الشخصية"
+                title={uploadingAvatar ? "جاري الرفع..." : "تغيير الصورة الشخصية"}
               >
                 <IcCam />
               </div>
@@ -722,13 +719,13 @@ export default function ProfilePage() {
 
                 <div className="notice" style={{ marginBottom: "18px" }}>
                   <IcInfo />
-                  الباك الحالي يسمح باستبدال صور الأعمال الثلاث معًا، وليس إضافة صورة واحدة منفصلة بعد
+                  يمكنك إضافة صور أعمال جديدة، وسيتم حفظها فوق الصور القديمة
                 </div>
 
                 <div className="photos-grid">
                   <div className="photo-add" onClick={() => photoRef.current?.click()}>
                     <div className="add-circle">+</div>
-                    {replacingPhotos ? "جاري الرفع..." : "استبدال الصور الثلاث"}
+                    {addingPhotos ? "جاري الرفع..." : "إضافة صور جديدة"}
                   </div>
 
                   {form.workImages?.length > 0 ? (

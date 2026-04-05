@@ -57,23 +57,20 @@ const craftsmanSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-
     profileImage: {
       type: String,
       default: "",
     },
-
     workImages: {
       type: [String],
-      required: true,
+      default: [],
       validate: {
         validator: function (arr) {
-          return Array.isArray(arr) && arr.length === 3;
+          return Array.isArray(arr) && arr.length >= 3 && arr.length <= 12;
         },
-        message: "Exactly 3 work images are required",
+        message: "Craftsman must have between 3 and 12 work images",
       },
     },
-
     averageRating: {
       type: Number,
       default: 0,
@@ -94,3 +91,7 @@ const craftsmanSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+const Craftsman = mongoose.model("Craftsman", craftsmanSchema);
+
+module.exports = Craftsman;
