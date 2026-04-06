@@ -1,3 +1,6 @@
+//هنا صفحة بتعرض تفاصيل الحرفي حين يتم الضغط على زر اطلب الخدمة
+//بظهر كل بيانات الحرفي مع الخريطة ولما يقرر يطلب الخدمة بظهرلو فورم بسيط عشان يعبي بياناتو
+
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./CraftsmanProfile.css";

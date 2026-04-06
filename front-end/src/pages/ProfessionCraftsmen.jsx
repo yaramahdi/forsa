@@ -1,3 +1,6 @@
+
+//هاي صفحة عرض الحرفيون حسب المهنة 
+//لو ضغط على ايقونة مهندس , رح يجيب كل المهندسين وهكذا
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MapPin, Briefcase } from 'lucide-react';
