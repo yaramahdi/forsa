@@ -13,12 +13,7 @@ import Login from './pages/login'
 import CreateNewPassword from "./pages/createNewPassword"
 import ProfessionCraftsmen from './pages/ProfessionCraftsmen'
 import ProfilePage from './pages/ProfilePage'
-<<<<<<< HEAD
-import SearchResults from './pages/SearchResults'
-=======
-import AdminPage from './pages/AdminPage'
-import CraftsmanProfile from "./pages/CraftsmanProfile";
->>>>>>> a890021a58464bc12797f87c29b57a52362cf3af
+ 
 
 function HomePage() {
   const [searchProfession, setSearchProfession] = useState(null)
@@ -66,14 +61,7 @@ function App() {
           <Route path="/create-new-password" element={<CreateNewPassword />} />
 
           <Route path="/craftsmen/:profession" element={<ProfessionCraftsmen />} />
-<<<<<<< HEAD
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/search-results" element={<SearchResults />} />
-=======
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/craftsman/:id" element={<CraftsmanProfile />} />
->>>>>>> a890021a58464bc12797f87c29b57a52362cf3af
+ 
         </Routes>
       </BrowserRouter>
     </LanguageProvider>
