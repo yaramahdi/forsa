@@ -4,6 +4,20 @@ import { MapPin, Briefcase } from 'lucide-react';
 import './professionCraftsmen.css';
 import { getCraftsmanImage } from '../utils/getCraftsmanImage';
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+
+function readJsonSafe(response) {
+  return response.json().catch(() => null);
+}
+
+function extractCraftsmen(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.craftsmen)) return payload.craftsmen;
+  if (Array.isArray(payload?.data?.craftsmen)) return payload.data.craftsmen;
+  return [];
+}
+
 export default function ProfessionCraftsmen() {
   const navigate = useNavigate();
   const { profession } = useParams();
@@ -23,12 +37,26 @@ export default function ProfessionCraftsmen() {
       technician: 'فني',
       driver: 'سائق',
       mechanic: 'ميكانيكي',
-      other: 'أخرى'
+      other: 'أخرى',
+
+      مهندس: 'مهندس',
+      سباك: 'سباك',
+      دهان: 'دهان',
+      نجار: 'نجار',
+      كهربائي: 'كهربائي',
+      فني: 'فني',
+      سائق: 'سائق',
+      ميكانيكي: 'ميكانيكي',
+      أخرى: 'أخرى'
     }),
     []
   );
 
-  const pageTitle = professionMap[profession] || profession;
+  const normalizedProfession = useMemo(() => {
+    return professionMap[profession] || profession || '';
+  }, [profession, professionMap]);
+
+  const pageTitle = normalizedProfession || 'حرفي';
 
   useEffect(() => {
     const fetchCraftsmen = async () => {
@@ -36,14 +64,14 @@ export default function ProfessionCraftsmen() {
         setLoading(true);
         setError('');
 
-        let url = `http://localhost:5000/api/craftsmen?profession=${encodeURIComponent(profession)}`;
+        let url = `${API_BASE_URL}/api/craftsmen?profession=${encodeURIComponent(normalizedProfession)}`;
 
         if (selectedCity) {
           url += `&city=${encodeURIComponent(selectedCity)}`;
         }
 
         const response = await fetch(url);
-        const result = await response.json();
+        const result = await readJsonSafe(response);
 
         const isSuccess =
           response.ok &&
@@ -59,7 +87,7 @@ export default function ProfessionCraftsmen() {
           return;
         }
 
-        setCraftsmen(result?.data || []);
+        setCraftsmen(extractCraftsmen(result));
       } catch (err) {
         setError('تعذر الاتصال بالسيرفر');
         setCraftsmen([]);
@@ -68,8 +96,14 @@ export default function ProfessionCraftsmen() {
       }
     };
 
-    fetchCraftsmen();
-  }, [profession, selectedCity]);
+    if (normalizedProfession) {
+      fetchCraftsmen();
+    } else {
+      setLoading(false);
+      setCraftsmen([]);
+      setError('المهنة غير صحيحة');
+    }
+  }, [normalizedProfession, selectedCity]);
 
   return (
     <div className="profession-page">
@@ -122,9 +156,13 @@ export default function ProfessionCraftsmen() {
         {!loading && !error && craftsmen.length > 0 && (
           <div className="craftsmen-list">
             {craftsmen.map((craftsman) => (
-              <div className="craftsman-card" key={craftsman._id}>
+              <div className="craftsman-card" key={craftsman._id || craftsman.id}>
                 <div className="craftsman-action">
-                  <button type="button" className="request-service-btn">
+                  <button
+                    type="button"
+                    className="request-service-btn"
+                    onClick={() => navigate(`/craftsman/${craftsman._id || craftsman.id}`)}
+                  >
                     اطلب الآن
                   </button>
                 </div>

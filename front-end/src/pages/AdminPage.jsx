@@ -803,7 +803,7 @@ function normalizeCraftsman(item) {
     neighborhood: item?.neighborhood || item?.address || "",
     photos: normalizeArrayImages(item?.workImages || item?.photos || item?.images),
     profileImage: item?.profileImage || item?.avatar || item?.image || "",
-    featured: Boolean(item?.isFeatured ?? item?.featured ?? false),
+    featured: Boolean(item?.featured ?? item?.isFeatured ?? false),
   };
 }
 

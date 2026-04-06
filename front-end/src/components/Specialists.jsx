@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
 import { MapPin, ChevronLeft, ChevronRight, Phone } from 'lucide-react'
@@ -209,8 +210,6 @@ const sectionCss = `
   background: #1b3a5c;
 }
 
-
-
 .specialists-arrow:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -329,6 +328,7 @@ function getProfileImage(specialist) {
 }
 
 export default function Specialists({ searchProfession }) {
+  const navigate = useNavigate()
   const { language } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
 
@@ -386,29 +386,27 @@ export default function Specialists({ searchProfession }) {
     }
   }, [searchProfession, specialistsData])
 
-const checkScroll = () => {
-  const container = scrollContainerRef.current
-  if (!container) return
+  const checkScroll = () => {
+    const container = scrollContainerRef.current
+    if (!container) return
 
-  const cards = container.querySelectorAll('.specialist-card')
-  if (!cards.length) {
-    setCanScrollLeft(false)
-    setCanScrollRight(false)
-    return
+    const cards = container.querySelectorAll('.specialist-card')
+    if (!cards.length) {
+      setCanScrollLeft(false)
+      setCanScrollRight(false)
+      return
+    }
+
+    const containerRect = container.getBoundingClientRect()
+    const firstCardRect = cards[0].getBoundingClientRect()
+    const lastCardRect = cards[cards.length - 1].getBoundingClientRect()
+
+    const hasMoreOnLeft = lastCardRect.left < containerRect.left - 4
+    const hasMoreOnRight = firstCardRect.right > containerRect.right + 4
+
+    setCanScrollLeft(hasMoreOnLeft)
+    setCanScrollRight(hasMoreOnRight)
   }
-
-  const containerRect = container.getBoundingClientRect()
-  const firstCardRect = cards[0].getBoundingClientRect()
-  const lastCardRect = cards[cards.length - 1].getBoundingClientRect()
-
-  // لأن الصفحة RTL:
-  // أول عنصر يكون على اليمين، وآخر عنصر يكون على اليسار
-  const hasMoreOnLeft = lastCardRect.left < containerRect.left - 4
-  const hasMoreOnRight = firstCardRect.right > containerRect.right + 4
-
-  setCanScrollLeft(hasMoreOnLeft)
-  setCanScrollRight(hasMoreOnRight)
-}
 
   useEffect(() => {
     if (scrollContainerRef.current) {
@@ -419,6 +417,7 @@ const checkScroll = () => {
       checkScroll()
     }
   }, [displayedSpecialists])
+
   useEffect(() => {
     const container = scrollContainerRef.current
     checkScroll()
@@ -445,7 +444,8 @@ const checkScroll = () => {
   }
 
   const handleRequestService = (specialist) => {
-    console.log('Request service from:', specialist)
+    if (!specialist?.id) return
+    navigate(`/craftsman/${specialist.id}`)
   }
 
   const getSpecialistName = (specialist) => {
