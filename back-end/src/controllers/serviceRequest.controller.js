@@ -1,28 +1,76 @@
 const createError = require("http-errors");
+const mongoose = require("mongoose");
 const Craftsman = require("../models/craftsman.model");
 const ServiceRequest = require("../models/serviceRequest.model");
 
-// هذه الدالة مسؤولة عن إنشاء طلب خدمة جديد
+function normalizePhone(value) {
+  const map = {
+    "٠": "0",
+    "١": "1",
+    "٢": "2",
+    "٣": "3",
+    "٤": "4",
+    "٥": "5",
+    "٦": "6",
+    "٧": "7",
+    "٨": "8",
+    "٩": "9",
+  };
+
+  return String(value || "")
+    .replace(/[٠-٩]/g, (digit) => map[digit] || digit)
+    .replace(/\s+/g, "")
+    .trim();
+}
+
+function getCurrentCraftsmanId(req) {
+  return (
+    req.user?.id ||
+    req.user?._id ||
+    req.user?.userId ||
+    req.user?.craftsmanId ||
+    null
+  );
+}
+
+// إنشاء طلب خدمة جديد
 const createServiceRequest = async (req, res, next) => {
   try {
-    // نأخذ بيانات المستخدم والحرفي المختار من body
-    const { clientName, clientPhone, craftsmanId } = req.body;
+    const clientName = String(req.body?.clientName || "").trim();
+    const clientPhone = normalizePhone(req.body?.clientPhone);
+    const craftsmanId = String(req.body?.craftsmanId || "").trim();
 
-    // نتأكد أن الحرفي موجود أصلًا
-    const craftsman = await Craftsman.findById(craftsmanId);
+    if (!clientName) {
+      return next(createError(400, "Client name is required"));
+    }
+
+    if (!clientPhone) {
+      return next(createError(400, "Client phone is required"));
+    }
+
+    if (!/^\d{10,13}$/.test(clientPhone)) {
+      return next(createError(400, "Client phone is invalid"));
+    }
+
+    if (!craftsmanId || !mongoose.Types.ObjectId.isValid(craftsmanId)) {
+      return next(createError(400, "Craftsman id is invalid"));
+    }
+
+    const craftsman = await Craftsman.findById(craftsmanId).select(
+      "_id firstName lastName phone"
+    );
 
     if (!craftsman) {
       return next(createError(404, "Craftsman not found"));
     }
 
-    // ننشئ طلب الخدمة ونربطه بالحرفي المختار
     const savedRequest = await ServiceRequest.create({
       clientName,
       clientPhone,
-      craftsmanId,
+      craftsmanId: craftsman._id,
+      status: "pending",
     });
 
-    // نرجع رد منظم + رقم الحرفي حتى يستخدم لاحقًا في صفحة الشكر
     return global.returnJson(
       res,
       201,
@@ -38,24 +86,81 @@ const createServiceRequest = async (req, res, next) => {
   }
 };
 
-// هذه الدالة تجلب كل الطلبات الخاصة بالحرفي الحالي من خلال الـ token
+// جلب كل طلبات الحرفي الحالي
 const getMyServiceRequests = async (req, res, next) => {
   try {
-    // نأخذ id الحرفي الحالي من التوكن
-    const craftsmanId = req.user.id;
+    const craftsmanId = getCurrentCraftsmanId(req);
 
-    // نبحث عن كل الطلبات التي تخص هذا الحرفي
-    // sort({ createdAt: -1 }) يعني الأحدث أولًا
+    if (!craftsmanId) {
+      return next(createError(401, "Unauthorized"));
+    }
+
     const serviceRequests = await ServiceRequest.find({ craftsmanId })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
-    // نرجع الطلبات بشكل منظم
     return global.returnJson(
       res,
       200,
       true,
       "My service requests fetched successfully",
-      serviceRequests
+      {
+        serviceRequests,
+        total: serviceRequests.length,
+      }
+    );
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
+// تحديث حالة طلب خدمة خاص بالحرفي الحالي
+const updateMyServiceRequestStatus = async (req, res, next) => {
+  try {
+    const craftsmanId = getCurrentCraftsmanId(req);
+    const { requestId } = req.params;
+    const nextStatus = String(req.body?.status || "").trim();
+
+    if (!craftsmanId) {
+      return next(createError(401, "Unauthorized"));
+    }
+
+    if (!requestId || !mongoose.Types.ObjectId.isValid(requestId)) {
+      return next(createError(400, "Request id is invalid"));
+    }
+
+    const allowedStatuses = [
+      "pending",
+      "confirmed",
+      "contacted",
+      "completed",
+      "cancelled",
+    ];
+
+    if (!allowedStatuses.includes(nextStatus)) {
+      return next(createError(400, "Invalid status"));
+    }
+
+    const request = await ServiceRequest.findOne({
+      _id: requestId,
+      craftsmanId,
+    });
+
+    if (!request) {
+      return next(createError(404, "Service request not found"));
+    }
+
+    request.status = nextStatus;
+    await request.save();
+
+    return global.returnJson(
+      res,
+      200,
+      true,
+      "Service request status updated successfully",
+      {
+        serviceRequest: request,
+      }
     );
   } catch (error) {
     return next(createError(500, error.message));
@@ -65,4 +170,5 @@ const getMyServiceRequests = async (req, res, next) => {
 module.exports = {
   createServiceRequest,
   getMyServiceRequests,
+  updateMyServiceRequestStatus,
 };

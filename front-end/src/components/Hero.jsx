@@ -1,117 +1,111 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
 import { Search } from 'lucide-react'
 
-export default function Hero({ onProfessionSelect }) {
+const SEARCH_OPTIONS = [
+  { id: 1, name: 'سباك', name_en: 'Plumber' },
+  { id: 2, name: 'نجار', name_en: 'Carpenter' },
+  { id: 3, name: 'كهربائي', name_en: 'Electrician' },
+  { id: 4, name: 'دهان', name_en: 'Painter' },
+  { id: 5, name: 'مهندس', name_en: 'Engineer' },
+  { id: 6, name: 'فني', name_en: 'Technician' },
+  { id: 7, name: 'سائق', name_en: 'Driver' },
+  { id: 8, name: 'ميكانيكي', name_en: 'Mechanic' }
+]
+
+export default function Hero() {
   const { language } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
   const navigate = useNavigate()
-  
+
   const [visibleWords, setVisibleWords] = useState([])
   const [searchValue, setSearchValue] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const [filteredSuggestions, setFilteredSuggestions] = useState([])
-  const [selectedProfession, setSelectedProfession] = useState(null)
+  const [filteredSuggestions, setFilteredSuggestions] = useState(SEARCH_OPTIONS)
   const searchContainerRef = useRef(null)
-  const suggestionsRef = useRef(null)
 
-  // قائمة الحرف المتاحة - مهن الحرفيين المختلفة مع أيقونات
-  const professions = [
-    { id: 1, name: 'سباك', name_en: 'Plumber', icon: '🔧' },
-    { id: 2, name: 'نجار', name_en: 'Carpenter', icon: '🪵' },
-    { id: 3, name: 'كهربائي', name_en: 'Electrician', icon: '⚡' },
-    { id: 4, name: 'دهان', name_en: 'Painter', icon: '🎨' },
-    { id: 5, name: 'فني تكييف', name_en: 'AC Technician', icon: '❄️' },
-    { id: 6, name: 'بلاط', name_en: 'Tiler', icon: '🧱' },
-    { id: 7, name: 'مهندس', name_en: 'Engineer', icon: '📐' },
-    { id: 8, name: 'بناء', name_en: 'Construction', icon: '🏗️' }
-  ]
-
-  const getProfessionName = (profession) => {
-    return language === 'ar' ? profession.name : profession.name_en
+  const getOptionLabel = (option) => {
+    return language === 'ar' ? option.name : option.name_en
   }
 
   const text = t('heroTitle')
-  const words = text.split(" ")
+  const words = text.split(' ')
 
   useEffect(() => {
     setVisibleWords([])
     words.forEach((word, index) => {
       setTimeout(() => {
-        setVisibleWords(prev => [...prev, index])
+        setVisibleWords((prev) => [...prev, index])
       }, index * 400)
     })
-  }, [language])
+  }, [language, text])
 
-  // معالجة تغيير البحث
+  const filterSuggestions = (value) => {
+    const trimmedValue = value.trim()
+
+    if (!trimmedValue) {
+      setFilteredSuggestions(SEARCH_OPTIONS)
+      return
+    }
+
+    const filtered = SEARCH_OPTIONS.filter((option) => {
+      return language === 'ar'
+        ? option.name.includes(trimmedValue)
+        : option.name_en.toLowerCase().includes(trimmedValue.toLowerCase())
+    })
+
+    setFilteredSuggestions(filtered)
+  }
+
   const handleSearchChange = (e) => {
     const value = e.target.value
     setSearchValue(value)
     setShowSuggestions(true)
-
-    if (value.trim()) {
-      const filtered = professions.filter(prof => {
-        if (language === 'ar') {
-          return prof.name.includes(value)
-        } else {
-          return prof.name_en.toLowerCase().includes(value.toLowerCase())
-        }
-      })
-      setFilteredSuggestions(filtered)
-    } else {
-      setFilteredSuggestions(professions)
-    }
+    filterSuggestions(value)
   }
 
-  // معالجة اختيار اقتراح
-  const handleSelectSuggestion = (profession) => {
-    const displayName = language === 'ar' ? profession.name : profession.name_en
-    setSearchValue(displayName)
-    setSelectedProfession(profession)
+  const goToSearchResults = (query) => {
+    const finalQuery = String(query || '').trim()
+    if (!finalQuery) return
+
+    navigate(`/search-results?q=${encodeURIComponent(finalQuery)}`)
     setShowSuggestions(false)
-    
-    // التوجيه لصفحة نتائج البحث بدلاً من التمرير لأسفل
-    navigate(`/search-results?q=${encodeURIComponent(displayName)}`)
   }
 
-  // معالجة البحث
+  const handleSelectSuggestion = (option) => {
+    const label = getOptionLabel(option)
+    setSearchValue(label)
+    goToSearchResults(label)
+  }
+
   const handleSearch = () => {
-    if (searchValue.trim()) {
-      // البحث عن مهنة محددة
-      const profession = professions.find(p => {
-        if (language === 'ar') {
-          return p.name.includes(searchValue)
-        } else {
-          return p.name_en.toLowerCase().includes(searchValue.toLowerCase())
-        }
-      })
-      
-      const query = profession ? getProfessionName(profession) : searchValue.trim()
-      navigate(`/search-results?q=${encodeURIComponent(query)}`)
-      setShowSuggestions(false)
-    } else {
-      // إذا كان الحقل فارغاً، اعرض جميع المهن
-      setShowSuggestions(true)
-      setFilteredSuggestions(professions)
+    const query = searchValue.trim()
+
+    if (query) {
+      goToSearchResults(query)
+      return
     }
+
+    setFilteredSuggestions(SEARCH_OPTIONS)
+    setShowSuggestions(true)
   }
 
-  // معالجة المفاتيح
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
+      e.preventDefault()
       handleSearch()
     }
   }
 
-  // إخفاء الاقتراحات عند النقر خارج المربع
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!e.target.closest('.search-container-transparent')) {
+      if (!searchContainerRef.current?.contains(e.target)) {
         setShowSuggestions(false)
       }
     }
+
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
@@ -124,19 +118,24 @@ export default function Hero({ onProfessionSelect }) {
             <span
               key={index}
               className={`word ${visibleWords.includes(index) ? 'visible' : ''} ${
-                (language === 'ar' && word.includes('الأحلام')) || (language === 'en' && word.includes('dreams')) ? 'highlight-word' : ''
+                (language === 'ar' && word.includes('الأحلام')) ||
+                (language === 'en' && word.includes('dreams'))
+                  ? 'highlight-word'
+                  : ''
               }`}
             >
               {word}
             </span>
           ))}
         </h1>
-        
+
         <p className="hero-sub">{t('heroSubtitle')}</p>
-        
+
         <div className="search-wrapper">
-          <button className="action-btn-green" onClick={handleSearch}>{t('searchBtn')}</button>
-          
+          <button className="action-btn-green" onClick={handleSearch}>
+            {t('searchBtn')}
+          </button>
+
           <div className="search-container-transparent" ref={searchContainerRef}>
             <input
               type="text"
@@ -144,34 +143,30 @@ export default function Hero({ onProfessionSelect }) {
               placeholder={t('searchPlaceholder')}
               value={searchValue}
               onChange={handleSearchChange}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               onFocus={() => {
-                if (!searchValue.trim()) {
-                  setFilteredSuggestions(professions)
-                }
+                filterSuggestions(searchValue)
                 setShowSuggestions(true)
               }}
             />
+
             <span className="search-icon">
               <Search size={20} strokeWidth={2.5} />
             </span>
 
-            {/* قائمة الاقتراحات */}
             {showSuggestions && (
-              <div 
-                className="suggestions-dropdown"
-                ref={suggestionsRef}
-              >
+              <div className="suggestions-dropdown">
                 <p className="suggestions-label">{t('searchSuggestions')}</p>
+
                 {filteredSuggestions.length > 0 ? (
                   <ul className="suggestions-list">
-                    {filteredSuggestions.map(profession => (
+                    {filteredSuggestions.map((option) => (
                       <li
-                        key={profession.id}
+                        key={option.id}
                         className="suggestion-item"
-                        onClick={() => handleSelectSuggestion(profession)}
+                        onClick={() => handleSelectSuggestion(option)}
                       >
-                        <span className="suggestion-name">{getProfessionName(profession)}</span>
+                        <span className="suggestion-name">{getOptionLabel(option)}</span>
                       </li>
                     ))}
                   </ul>
