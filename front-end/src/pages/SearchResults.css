@@ -1,0 +1,102 @@
+.search-results-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #fdfcf0; /* --forsa-bg */
+}
+
+.results-header-section {
+  background: linear-gradient(135deg, #1b3d5f 0%, #2e5a8c 100%);
+  padding: 60px 0 40px;
+  color: white;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-family: 'Cairo', sans-serif;
+  transition: all 0.3s ease;
+  width: fit-content;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-5px);
+}
+
+[dir="rtl"] .back-btn:hover {
+  transform: translateX(5px);
+}
+
+.results-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.query-highlight {
+  color: #f9c52e; /* --forsa-yellow */
+}
+
+.results-count {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.results-main {
+  flex: 1;
+  padding-bottom: 80px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  justify-items: center;
+}
+
+/* استخدام نفس تنسيقات البطاقات من Specialists.jsx */
+.no-results-container {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.no-results-container h2 {
+  color: #1b3d5f;
+  margin-bottom: 10px;
+}
+
+.no-results-container p {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .results-title {
+    font-size: 1.8rem;
+  }
+  
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+}

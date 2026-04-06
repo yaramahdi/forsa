@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
 import { Search } from 'lucide-react'
@@ -6,13 +7,13 @@ import { Search } from 'lucide-react'
 export default function Hero({ onProfessionSelect }) {
   const { language } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
+  const navigate = useNavigate()
   
   const [visibleWords, setVisibleWords] = useState([])
   const [searchValue, setSearchValue] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [filteredSuggestions, setFilteredSuggestions] = useState([])
   const [selectedProfession, setSelectedProfession] = useState(null)
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
   const searchContainerRef = useRef(null)
   const suggestionsRef = useRef(null)
 
@@ -71,20 +72,8 @@ export default function Hero({ onProfessionSelect }) {
     setSelectedProfession(profession)
     setShowSuggestions(false)
     
-    // تمرير البيانات إلى الأب
-    if (onProfessionSelect) {
-      onProfessionSelect(profession)
-    }
-    
-    console.log('Selected profession:', profession)
-    
-    // التمرير السلس لقسم النتائج
-    setTimeout(() => {
-      const resultsSection = document.getElementById('search-results')
-      if (resultsSection) {
-        resultsSection.scrollIntoView({ behavior: 'smooth' })
-      }
-    }, 100)
+    // التوجيه لصفحة نتائج البحث بدلاً من التمرير لأسفل
+    navigate(`/search-results?q=${encodeURIComponent(displayName)}`)
   }
 
   // معالجة البحث
@@ -98,21 +87,10 @@ export default function Hero({ onProfessionSelect }) {
           return p.name_en.toLowerCase().includes(searchValue.toLowerCase())
         }
       })
-      if (profession) {
-        handleSelectSuggestion(profession)
-      } else {
-        // إظهار جميع الاقتراحات إذا لم تتطابق تماماً
-        setShowSuggestions(true)
-        setFilteredSuggestions(
-          professions.filter(prof => {
-            if (language === 'ar') {
-              return prof.name.includes(searchValue)
-            } else {
-              return prof.name_en.toLowerCase().includes(searchValue.toLowerCase())
-            }
-          })
-        )
-      }
+      
+      const query = profession ? getProfessionName(profession) : searchValue.trim()
+      navigate(`/search-results?q=${encodeURIComponent(query)}`)
+      setShowSuggestions(false)
     } else {
       // إذا كان الحقل فارغاً، اعرض جميع المهن
       setShowSuggestions(true)
@@ -137,14 +115,6 @@ export default function Hero({ onProfessionSelect }) {
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
   }, [])
-
-  // ضبط موضعية القائمة المنسدلة - تصحيح الحساب
-  useEffect(() => {
-    if (showSuggestions && searchContainerRef.current) {
-      // لا نحتاج لحساب الموضع لأنه يتم من CSS الآن
-      // CSS سيتولى عرض القائمة تحت خانة البحث مباشرة
-    }
-  }, [showSuggestions])
 
   return (
     <section className="hero-section" id="search-hero">
