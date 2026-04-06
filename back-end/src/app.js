@@ -4,6 +4,7 @@ const path = require("path");
 
 const craftsmanRoutes = require("./routes/craftsman.routes");
 const serviceRequestRoutes = require("./routes/serviceRequest.routes");
+const adminRoutes = require("./routes/admin.routes");
 
 const { returnJson } = require("./modules/my_modules");
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/craftsmen", craftsmanRoutes);
 app.use("/api/service-requests", serviceRequestRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((error, req, res, next) => {
   return returnJson(

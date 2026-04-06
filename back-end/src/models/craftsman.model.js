@@ -82,7 +82,7 @@ const craftsmanSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
-    isFeatured: {
+    featured: {
       type: Boolean,
       default: false,
     },

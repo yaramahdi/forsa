@@ -1,33 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Poppins:wght@400;600;800&family=Tajawal:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 .signup-page {
   direction: rtl;
-  background: linear-gradient(135deg, rgba(27, 61, 95, 0.15) 0%, rgba(40, 167, 69, 0.1) 100%),
+  background:
+    linear-gradient(135deg, rgba(27, 61, 95, 0.15) 0%, rgba(40, 167, 69, 0.1) 100%),
     url('/images/background.png') no-repeat center;
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-
-  height: 100vh; /* مهم */
-  overflow: hidden; /* يمنع السكرول */
-
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 20px 150px;
+  padding: 20px 110px;
+  overflow: hidden;
 }
 
 .signup-container {
   width: 100%;
-  max-width: 420px; /* حجم بيرفكت */
+  max-width: 430px;
+  max-height: calc(100vh - 40px);
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
-  padding: 25px 20px; /* تصغير */
-  border-radius: 18px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.16);
   text-align: center;
+  margin-left: auto;
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  margin-left: auto; /* عاليمين */
+.signup-top-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.back-home-btn {
+  background: transparent;
+  border: 1px solid #163d57;
+  color: #163d57;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.back-home-btn:hover {
+  background: #163d57;
+  color: #fff;
 }
 
 .signup-title {
@@ -36,13 +69,36 @@
   font-size: 18px;
   color: #1b3d52;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 form {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 4px; /* تقليل المسافات */
+  gap: 4px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-left: 4px;
+  padding-right: 2px;
+}
+
+form::-webkit-scrollbar {
+  width: 8px;
+}
+
+form::-webkit-scrollbar-track {
+  background: #edf2f7;
+  border-radius: 999px;
+}
+
+form::-webkit-scrollbar-thumb {
+  background: #b8c7d8;
+  border-radius: 999px;
+}
+
+form::-webkit-scrollbar-thumb:hover {
+  background: #92abc3;
 }
 
 .signup-label {
@@ -52,6 +108,7 @@ form {
   font-weight: 700;
   font-size: 13px;
   font-family: 'Tajawal', sans-serif;
+  color: #18364d;
 }
 
 .form-row {
@@ -64,6 +121,7 @@ form {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .input-box {
@@ -74,136 +132,117 @@ form {
 .input-box input,
 .input-box select {
   width: 100%;
-  height: 34px; /* أصغر */
-  border-radius: 8px;
+  height: 42px;
+  border-radius: 11px;
   border: 1px solid #d9dee7;
-  padding: 0 35px 0 10px;
-  font-size: 12px;
+  padding: 0 40px 0 12px;
+  font-size: 13px;
+  font-family: 'Cairo', sans-serif;
   background: #f5f7fa;
-  transition: 0.25s;
-  box-sizing: border-box; /* هذا يمنع تكبير الفورم عند ظهور الخطأ */
+  color: #203547;
+  transition: 0.25s ease;
+  outline: none;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+.input-box input::placeholder {
+  color: #97a2af;
+}
+
+.input-box input:focus,
+.input-box select:focus {
+  border-color: #4c84bc;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(76, 132, 188, 0.12);
 }
 
 .input-box .icon {
   position: absolute;
-  right: 10px;
+  right: 11px;
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
+  pointer-events: none;
 }
 
 .input-box:focus-within .icon {
   color: #1b4b82;
 }
 
+.input-box-error input,
+.input-box-error select {
+  border-color: #d32f2f !important;
+  background: #fff8f8;
+}
+
+.field-error {
+  color: #d32f2f;
+  font-size: 11px;
+  text-align: right;
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+.extra-field {
+  margin-top: 10px;
+}
+
 /* Upload */
 .upload-grid {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 10px;
+  flex-wrap: nowrap;
   justify-content: center;
-  margin: 6px 0;
+  margin: 8px 0 4px;
 }
 
 .upload-box {
-  width: 60px;
-  height: 50px;
+  width: 78px;
+  height: 68px;
   border: 2px dashed #d2d7df;
-   border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   background: #fafafa;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  transition: 0.2s ease;
+}
+
+.upload-box:hover {
+  border-color: #7f9dbc;
+  background: #f7fbff;
 }
 
 .upload-box span {
-  font-size: 20px;
+  font-size: 24px;
   color: #8d96a3;
+  line-height: 1;
 }
 
-.upload-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Button */
-.signup-btn {
-  width: 100%;
-  height: 36px;
-  font-size: 15px;
-  font-weight: 800;
-  border: none;
-  border-radius: 10px;
-  background: #1B3D52;
-  color: rgb(255, 255, 255);
-  cursor: pointer;
-  margin-top: 8px;
-}
-
-.signup-btn:hover {
-  background: #3F7FBE;
-}
-
-/* Login */
-.login-text {
-  margin-top: 5px;
-  font-size: 13px;
-  font-family: 'Tajawal', sans-serif;
-  color: #051c2b;
-  font-weight: 500;
-}
-.login-link {
-  color: #1b3d52;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.login-link:hover {
-  text-decoration: underline;
-}
-
-/* Errors */
-.field-error {
-  color: #d32f2f;
-  font-size: 11px;
-  text-align: right;
-}
-
-.input-box-error {
-  border: 1px solid #d32f2f !important;
-  
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .signup-page {
-    justify-content: center;
-    padding: 10px;
-    overflow: auto; /* نسمح بالسكرول فقط بالموبايل */
-  }
-
-  .signup-container {
-    max-width: 100%;
-    margin-left: 0;
-  }
-
-.extra-field {
-  margin-top: 10px;
+.upload-box-error {
+  border-color: #d32f2f;
+  background: #fff8f8;
 }
 
 .preview-wrapper {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
-.preview-wrapper img {
+.preview-wrapper img,
+.upload-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px;
+  display: block;
 }
 
 .remove-image-btn {
@@ -214,32 +253,101 @@ form {
   height: 24px;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.68);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-.signup-top-bar {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 10px;
+  z-index: 2;
 }
 
-.back-home-btn {
-  background: transparent;
-  border: 1px solid #163d57;
-  color: #163d57;
-  padding: 8px 14px;
-  border-radius: 10px;
+/* Button */
+.signup-btn {
+  width: 100%;
+  height: 46px;
+  font-size: 17px;
+  font-weight: 800;
+  border: none;
+  border-radius: 12px;
+  background: #1B3D52;
+  color: #fff;
   cursor: pointer;
-  font-size: 14px;
+  margin-top: 10px;
+  font-family: 'Cairo', sans-serif;
   transition: 0.2s ease;
 }
 
-.back-home-btn:hover {
-  background: #163d57;
-  color: #fff;
- 
-} }
+.signup-btn:hover:not(:disabled) {
+  background: #245779;
+}
+
+.signup-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.success-message {
+  color: #16803c;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+/* Login */
+.login-text {
+  margin-top: 8px;
+  font-size: 13px;
+  font-family: 'Tajawal', sans-serif;
+  color: #051c2b;
+  font-weight: 500;
+  text-align: center;
+}
+
+.login-link {
+  color: #1b3d52;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 992px) {
+  .signup-page {
+    padding: 16px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .signup-page {
+    justify-content: center;
+    align-items: flex-start;
+    padding: 12px;
+    overflow: auto;
+  }
+
+  .signup-container {
+    max-width: 100%;
+    max-height: none;
+    margin-left: 0;
+  }
+
+  form {
+    overflow: visible;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .upload-grid {
+    justify-content: center;
+  }
+}

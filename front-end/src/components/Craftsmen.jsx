@@ -1,8 +1,10 @@
 import React from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
-
+import { useNavigate } from "react-router-dom";
+//صفحة هل انت حرفي ؟ سجل الان 
 export default function Craftsmen() {
+   const navigate = useNavigate();
   const { language } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
 
@@ -26,7 +28,7 @@ export default function Craftsmen() {
                     {t('craftsmanSubtitle')}
                   </p>
 
-                  <button className="modern-glow-btn">
+                  <button className="modern-glow-btn" onClick={() => navigate('/signup')}>
                     <span>{t('registerNow')}</span>
                   </button>
 

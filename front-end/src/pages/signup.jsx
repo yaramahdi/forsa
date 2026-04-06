@@ -13,6 +13,23 @@ import {
   X
 } from 'lucide-react';
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+
+const PROFESSION_LABELS = {
+  engineer: 'مهندس',
+  plumber: 'سباك',
+  carpenter: 'نجار',
+  electrician: 'كهربائي',
+  painter: 'دهان',
+  technician: 'فني',
+  driver: 'سائق',
+  mechanic: 'ميكانيكي',
+};
+
+function readJsonSafe(response) {
+  return response.json().catch(() => null);
+}
+
 export default function Signup() {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -269,8 +286,11 @@ export default function Signup() {
 
       const submitData = new FormData();
 
-      // نرسل قيمة profession النهائية:
-      // إذا اختار "أخرى" نرسل النص المكتوب في customProfession
+      const professionToSend =
+        formData.profession === 'other'
+          ? formData.customProfession.trim()
+          : PROFESSION_LABELS[formData.profession] || formData.profession;
+
       submitData.append('firstName', formData.firstName.trim());
       submitData.append('lastName', formData.lastName.trim());
       submitData.append('email', formData.email.trim().toLowerCase());
@@ -279,24 +299,19 @@ export default function Signup() {
       submitData.append('yearsOfExperience', formData.yearsOfExperience);
       submitData.append('city', formData.city.trim());
       submitData.append('neighborhood', formData.neighborhood.trim());
-      submitData.append(
-        'profession',
-        formData.profession === 'other'
-          ? formData.customProfession.trim()
-          : formData.profession
-      );
+      submitData.append('profession', professionToSend);
       submitData.append('bio', '');
 
       formData.workImages.forEach((file) => {
         submitData.append('workImages', file);
       });
 
-      const response = await fetch('http://localhost:5000/api/craftsmen/register', {
+      const response = await fetch(`${API_BASE_URL}/api/craftsmen/register`, {
         method: 'POST',
         body: submitData
       });
 
-      const result = await response.json();
+      const result = await readJsonSafe(response);
 
       const isSuccess =
         response.ok &&
@@ -336,7 +351,6 @@ export default function Signup() {
         fileInputRef.current.value = '';
       }
 
-      // بعد النجاح ننتقل للصفحة الرئيسية بعد مهلة قصيرة
       setTimeout(() => {
         navigate('/');
       }, 1000);
@@ -366,311 +380,316 @@ export default function Signup() {
 
         <h1 className="signup-title">انشاء حساب للحرفيين</h1>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-row">
-            <div className="form-group">
-              <label className="signup-label">الاسم الأول</label>
-              <div className={`input-box ${showError('firstName') ? 'input-box-error' : ''}`}>
+        <form onSubmit={handleSubmit} className="signup-form">
+          <div className="signup-form-scroll">
+            <div className="form-row">
+              <div className="form-group">
+                <label className="signup-label">الاسم الأول</label>
+                <div className={`input-box ${showError('firstName') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="text"
+                    name="firstName"
+                    placeholder="أدخل الاسم الأول"
+                    className="signup-form-control"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <span className="icon">
+                    <User size={18} />
+                  </span>
+                </div>
+                {showError('firstName') && <p className="field-error">{errors.firstName}</p>}
+              </div>
+
+              <div className="form-group">
+                <label className="signup-label">الاسم الثاني</label>
+                <div className={`input-box ${showError('lastName') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="text"
+                    name="lastName"
+                    placeholder="أدخل الاسم الثاني"
+                    className="signup-form-control"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <span className="icon">
+                    <User size={18} />
+                  </span>
+                </div>
+                {showError('lastName') && <p className="field-error">{errors.lastName}</p>}
+              </div>
+            </div>
+
+            <div className="form-group full-width">
+              <label className="signup-label">البريد الإلكتروني</label>
+              <div className={`input-box ${showError('email') ? 'input-box-error' : ''}`}>
                 <input
-                  type="text"
-                  name="firstName"
-                  placeholder="أدخل الاسم الأول"
+                  type="email"
+                  name="email"
+                  placeholder="example@gmail.com"
                   className="signup-form-control"
-                  value={formData.firstName}
+                  value={formData.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
                 />
                 <span className="icon">
-                  <User size={18} />
+                  <Mail size={18} />
                 </span>
               </div>
-              {showError('firstName') && <p className="field-error">{errors.firstName}</p>}
+              {showError('email') && <p className="field-error">{errors.email}</p>}
             </div>
 
-            <div className="form-group">
-              <label className="signup-label">الاسم الثاني</label>
-              <div className={`input-box ${showError('lastName') ? 'input-box-error' : ''}`}>
-                <input
-                  type="text"
-                  name="lastName"
-                  placeholder="أدخل الاسم الثاني"
-                  className="signup-form-control"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <span className="icon">
-                  <User size={18} />
-                </span>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="signup-label">كلمة المرور</label>
+                <div className={`input-box ${showError('password') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="أدخل كلمة المرور"
+                    className="signup-form-control"
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <span className="icon">
+                    <Lock size={18} />
+                  </span>
+                </div>
+                {showError('password') && <p className="field-error">{errors.password}</p>}
               </div>
-              {showError('lastName') && <p className="field-error">{errors.lastName}</p>}
-            </div>
-          </div>
 
-          <label className="signup-label">البريد الإلكتروني</label>
-          <div className={`input-box ${showError('email') ? 'input-box-error' : ''}`}>
-            <input
-              type="email"
-              name="email"
-              placeholder="example@gmail.com"
-              className="signup-form-control"
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-            />
-            <span className="icon">
-              <Mail size={18} />
-            </span>
-          </div>
-          {showError('email') && <p className="field-error">{errors.email}</p>}
-
-          <div className="form-row">
-            <div className="form-group">
-              <label className="signup-label">كلمة المرور</label>
-              <div className={`input-box ${showError('password') ? 'input-box-error' : ''}`}>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="أدخل كلمة المرور"
-                  className="signup-form-control"
-                  value={formData.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <span className="icon">
-                  <Lock size={18} />
-                </span>
+              <div className="form-group">
+                <label className="signup-label">تأكيد كلمة المرور</label>
+                <div className={`input-box ${showError('confirmPassword') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="تأكيد كلمة المرور"
+                    className="signup-form-control"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <span className="icon">
+                    <Lock size={18} />
+                  </span>
+                </div>
+                {showError('confirmPassword') && (
+                  <p className="field-error">{errors.confirmPassword}</p>
+                )}
               </div>
-              {showError('password') && <p className="field-error">{errors.password}</p>}
             </div>
 
-            <div className="form-group">
-              <label className="signup-label">تأكيد كلمة المرور</label>
-              <div className={`input-box ${showError('confirmPassword') ? 'input-box-error' : ''}`}>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="تأكيد كلمة المرور"
-                  className="signup-form-control"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <span className="icon">
-                  <Lock size={18} />
-                </span>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="signup-label">رقم الهاتف</label>
+                <div className={`input-box ${showError('phone') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="text"
+                    name="phone"
+                    placeholder="059XXXXXXXX"
+                    className="signup-form-control"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <span className="icon">
+                    <Phone size={18} />
+                  </span>
+                </div>
+                {showError('phone') && <p className="field-error">{errors.phone}</p>}
               </div>
-              {showError('confirmPassword') && (
-                <p className="field-error">{errors.confirmPassword}</p>
-              )}
-            </div>
-          </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label className="signup-label">رقم الهاتف</label>
-              <div className={`input-box ${showError('phone') ? 'input-box-error' : ''}`}>
-                <input
-                  type="text"
-                  name="phone"
-                  placeholder="059XXXXXXXX"
-                  className="signup-form-control"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <span className="icon">
-                  <Phone size={18} />
-                </span>
+              <div className="form-group">
+                <label className="signup-label">عدد سنين الخبرة</label>
+                <div className={`input-box ${showError('yearsOfExperience') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="text"
+                    name="yearsOfExperience"
+                    placeholder="ادخل عدد سنين خبرتك"
+                    className="signup-form-control"
+                    value={formData.yearsOfExperience}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <span className="icon">
+                    <Hammer size={18} />
+                  </span>
+                </div>
+                {showError('yearsOfExperience') && (
+                  <p className="field-error">{errors.yearsOfExperience}</p>
+                )}
               </div>
-              {showError('phone') && <p className="field-error">{errors.phone}</p>}
             </div>
 
-            <div className="form-group">
-              <label className="signup-label">عدد سنين الخبرة</label>
-              <div
-                className={`input-box ${showError('yearsOfExperience') ? 'input-box-error' : ''}`}
-              >
-                <input
-                  type="text"
-                  name="yearsOfExperience"
-                  placeholder="ادخل عدد سنين خبرتك"
-                  className="signup-form-control"
-                  value={formData.yearsOfExperience}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <span className="icon">
-                  <Hammer size={18} />
-                </span>
+            <div className="form-row">
+              <div className="form-group">
+                <label className="signup-label">المنطقة</label>
+                <div className={`input-box ${showError('city') ? 'input-box-error' : ''}`}>
+                  <select
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="signup-form-control"
+                  >
+                    <option value="" disabled hidden>
+                      اختر المنطقة
+                    </option>
+                    <option value="غزة">غزة</option>
+                    <option value="شمال غزة">شمال غزة</option>
+                    <option value="الوسطى">الوسطى</option>
+                    <option value="الجنوب">الجنوب</option>
+                  </select>
+                  <span className="icon">
+                    <MapPin size={18} />
+                  </span>
+                </div>
+                {showError('city') && <p className="field-error">{errors.city}</p>}
               </div>
-              {showError('yearsOfExperience') && (
-                <p className="field-error">{errors.yearsOfExperience}</p>
-              )}
-            </div>
-          </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label className="signup-label">المنطقة</label>
-              <div className={`input-box ${showError('city') ? 'input-box-error' : ''}`}>
+              <div className="form-group">
+                <label className="signup-label">عنوان السكن في غزة</label>
+                <div className={`input-box ${showError('neighborhood') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="text"
+                    name="neighborhood"
+                    placeholder="ادخل عنوانك بالتفصيل"
+                    className="signup-form-control"
+                    value={formData.neighborhood}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <span className="icon">
+                    <MapPin size={18} />
+                  </span>
+                </div>
+                {showError('neighborhood') && (
+                  <p className="field-error">{errors.neighborhood}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="form-group full-width">
+              <label className="signup-label">المهنة</label>
+              <div className={`input-box ${showError('profession') ? 'input-box-error' : ''}`}>
                 <select
-                  name="city"
-                  value={formData.city}
+                  name="profession"
+                  value={formData.profession}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   className="signup-form-control"
                 >
                   <option value="" disabled hidden>
-                    اختر المنطقة
+                    اختر مهنتك
                   </option>
-                  <option value="غزة">غزة</option>
-                  <option value="شمال غزة">شمال غزة</option>
-                  <option value="الوسطى">الوسطى</option>
-                  <option value="الجنوب">الجنوب</option>
+                  <option value="engineer">مهندس</option>
+                  <option value="plumber">سباك</option>
+                  <option value="carpenter">نجار</option>
+                  <option value="electrician">كهربائي</option>
+                  <option value="painter">دهان</option>
+                  <option value="technician">فني</option>
+                  <option value="driver">سائق</option>
+                  <option value="mechanic">ميكانيكي</option>
+                  <option value="other">أخرى</option>
                 </select>
                 <span className="icon">
-                  <MapPin size={18} />
+                  <Briefcase size={18} />
                 </span>
               </div>
-              {showError('city') && <p className="field-error">{errors.city}</p>}
+              {showError('profession') && <p className="field-error">{errors.profession}</p>}
             </div>
 
-            <div className="form-group">
-              <label className="signup-label">عنوان السكن في غزة</label>
-              <div className={`input-box ${showError('neighborhood') ? 'input-box-error' : ''}`}>
-                <input
-                  type="text"
-                  name="neighborhood"
-                  placeholder="ادخل عنوانك بالتفصيل"
-                  className="signup-form-control"
-                  value={formData.neighborhood}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <span className="icon">
-                  <MapPin size={18} />
-                </span>
-              </div>
-              {showError('neighborhood') && (
-                <p className="field-error">{errors.neighborhood}</p>
-              )}
-            </div>
-          </div>
-
-          <label className="signup-label">المهنة</label>
-          <div className={`input-box ${showError('profession') ? 'input-box-error' : ''}`}>
-            <select
-              name="profession"
-              value={formData.profession}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="signup-form-control"
-            >
-              <option value="" disabled hidden>
-                اختر مهنتك
-              </option>
-              <option value="engineer">مهندس</option>
-              <option value="plumber">سباك</option>
-              <option value="carpenter">نجار</option>
-              <option value="electrician">كهربائي</option>
-              <option value="painter">دهان</option>
-              <option value="technician">فني</option>
-              <option value="driver">سائق</option>
-              <option value="mechanic">ميكانيكي</option>
-              <option value="other">أخرى</option>
-            </select>
-            <span className="icon">
-              <Briefcase size={18} />
-            </span>
-          </div>
-          {showError('profession') && <p className="field-error">{errors.profession}</p>}
-
-          {formData.profession === 'other' && (
-            <>
-              <div
-                className={`input-box extra-field ${
-                  showError('customProfession') ? 'input-box-error' : ''
-                }`}
-              >
-                <input
-                  type="text"
-                  name="customProfession"
-                  placeholder="اكتب مهنتك"
-                  className="signup-form-control"
-                  value={formData.customProfession}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              </div>
-              {showError('customProfession') && (
-                <p className="field-error">{errors.customProfession}</p>
-              )}
-            </>
-          )}
-
-          <label className="signup-label">صور أعمالك</label>
-
-          <div className="upload-grid">
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-            />
-
-            {[...Array(3)].map((_, index) => (
-              <div
-                key={index}
-                className={`upload-box ${showError('workImages') ? 'upload-box-error' : ''}`}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {previewImages[index] ? (
-                  <div className="preview-wrapper">
-                    <img src={previewImages[index]} alt={`preview-${index}`} />
-                    <button
-                      type="button"
-                      className="remove-image-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveImage(index);
-                      }}
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ) : (
-                  <span>+</span>
+            {formData.profession === 'other' && (
+              <div className="form-group full-width extra-field">
+                <label className="signup-label">اكتب مهنتك</label>
+                <div className={`input-box ${showError('customProfession') ? 'input-box-error' : ''}`}>
+                  <input
+                    type="text"
+                    name="customProfession"
+                    placeholder="اكتب مهنتك"
+                    className="signup-form-control"
+                    value={formData.customProfession}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </div>
+                {showError('customProfession') && (
+                  <p className="field-error">{errors.customProfession}</p>
                 )}
               </div>
-            ))}
+            )}
+
+            <div className="form-group full-width">
+              <label className="signup-label">صور أعمالك</label>
+
+              <div className="upload-grid">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                />
+
+                {[...Array(3)].map((_, index) => (
+                  <div
+                    key={index}
+                    className={`upload-box ${showError('workImages') ? 'upload-box-error' : ''}`}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {previewImages[index] ? (
+                      <div className="preview-wrapper">
+                        <img src={previewImages[index]} alt={`preview-${index}`} />
+                        <button
+                          type="button"
+                          className="remove-image-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveImage(index);
+                          }}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <span>+</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {showError('workImages') && <p className="field-error">{errors.workImages}</p>}
+            </div>
           </div>
 
-          {showError('workImages') && <p className="field-error">{errors.workImages}</p>}
+          <div className="signup-actions">
+            <button type="submit" className="signup-btn" disabled={isSubmitting}>
+              {isSubmitting ? 'جاري إنشاء الحساب...' : 'انشاء حسابي'}
+            </button>
 
-          <button type="submit" className="signup-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'جاري إنشاء الحساب...' : 'انشاء حسابي'}
-          </button>
+            {serverError && (
+              <p className="field-error center-text">
+                {serverError}
+              </p>
+            )}
 
-          {serverError && (
-            <p className="field-error" style={{ textAlign: 'center' }}>
-              {serverError}
+            {successMessage && <p className="success-message">{successMessage}</p>}
+
+            <p className="login-text">
+              هل لديك حساب بالفعل؟{' '}
+              <span
+                className="login-link"
+                onClick={() => navigate('/login')}
+              >
+                تسجيل الدخول
+              </span>
             </p>
-          )}
-
-          {successMessage && <p className="success-message">{successMessage}</p>}
-
-          <p className="login-text">
-            هل لديك حساب بالفعل؟{' '}
-            <span
-              className="login-link"
-              onClick={() => alert('صفحة تسجيل الدخول قريباً')}
-            >
-              تسجيل الدخول
-            </span>
-          </p>
+          </div>
         </form>
       </div>
     </div>

@@ -38,7 +38,7 @@ const buildCraftsmanResponse = (craftsman) => ({
   workImages: craftsman.workImages,
   averageRating: craftsman.averageRating,
   ratingsCount: craftsman.ratingsCount,
-  isFeatured: craftsman.isFeatured,
+  featured: craftsman.featured,
   createdAt: craftsman.createdAt,
   updatedAt: craftsman.updatedAt,
 });
@@ -319,6 +319,24 @@ const updateMyProfile = async (req, res, next) => {
   }
 };
 
+const getFeaturedCraftsmen = async (req, res, next) => {
+  try {
+    const featuredCraftsmen = await Craftsman.find({ featured: true })
+      .select("-password")
+      .sort({ createdAt: -1 });
+
+    return global.returnJson(
+      res,
+      200,
+      true,
+      "Featured craftsmen fetched successfully",
+      featuredCraftsmen
+    );
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
 module.exports = {
   registerCraftsman,
   loginCraftsman,
@@ -326,4 +344,5 @@ module.exports = {
   getCraftsmanById,
   getMyProfile,
   updateMyProfile,
+  getFeaturedCraftsmen
 };
