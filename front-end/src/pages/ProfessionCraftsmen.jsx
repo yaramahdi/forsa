@@ -1,13 +1,6 @@
-
-//هاي صفحة عرض الحرفيون حسب المهنة 
-//لو ضغط على ايقونة مهندس , رح يجيب كل المهندسين وهكذا
-//هاي صفحة عرض الحرفيون حسب المهنة
-//لو ضغط على ايقونة مهندس , رح يجيب كل المهندسين وهكذا
-//هاي صفحة عرض الحرفيون حسب المهنة
-//لو ضغط على ايقونة مهندس , رح يجيب كل المهندسين وهكذا
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MapPin, Briefcase, CircleDollarSign } from 'lucide-react';
+import { MapPin, Briefcase, CircleDollarSign, User } from 'lucide-react';
 import './professionCraftsmen.css';
 import { getCraftsmanImage } from '../utils/getCraftsmanImage';
 
@@ -64,7 +57,6 @@ export default function ProfessionCraftsmen() {
       driver: 'سائق',
       mechanic: 'ميكانيكي',
       other: 'أخرى',
-
       مهندس: 'مهندس',
       سباك: 'سباك',
       دهان: 'دهان',
@@ -159,7 +151,6 @@ export default function ProfessionCraftsmen() {
         <div className="filters-card">
           <div className="filters-row">
             <div className="city-pill-box">
-              <span className="pill-label">المنطقة</span>
               <span className="pill-value">{selectedCity || 'كل المناطق'}</span>
             </div>
 
@@ -189,50 +180,50 @@ export default function ProfessionCraftsmen() {
         {!loading && !error && visibleCraftsmen.length > 0 && (
           <div className="craftsmen-list">
             {visibleCraftsmen.map((craftsman) => (
-              <div className="craftsman-card" key={craftsman._id || craftsman.id}>
-                <div className="craftsman-action">
-                  <button
-                    type="button"
-                    className="request-service-btn"
-                    onClick={() => navigate(`/craftsman/${craftsman._id || craftsman.id}`)}
-                  >
-                    اطلب الآن
-                  </button>
+              <div className="craftsman-card-horizontal" key={craftsman._id || craftsman.id}>
+                {/* 1. الصورة على اليمين */}
+                <div className="craftsman-image-right">
+                  <img
+                    src={getCraftsmanImage(craftsman)}
+                    alt={`${craftsman.firstName} ${craftsman.lastName}`}
+                    className="profile-img-horizontal"
+                  />
                 </div>
 
-                <div className="craftsman-content">
-                  <h2 className="craftsman-name">
+                {/* 2. المحتوى في المنتصف (بيانات تحت بعضها) */}
+                <div className="craftsman-info-center">
+                  <h2 className="craftsman-name-text">
                     {craftsman.firstName} {craftsman.lastName}
                   </h2>
-
-                  <p className="craftsman-job-line">
-                    {professionMap[craftsman.profession] || craftsman.profession} - {craftsman.neighborhood}
+                  <p className="craftsman-job-text">
+                    {professionMap[craftsman.profession] || craftsman.profession} - حي {craftsman.neighborhood}
                   </p>
-
-                  <div className="craftsman-meta">
-                    <div className="meta-row">
-                      <Briefcase size={17} />
+                  
+                  <div className="craftsman-details-column">
+                    <div className="detail-item">
+                      <Briefcase size={14} className="icon-brand" />
                       <span>الخبرة {craftsman.yearsOfExperience} سنوات</span>
                     </div>
-
-                    <div className="meta-row">
-                      <MapPin size={17} />
+                    <div className="detail-item">
+                      <MapPin size={14} className="icon-brand" />
                       <span>{craftsman.city}</span>
                     </div>
-
-                    <div className="meta-row">
-                      <CircleDollarSign size={17} />
+                    <div className="detail-item">
+                      <CircleDollarSign size={14} className="icon-brand" />
                       <span>{formatPrice(craftsman.price)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="craftsman-image-wrap">
-                  <img
-                    src={getCraftsmanImage(craftsman)}
-                    alt={`${craftsman.firstName} ${craftsman.lastName}`}
-                    className="craftsman-image"
-                  />
+                {/* 3. زر الطلب على اليسار */}
+                <div className="craftsman-action-left">
+                  <button
+                    type="button"
+                    className="request-service-btn-main"
+                    onClick={() => navigate(`/craftsman/${craftsman._id || craftsman.id}`)}
+                  >
+                    اطلب الآن
+                  </button>
                 </div>
               </div>
             ))}

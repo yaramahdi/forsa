@@ -114,6 +114,8 @@ display: flex;
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-left: auto;   /* هذا أهم سطر → يدفعها لليسار */
+  order: 3;            /* يخليها آخر عنصر */
 }
 .profile-avatar-btn {
   width: 42px;

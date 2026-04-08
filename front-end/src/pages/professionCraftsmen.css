@@ -1,104 +1,90 @@
 .profession-page {
   min-height: 100vh;
-  background: #f4f6fb;
-  padding: 18px 20px 60px;
+  background: #fdfcf0; /* --forsa-bg */
+  padding: 20px;
   direction: rtl;
+  font-family: 'Cairo', sans-serif;
 }
 
 .profession-page-container {
-  max-width: 1120px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .profession-page-topbar {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
 }
 
 .back-home-button {
   background: #fff;
-  color: #1d4f89;
-  border: 1px solid #1d4f89;
-  padding: 10px 16px;
+  color: #1b3d5f; /* --forsa-blue */
+  border: 1px solid #1b3d5f;
+  padding: 8px 20px;
   border-radius: 12px;
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .back-home-button:hover {
-  background: #1d4f89;
+  background: #1b3d5f;
   color: #fff;
 }
 
 .profession-hero {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 46px 24px 40px;
   text-align: center;
-  margin-bottom: 18px;
-  box-shadow: 0 6px 18px rgba(15, 47, 71, 0.06);
+  margin-bottom: 30px;
 }
 
 .profession-hero h1 {
-  margin: 0 0 12px;
   font-size: 32px;
-  font-weight: 800;
-  color: #111827;
+  font-weight: 900;
+  color: #1b3d5f;
+  margin-bottom: 8px;
 }
 
 .profession-hero p {
-  margin: 0;
-  color: #2f3f50;
-  font-size: 18px;
+  color: #555;
+  font-size: 16px;
 }
 
 .filters-card {
-  background: #ffffff;
-  border-radius: 22px;
-  padding: 16px;
-  margin-bottom: 18px;
-  box-shadow: 0 6px 18px rgba(15, 47, 71, 0.06);
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .filters-row {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 14px;
-  align-items: stretch;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .city-pill-box {
-  background: linear-gradient(135deg, #1f5f99, #2f7ec5);
-  border-radius: 18px;
+  background: #1b3d5f; /* أزرق كحلي من هوية الموقع */
   color: #fff;
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 10px 25px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 18px;
+  min-width: 120px;
   text-align: center;
 }
 
-.pill-label {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.pill-value {
-  font-size: 22px;
-  font-weight: 800;
-}
-
 .city-select-box {
-  background: #ffffff;
-  border: 1px solid #dbe4ee;
-  border-radius: 18px;
-  padding: 0 18px;
+  flex: 1;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 0 15px;
+  height: 48px;
   display: flex;
   align-items: center;
-  min-height: 82px;
 }
 
 .filter-select {
@@ -106,138 +92,158 @@
   border: none;
   background: transparent;
   outline: none;
-  color: #111827;
-  font-size: 20px;
-  font-weight: 700;
-  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
 }
 
 .craftsmen-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 15px;
 }
 
-.craftsman-card {
-  background: #ffffff;
-  border-radius: 22px;
-  padding: 18px 20px;
-  box-shadow: 0 6px 18px rgba(15, 47, 71, 0.06);
-  display: grid;
-  grid-template-columns: 160px 1fr 170px;
-  align-items: center;
-  gap: 22px;
-  min-height: 205px;
-}
-
-.craftsman-action {
+.craftsman-card-horizontal {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
   display: flex;
+  flex-direction: row; /* التأكد من الاتجاه الأفقي */
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-start; /* ترتيب العناصر من اليمين لليسار */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s ease;
+  border: 1px solid #f0f0f0;
+  gap: 25px;
 }
 
-.request-service-btn {
-  background: linear-gradient(135deg, #1f5f99, #2f7ec5);
-  color: #ffffff;
-  border: none;
-  border-radius: 14px;
-  padding: 12px 24px;
-  font-size: 17px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 6px 14px rgba(47, 126, 197, 0.2);
-  transition: 0.2s ease;
+.craftsman-card-horizontal:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
-.request-service-btn:hover {
-  transform: translateY(-1px);
+/* 1. الصورة على اليمين */
+.craftsman-image-right {
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
 }
 
-.craftsman-content {
+.profile-img-horizontal {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+/* 2. المحتوى في المنتصف (بيانات تحت بعضها) */
+.craftsman-info-center {
+  flex: 1;
   text-align: right;
-}
-
-.craftsman-name {
-  margin: 0 0 10px;
-  color: #111827;
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.craftsman-job-line {
-  margin: 0 0 12px;
-  color: #1f2937;
-  font-size: 17px;
-  font-weight: 500;
-}
-
-.craftsman-meta {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.meta-row {
+.craftsman-name-text {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1b3d5f;
+  margin: 0;
+}
+
+.craftsman-job-text {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+  font-weight: 600;
+}
+
+.craftsman-details-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.detail-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #66788a;
+  font-size: 14px;
+  color: #555;
+}
+
+.icon-brand {
+  color: #1b3d5f;
+  opacity: 0.8;
+}
+
+/* 3. زر الطلب على اليسار */
+.craftsman-action-left {
+  margin-right: auto; /* دفع الزر لليسار تماماً */
+}
+
+.request-service-btn-main {
+  background: #1b3d5f; /* أزرق كحلي من هوية الموقع */
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-weight: 700;
   font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(27, 61, 95, 0.2);
 }
 
-.craftsman-image-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.craftsman-image {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 16px;
-  display: block;
+.request-service-btn-main:hover {
+  background: #2e5a8c;
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(27, 61, 95, 0.3);
 }
 
 .page-state {
   text-align: center;
+  padding: 40px;
+  color: #666;
   font-size: 18px;
-  color: #39556d;
-  margin-top: 26px;
 }
 
 .error-text {
-  color: #d64545;
+  color: #e63946;
 }
 
-@media (max-width: 900px) {
-  .filters-row {
-    grid-template-columns: 1fr;
-  }
-
-  .craftsman-card {
-    grid-template-columns: 1fr;
+/* التوافق مع الشاشات الصغيرة */
+@media (max-width: 650px) {
+  .craftsman-card-horizontal {
+    flex-direction: column;
     text-align: center;
-    min-height: auto;
+    gap: 15px;
+    padding: 25px;
   }
-
-  .craftsman-content {
+  
+  .craftsman-image-right {
+    margin-right: 0;
+    width: 150px;
+    height: 150px;
+  }
+  
+  .craftsman-info-center {
     text-align: center;
+    width: 100%;
   }
-
-  .craftsman-action {
+  
+  .detail-item {
     justify-content: center;
   }
-
-  .meta-row {
-    justify-content: center;
+  
+  .craftsman-action-left {
+    margin-right: 0;
+    width: 100%;
   }
-
-  .profession-hero h1 {
-    font-size: 26px;
-  }
-
-  .profession-hero p {
-    font-size: 16px;
+  
+  .request-service-btn-main {
+    width: 100%;
   }
 }
