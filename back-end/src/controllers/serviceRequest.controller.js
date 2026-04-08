@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const Craftsman = require("../models/craftsman.model");
 const ServiceRequest = require("../models/serviceRequest.model");
 
@@ -33,6 +34,32 @@ function getCurrentCraftsmanId(req) {
   );
 }
 
+function getOptionalAuthenticatedCraftsmanId(req) {
+  const directUserId = getCurrentCraftsmanId(req);
+  if (directUserId) return String(directUserId);
+
+  const authHeader = req.headers?.authorization || req.headers?.Authorization || "";
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const token = authHeader.slice(7).trim();
+  if (!token) return null;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return String(
+      decoded?.id ||
+        decoded?._id ||
+        decoded?.userId ||
+        decoded?.craftsmanId ||
+        ""
+    ).trim() || null;
+  } catch {
+    return null;
+  }
+}
+
 // إنشاء طلب خدمة جديد
 const createServiceRequest = async (req, res, next) => {
   try {
@@ -54,6 +81,17 @@ const createServiceRequest = async (req, res, next) => {
 
     if (!craftsmanId || !mongoose.Types.ObjectId.isValid(craftsmanId)) {
       return next(createError(400, "Craftsman id is invalid"));
+    }
+
+    const currentAuthenticatedCraftsmanId = getOptionalAuthenticatedCraftsmanId(req);
+
+    if (
+      currentAuthenticatedCraftsmanId &&
+      String(currentAuthenticatedCraftsmanId) === String(craftsmanId)
+    ) {
+      return next(
+        createError(400, "You cannot request a service from your own account")
+      );
     }
 
     const craftsman = await Craftsman.findById(craftsmanId).select(

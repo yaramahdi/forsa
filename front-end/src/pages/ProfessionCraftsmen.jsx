@@ -1,9 +1,13 @@
 
 //هاي صفحة عرض الحرفيون حسب المهنة 
 //لو ضغط على ايقونة مهندس , رح يجيب كل المهندسين وهكذا
+//هاي صفحة عرض الحرفيون حسب المهنة
+//لو ضغط على ايقونة مهندس , رح يجيب كل المهندسين وهكذا
+//هاي صفحة عرض الحرفيون حسب المهنة
+//لو ضغط على ايقونة مهندس , رح يجيب كل المهندسين وهكذا
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MapPin, Briefcase } from 'lucide-react';
+import { MapPin, Briefcase, CircleDollarSign } from 'lucide-react';
 import './professionCraftsmen.css';
 import { getCraftsmanImage } from '../utils/getCraftsmanImage';
 
@@ -21,9 +25,28 @@ function extractCraftsmen(payload) {
   return [];
 }
 
+function getCurrentLoggedInCraftsmanId() {
+  if (typeof window === 'undefined') return '';
+  try {
+    const raw = window.localStorage.getItem('forsaCraftsman');
+    if (!raw) return '';
+    const parsed = JSON.parse(raw);
+    return String(parsed?._id || parsed?.id || '').trim();
+  } catch {
+    return '';
+  }
+}
+
+function formatPrice(price) {
+  const numericPrice = Number(price);
+  if (!Number.isFinite(numericPrice) || numericPrice <= 0) return 'السعر غير محدد';
+  return `${numericPrice} ₪ / ساعة`;
+}
+
 export default function ProfessionCraftsmen() {
   const navigate = useNavigate();
   const { profession } = useParams();
+  const currentLoggedInCraftsmanId = useMemo(() => getCurrentLoggedInCraftsmanId(), []);
 
   const [craftsmen, setCraftsmen] = useState([]);
   const [selectedCity, setSelectedCity] = useState('');
@@ -108,6 +131,13 @@ export default function ProfessionCraftsmen() {
     }
   }, [normalizedProfession, selectedCity]);
 
+  const visibleCraftsmen = useMemo(() => {
+    if (!currentLoggedInCraftsmanId) return craftsmen;
+    return craftsmen.filter(
+      (item) => String(item._id || item.id || '') !== String(currentLoggedInCraftsmanId)
+    );
+  }, [craftsmen, currentLoggedInCraftsmanId]);
+
   return (
     <div className="profession-page">
       <div className="profession-page-container">
@@ -152,13 +182,13 @@ export default function ProfessionCraftsmen() {
         {loading && <p className="page-state">جاري تحميل الحرفيين...</p>}
         {error && <p className="page-state error-text">{error}</p>}
 
-        {!loading && !error && craftsmen.length === 0 && (
+        {!loading && !error && visibleCraftsmen.length === 0 && (
           <p className="page-state">لا يوجد حرفيون ضمن هذه المهنة حاليًا.</p>
         )}
 
-        {!loading && !error && craftsmen.length > 0 && (
+        {!loading && !error && visibleCraftsmen.length > 0 && (
           <div className="craftsmen-list">
-            {craftsmen.map((craftsman) => (
+            {visibleCraftsmen.map((craftsman) => (
               <div className="craftsman-card" key={craftsman._id || craftsman.id}>
                 <div className="craftsman-action">
                   <button
@@ -188,6 +218,11 @@ export default function ProfessionCraftsmen() {
                     <div className="meta-row">
                       <MapPin size={17} />
                       <span>{craftsman.city}</span>
+                    </div>
+
+                    <div className="meta-row">
+                      <CircleDollarSign size={17} />
+                      <span>{formatPrice(craftsman.price)}</span>
                     </div>
                   </div>
                 </div>

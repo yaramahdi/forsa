@@ -1,6 +1,12 @@
 //هنا صفحة بتعرض تفاصيل الحرفي حين يتم الضغط على زر اطلب الخدمة
 //بظهر كل بيانات الحرفي مع الخريطة ولما يقرر يطلب الخدمة بظهرلو فورم بسيط عشان يعبي بياناتو
 
+//هنا صفحة بتعرض تفاصيل الحرفي حين يتم الضغط على زر اطلب الخدمة
+//بظهر كل بيانات الحرفي مع الخريطة ولما يقرر يطلب الخدمة بظهرلو فورم بسيط عشان يعبي بياناتو
+
+//هنا صفحة بتعرض تفاصيل الحرفي حين يتم الضغط على زر اطلب الخدمة
+//بظهر كل بيانات الحرفي مع الخريطة ولما يقرر يطلب الخدمة بظهرلو فورم بسيط عشان يعبي بياناتو
+
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./CraftsmanProfile.css";
@@ -65,6 +71,36 @@ const IcImages = () => (
   </svg>
 );
 const IcBack = () => <Ic s={16} d="M19 12H5M12 19l-7-7 7-7" />;
+const IcShekel = ({ s = 17 }) => (
+  <svg
+    width={s}
+    height={s}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="2.5"
+      y="2.5"
+      width="19"
+      height="19"
+      rx="9.5"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+    <text
+      x="12"
+      y="15.5"
+      textAnchor="middle"
+      fontSize="11"
+      fontWeight="700"
+      fill="currentColor"
+      fontFamily="Cairo, Arial, sans-serif"
+    >
+      ₪
+    </text>
+  </svg>
+);
 
 function readJsonSafe(response) {
   return response.json().catch(() => null);
@@ -88,6 +124,34 @@ function buildAddress(craftsman) {
   return [craftsman?.city, craftsman?.neighborhood].filter(Boolean).join(" - ") || "العنوان غير متوفر";
 }
 
+function formatPrice(price) {
+  const numericPrice = Number(price);
+  if (!Number.isFinite(numericPrice) || numericPrice <= 0) return "غير محدد";
+  return `${numericPrice} ₪ / ساعة`;
+}
+
+function getAuthToken() {
+  if (typeof window === "undefined") return "";
+  return (
+    window.localStorage.getItem("forsaToken") ||
+    window.localStorage.getItem("token") ||
+    window.localStorage.getItem("accessToken") ||
+    ""
+  );
+}
+
+function getCurrentLoggedInCraftsmanId() {
+  if (typeof window === "undefined") return "";
+  try {
+    const raw = window.localStorage.getItem("forsaCraftsman");
+    if (!raw) return "";
+    const parsed = JSON.parse(raw);
+    return String(parsed?._id || parsed?.id || "").trim();
+  } catch {
+    return "";
+  }
+}
+
 function normalizeCraftsman(item) {
   if (!item) return null;
 
@@ -102,6 +166,7 @@ function normalizeCraftsman(item) {
     email: item.email || "غير متوفر",
     phone: item.phone || "غير متوفر",
     yearsOfExperience: Number(item.yearsOfExperience ?? 0),
+    price: Number(item.price ?? 0),
     bio: item.bio || "",
     profileImage: resolveImage(item.profileImage) || DEFAULT_PROFILE_IMAGE,
     workImages: Array.isArray(item.workImages) ? item.workImages.map(resolveImage).filter(Boolean) : [],
@@ -204,11 +269,18 @@ function RequestModal({ craftsman, onClose }) {
       setLoading(true);
       setSubmitError("");
 
+      const token = getAuthToken();
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch(SERVICE_REQUESTS_ENDPOINT, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({
           clientName: form.clientName.trim(),
           clientPhone: form.clientPhone.trim(),
@@ -322,6 +394,7 @@ function RequestModal({ craftsman, onClose }) {
 export default function CraftsmanProfile() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const currentLoggedInCraftsmanId = useMemo(() => getCurrentLoggedInCraftsmanId(), []);
 
   const [craftsman, setCraftsman] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -360,6 +433,18 @@ export default function CraftsmanProfile() {
     }
   }, [id]);
 
+  const isOwnProfile = useMemo(() => {
+    if (!craftsman?.id || !currentLoggedInCraftsmanId) return false;
+    return String(craftsman.id) === String(currentLoggedInCraftsmanId);
+  }, [craftsman, currentLoggedInCraftsmanId]);
+
+  useEffect(() => {
+    if (isOwnProfile) {
+      setModalOpen(false);
+      navigate("/profile", { replace: true });
+    }
+  }, [isOwnProfile, navigate]);
+
   const mapSrc = useMemo(() => {
     if (!craftsman) return "";
     return `https://www.google.com/maps?q=${encodeURIComponent(getMapQuery(craftsman))}&z=14&output=embed`;
@@ -386,6 +471,18 @@ export default function CraftsmanProfile() {
           <button type="button" className="cp-back-btn" onClick={() => navigate(-1)}>
             <IcBack /> رجوع
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isOwnProfile) {
+    return (
+      <div className="cp-state-page">
+        <div className="cp-state-card">
+          <div className="cp-state-emoji">↩️</div>
+          <h2>هذا ملفك الشخصي</h2>
+          <p>يتم الآن تحويلك إلى صفحة ملفك الشخصي الخاصة.</p>
         </div>
       </div>
     );
@@ -429,13 +526,20 @@ export default function CraftsmanProfile() {
 
               <div className="cp-meta">
                 <span className="cp-badge">{craftsman.profession}</span>
+
                 <span className="cp-meta-chip">
                   <IcPin />
                   {craftsman.address}
                 </span>
+
                 <span className="cp-meta-chip">
                   <IcWrench />
                   {craftsman.yearsOfExperience} سنوات خبرة
+                </span>
+
+                <span className="cp-meta-chip">
+                  <IcShekel />
+                  {formatPrice(craftsman.price)}
                 </span>
               </div>
             </div>
@@ -477,6 +581,26 @@ export default function CraftsmanProfile() {
                   <div className="cp-info-value">{craftsman.email}</div>
                 </div>
                 <div className="cp-info-icon"><IcMail /></div>
+              </div>
+
+              <div className="cp-info-row">
+                <div className="cp-info-row-text">
+                  <div className="cp-info-label">سعر الساعة</div>
+                  <div className="cp-info-value">
+                    <span
+                      className="cp-exp-badge"
+                      style={{
+                        background: "#eef5ff",
+                        color: "#2563A8",
+                        border: "1px solid #d7e6fb"
+                      }}
+                    >
+                      <IcShekel />
+                      {formatPrice(craftsman.price)}
+                    </span>
+                  </div>
+                </div>
+                <div className="cp-info-icon"><IcShekel /></div>
               </div>
 
               <div className="cp-info-row cp-no-border">

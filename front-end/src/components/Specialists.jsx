@@ -301,6 +301,18 @@ function resolveImage(src) {
   return src
 }
 
+function getCurrentLoggedInCraftsmanId() {
+  if (typeof window === 'undefined') return ''
+  try {
+    const raw = window.localStorage.getItem('forsaCraftsman')
+    if (!raw) return ''
+    const parsed = JSON.parse(raw)
+    return String(parsed?._id || parsed?.id || '').trim()
+  } catch {
+    return ''
+  }
+}
+
 function normalizeSpecialist(item) {
   const rawProfession = String(item?.profession || '').trim()
   const professionInfo = professionMeta[rawProfession] || {}
@@ -331,6 +343,8 @@ export default function Specialists({ searchProfession }) {
   const navigate = useNavigate()
   const { language } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
+
+  const currentLoggedInCraftsmanId = useMemo(() => getCurrentLoggedInCraftsmanId(), [])
 
   const [allSpecialists, setAllSpecialists] = useState([])
   const [displayedSpecialists, setDisplayedSpecialists] = useState([])
@@ -365,7 +379,12 @@ export default function Specialists({ searchProfession }) {
     fetchFeatured()
   }, [])
 
-  const specialistsData = useMemo(() => allSpecialists, [allSpecialists])
+  const specialistsData = useMemo(() => {
+    if (!currentLoggedInCraftsmanId) return allSpecialists
+    return allSpecialists.filter(
+      (item) => String(item.id || '') !== String(currentLoggedInCraftsmanId)
+    )
+  }, [allSpecialists, currentLoggedInCraftsmanId])
 
   useEffect(() => {
     if (searchProfession) {

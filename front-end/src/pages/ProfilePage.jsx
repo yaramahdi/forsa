@@ -322,6 +322,10 @@ body{overflow-x:hidden}
   .requests-shell{
     max-height:58vh;
   }
+
+  .fields-grid{
+    grid-template-columns:1fr;
+  }
 }
 `;
 
@@ -377,12 +381,51 @@ const IcWhatsApp = () => (
   </svg>
 );
 
+const IcShekel = ({ s = 17 }) => (
+  <svg
+    width={s}
+    height={s}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect
+      x="2.5"
+      y="2.5"
+      width="19"
+      height="19"
+      rx="9.5"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+    <text
+      x="12"
+      y="15.5"
+      textAnchor="middle"
+      fontSize="11"
+      fontWeight="700"
+      fill="currentColor"
+      fontFamily="Cairo, Arial, sans-serif"
+    >
+      ₪
+    </text>
+  </svg>
+);
+
 /* Helpers */
 const getToken = () =>
   localStorage.getItem("forsaToken") ||
   localStorage.getItem("token") ||
   localStorage.getItem("accessToken") ||
   "";
+
+function formatPrice(price) {
+  const numericPrice = Number(price);
+  if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
+    return "غير محدد";
+  }
+  return `${numericPrice} ₪ / ساعة`;
+}
 
 function normalizeDigits(value) {
   const map = {
@@ -477,7 +520,14 @@ function normalizeCraftsman(craftsman) {
     city: craftsman?.city || "",
     neighborhood: craftsman?.neighborhood || "",
     profession: craftsman?.profession || "",
-    yearsOfExperience: craftsman?.yearsOfExperience ?? "",
+    yearsOfExperience:
+      craftsman?.yearsOfExperience !== undefined && craftsman?.yearsOfExperience !== null
+        ? String(craftsman.yearsOfExperience)
+        : "",
+    price:
+      craftsman?.price !== undefined && craftsman?.price !== null
+        ? String(craftsman.price)
+        : "",
     bio: craftsman?.bio || "",
     profileImage: craftsman?.profileImage ? resolveImage(craftsman.profileImage) : "",
     workImages: Array.isArray(craftsman?.workImages)
@@ -502,6 +552,78 @@ function normalizeRequest(item) {
     status: item?.status || "pending",
     createdAt: item?.createdAt || "",
   };
+}
+
+/* Reusable UI Components */
+function ReadonlyField({ label, value, icon }) {
+  return (
+    <div className="fg">
+      <div className="flabel">
+        {icon && <span style={{ color: "var(--blue)" }}>{icon}</span>}
+        {label}
+      </div>
+      <div className="fval muted">{value || "—"}</div>
+    </div>
+  );
+}
+
+function EditableField({
+  label,
+  value,
+  displayValue,
+  placeholder,
+  icon,
+  editing,
+  onChange,
+  inputMode = "text",
+  dir = "rtl",
+  textarea = false,
+}) {
+  return (
+    <div className="fg">
+      <div className="flabel">
+        {icon && <span style={{ color: "var(--blue)" }}>{icon}</span>}
+        {label}
+      </div>
+
+      {editing ? (
+        textarea ? (
+          <textarea
+            className="ftextarea"
+            value={value || ""}
+            placeholder={placeholder}
+            onChange={(e) => onChange(e.target.value)}
+            dir={dir}
+          />
+        ) : (
+          <input
+            className="finput"
+            value={value || ""}
+            placeholder={placeholder}
+            onChange={(e) => onChange(e.target.value)}
+            inputMode={inputMode}
+            dir={dir}
+          />
+        )
+      ) : (
+        <div className="fval">
+          {displayValue || value || <span style={{ color: "var(--gray-text)" }}>—</span>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SBItem({ id, icon, label, count, tab, setTab }) {
+  return (
+    <button className={`sb-item${tab === id ? " active" : ""}`} onClick={() => setTab(id)}>
+      <div className="sb-item-main">
+        {icon}
+        {label}
+      </div>
+      {typeof count === "number" ? <span className="sb-count">{count}</span> : null}
+    </button>
+  );
 }
 
 export default function ProfilePage() {
@@ -549,10 +671,9 @@ export default function ProfilePage() {
   );
 
   const confirmedRequests = useMemo(
-    () =>
-      serviceRequests.filter((item) =>
-        ["confirmed", "contacted", "completed"].includes(item.status)
-      ),
+    () => serviceRequests.filter((item) =>
+      ["confirmed", "contacted", "completed"].includes(item.status)
+    ),
     [serviceRequests]
   );
 
@@ -665,8 +786,55 @@ export default function ProfilePage() {
     }
   }, [tab, requestsFetched]);
 
+  const handleDraftChange = (key, value) => {
+    let nextValue = value;
+
+    if (["phone", "yearsOfExperience", "price"].includes(key)) {
+      nextValue = normalizeDigits(nextValue).replace(/[^\d]/g, "");
+    }
+
+    if (key === "phone") {
+      nextValue = nextValue.slice(0, 10);
+    }
+
+    setDraft((prev) => ({
+      ...prev,
+      [key]: nextValue,
+    }));
+  };
+
   const handleSave = async () => {
     if (!draft) return;
+
+    if (!draft.firstName.trim() || !draft.lastName.trim()) {
+      showToast("الاسم الأول والثاني مطلوبان", "⚠️");
+      return;
+    }
+
+    if (!draft.phone.trim() || !/^059\d{7}$/.test(draft.phone.trim())) {
+      showToast("رقم الهاتف يجب أن يبدأ بـ 059 ويتكون من 10 أرقام", "⚠️");
+      return;
+    }
+
+    if (!draft.city.trim()) {
+      showToast("المنطقة مطلوبة", "⚠️");
+      return;
+    }
+
+    if (!draft.neighborhood.trim()) {
+      showToast("عنوان السكن مطلوب", "⚠️");
+      return;
+    }
+
+    if (draft.yearsOfExperience === "" || Number(draft.yearsOfExperience) < 0) {
+      showToast("سنوات الخبرة غير صحيحة", "⚠️");
+      return;
+    }
+
+    if (draft.price === "" || Number(draft.price) < 1) {
+      showToast("سعر الساعة يجب أن يكون رقمًا أكبر من أو يساوي 1", "⚠️");
+      return;
+    }
 
     const token = getToken();
     if (!token) {
@@ -689,6 +857,8 @@ export default function ProfilePage() {
           phone: draft.phone.trim(),
           city: draft.city.trim(),
           neighborhood: draft.neighborhood.trim(),
+          yearsOfExperience: Number(draft.yearsOfExperience),
+          price: Number(draft.price),
           bio: draft.bio.trim(),
         }),
       });
@@ -930,139 +1100,98 @@ export default function ProfilePage() {
     setTimeout(() => navigate("/"), 600);
   };
 
-  const ReadonlyField = ({ label, value, icon }) => (
-    <div className="fg">
-      <div className="flabel">
-        {icon && <span style={{ color: "var(--blue)" }}>{icon}</span>}
-        {label}
-      </div>
-      <div className="fval muted">{value || "—"}</div>
-    </div>
-  );
+  const renderRequestTable = (list, mode = "pending") => {
+    if (loadingRequests) {
+      return <div className="loading-box">جاري تحميل طلبات الخدمة...</div>;
+    }
 
-  const EditableField = ({ label, key_, placeholder, icon }) => (
-    <div className="fg">
-      <div className="flabel">
-        {icon && <span style={{ color: "var(--blue)" }}>{icon}</span>}
-        {label}
-      </div>
-      {editing ? (
-        <input
-          className="finput"
-          value={draft?.[key_] || ""}
-          placeholder={placeholder}
-          onChange={(e) => setDraft((d) => ({ ...d, [key_]: e.target.value }))}
-        />
-      ) : (
-        <div className="fval">
-          {form?.[key_] || <span style={{ color: "var(--gray-text)" }}>—</span>}
+    if (requestsError) {
+      return <div className="error-box">{requestsError}</div>;
+    }
+
+    if (!list.length) {
+      return (
+        <div className="empty">
+          <div className="empty-icon">📭</div>
+          <div className="empty-txt">
+            {mode === "confirmed"
+              ? "لا توجد طلبات مؤكدة حتى الآن"
+              : "لا توجد طلبات قيد الانتظار حاليًا"}
+          </div>
         </div>
-      )}
-    </div>
-  );
+      );
+    }
 
-  const SBItem = ({ id, icon, label, count }) => (
-    <button className={`sb-item${tab === id ? " active" : ""}`} onClick={() => setTab(id)}>
-      <div className="sb-item-main">
-        {icon}
-        {label}
-      </div>
-      {typeof count === "number" ? <span className="sb-count">{count}</span> : null}
-    </button>
-  );
-
-const renderRequestTable = (list, mode = "pending") => {
-  if (loadingRequests) {
-    return <div className="loading-box">جاري تحميل طلبات الخدمة...</div>;
-  }
-
-  if (requestsError) {
-    return <div className="error-box">{requestsError}</div>;
-  }
-
-  if (!list.length) {
     return (
-      <div className="empty">
-        <div className="empty-icon">📭</div>
-        <div className="empty-txt">
-          {mode === "confirmed"
-            ? "لا توجد طلبات مؤكدة حتى الآن"
-            : "لا توجد طلبات قيد الانتظار حاليًا"}
+      <div className="requests-table">
+        <div className="requests-head-row">
+          <div className="requests-head-cell">الاسم</div>
+          <div className="requests-head-cell">رقم الهاتف</div>
+          <div className="requests-head-cell">تاريخ الطلب</div>
+          <div className="requests-head-cell">الحالة</div>
+          <div className="requests-head-cell">واتساب</div>
+          <div className="requests-head-cell">
+            {mode === "pending" ? "إجراء" : "متابعة"}
+          </div>
         </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="requests-table">
-      <div className="requests-head-row">
-        <div className="requests-head-cell">الاسم</div>
-        <div className="requests-head-cell">رقم الهاتف</div>
-        <div className="requests-head-cell">تاريخ الطلب</div>
-        <div className="requests-head-cell">الحالة</div>
-        <div className="requests-head-cell">واتساب</div>
-        <div className="requests-head-cell">
-          {mode === "pending" ? "إجراء" : "متابعة"}
-        </div>
-      </div>
+        {list.map((request) => {
+          const whatsAppOptions = buildWhatsAppOptions(request.clientPhone);
 
-      {list.map((request) => {
-        const whatsAppOptions = buildWhatsAppOptions(request.clientPhone);
+          return (
+            <div className="request-row-item" key={request.id}>
+              <div className="request-cell name">{request.clientName}</div>
 
-        return (
-          <div className="request-row-item" key={request.id}>
-            <div className="request-cell name">{request.clientName}</div>
+              <div className="request-cell phone">{request.clientPhone}</div>
 
-            <div className="request-cell phone">{request.clientPhone}</div>
+              <div className="request-cell date">{formatDate(request.createdAt)}</div>
 
-            <div className="request-cell date">{formatDate(request.createdAt)}</div>
+              <div className="request-cell">
+                <span className={`request-status ${request.status}`}>
+                  {getStatusLabel(request.status)}
+                </span>
+              </div>
 
-            <div className="request-cell">
-              <span className={`request-status ${request.status}`}>
-                {getStatusLabel(request.status)}
-              </span>
-            </div>
+              <div className="request-cell">
+                <div className="request-wa-group">
+                  {whatsAppOptions.map((option, index) => (
+                    <a
+                      key={`${option.url}-${index}`}
+                      href={option.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="request-wa"
+                    >
+                      <IcWhatsApp />
+                      {option.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
 
-            <div className="request-cell">
-              <div className="request-wa-group">
-                {whatsAppOptions.map((option, index) => (
-                  <a
-                    key={`${option.url}-${index}`}
-                    href={option.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="request-wa"
+              <div className="request-cell request-action">
+                {mode === "pending" ? (
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={() => handleConfirmRequest(request.id)}
+                    disabled={confirmingId === request.id}
                   >
-                    <IcWhatsApp />
-                    {option.label}
-                  </a>
-                ))}
+                    <IcCheck />
+                    {confirmingId === request.id ? "جاري التأكيد..." : "تأكيد"}
+                  </button>
+                ) : (
+                  <span style={{ color: "var(--gray-text)", fontWeight: 700 }}>
+                    تم التأكيد
+                  </span>
+                )}
               </div>
             </div>
-
-            <div className="request-cell request-action">
-              {mode === "pending" ? (
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={() => handleConfirmRequest(request.id)}
-                  disabled={confirmingId === request.id}
-                >
-                  <IcCheck />
-                  {confirmingId === request.id ? "جاري التأكيد..." : "تأكيد"}
-                </button>
-              ) : (
-                <span style={{ color: "var(--gray-text)", fontWeight: 700 }}>
-                  تم التأكيد
-                </span>
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+          );
+        })}
+      </div>
+    );
+  };
 
   if (loadingProfile) {
     return (
@@ -1123,10 +1252,10 @@ const renderRequestTable = (list, mode = "pending") => {
           </div>
 
           <div className="sb-nav">
-            <SBItem id="data" icon={<IcPerson />} label="بياناتي الشخصية" />
-            <SBItem id="requests" icon={<IcBell />} label="طلبات قيد الانتظار" count={pendingRequests.length} />
-            <SBItem id="confirmed" icon={<IcCheckCircle />} label="الطلبات المؤكدة" count={confirmedRequests.length} />
-            <SBItem id="photos" icon={<IcGrid />} label="صور أعمالي" />
+            <SBItem id="data" icon={<IcPerson />} label="بياناتي الشخصية" tab={tab} setTab={setTab} />
+            <SBItem id="requests" icon={<IcBell />} label="طلبات قيد الانتظار" count={pendingRequests.length} tab={tab} setTab={setTab} />
+            <SBItem id="confirmed" icon={<IcCheckCircle />} label="الطلبات المؤكدة" count={confirmedRequests.length} tab={tab} setTab={setTab} />
+            <SBItem id="photos" icon={<IcGrid />} label="صور أعمالي" tab={tab} setTab={setTab} />
           </div>
 
           <button className="sb-logout" onClick={handleLogout}>
@@ -1180,6 +1309,10 @@ const renderRequestTable = (list, mode = "pending") => {
                   <IcPhone />
                   {form?.phone}
                 </span>
+                <span className="meta-chip">
+                  <IcShekel />
+                  {formatPrice(form?.price)}
+                </span>
               </div>
             </div>
           </div>
@@ -1211,13 +1344,69 @@ const renderRequestTable = (list, mode = "pending") => {
                   )}
 
                   <div className="fields-grid">
-                    <EditableField label="الاسم الأول" key_="firstName" placeholder="أدخل الاسم الأول" icon={<IcPerson />} />
-                    <EditableField label="الاسم الثاني" key_="lastName" placeholder="أدخل الاسم الثاني" icon={<IcPerson />} />
+                    <EditableField
+                      label="الاسم الأول"
+                      value={draft?.firstName}
+                      placeholder="أدخل الاسم الأول"
+                      icon={<IcPerson />}
+                      editing={editing}
+                      onChange={(value) => handleDraftChange("firstName", value)}
+                    />
+
+                    <EditableField
+                      label="الاسم الثاني"
+                      value={draft?.lastName}
+                      placeholder="أدخل الاسم الثاني"
+                      icon={<IcPerson />}
+                      editing={editing}
+                      onChange={(value) => handleDraftChange("lastName", value)}
+                    />
+
                     <ReadonlyField label="البريد الإلكتروني" value={form?.email} icon={<IcMail />} />
-                    <EditableField label="رقم الهاتف" key_="phone" placeholder="059XXXXXXXX" icon={<IcPhone />} />
+
+                    <EditableField
+                      label="رقم الهاتف"
+                      value={draft?.phone}
+                      placeholder="059XXXXXXXX"
+                      icon={<IcPhone />}
+                      editing={editing}
+                      onChange={(value) => handleDraftChange("phone", value)}
+                      inputMode="numeric"
+                      dir="ltr"
+                    />
+
                     <ReadonlyField label="المهنة" value={form?.profession} icon={<IcBag />} />
-                    <ReadonlyField label="سنوات الخبرة" value={`${form?.yearsOfExperience} سنوات`} icon={<IcClock />} />
-                    <EditableField label="المنطقة" key_="city" placeholder="أدخل المنطقة" icon={<IcPin />} />
+
+                    <EditableField
+                      label="سنوات الخبرة"
+                      value={draft?.yearsOfExperience}
+                      displayValue={form?.yearsOfExperience ? `${form.yearsOfExperience} سنوات` : "—"}
+                      placeholder="أدخل سنوات الخبرة"
+                      icon={<IcClock />}
+                      editing={editing}
+                      onChange={(value) => handleDraftChange("yearsOfExperience", value)}
+                      inputMode="numeric"
+                    />
+
+                    <EditableField
+                      label="سعر الساعة"
+                      value={draft?.price}
+                      displayValue={formatPrice(form?.price)}
+                      placeholder="مثال: 50"
+                      icon={<IcShekel />}
+                      editing={editing}
+                      onChange={(value) => handleDraftChange("price", value)}
+                      inputMode="numeric"
+                    />
+
+                    <EditableField
+                      label="المنطقة"
+                      value={draft?.city}
+                      placeholder="أدخل المنطقة"
+                      icon={<IcPin />}
+                      editing={editing}
+                      onChange={(value) => handleDraftChange("city", value)}
+                    />
 
                     <div className="fg full">
                       <div className="flabel">
@@ -1230,30 +1419,24 @@ const renderRequestTable = (list, mode = "pending") => {
                           className="finput"
                           value={draft?.neighborhood || ""}
                           placeholder="أدخل عنوانك بالتفصيل"
-                          onChange={(e) => setDraft((d) => ({ ...d, neighborhood: e.target.value }))}
+                          onChange={(e) => handleDraftChange("neighborhood", e.target.value)}
                         />
                       ) : (
                         <div className="fval">{form?.neighborhood || "—"}</div>
                       )}
                     </div>
 
-                    <div className="fg full">
-                      <div className="flabel">
-                        <span style={{ color: "var(--blue)" }}><IcInfo /></span>
-                        نبذة مختصرة
-                      </div>
-
-                      {editing ? (
-                        <textarea
-                          className="ftextarea"
-                          value={draft?.bio || ""}
-                          placeholder="اكتب نبذة مختصرة عنك"
-                          onChange={(e) => setDraft((d) => ({ ...d, bio: e.target.value }))}
-                        />
-                      ) : (
-                        <div className="fval">{form?.bio || "لا يوجد نبذة مضافة بعد"}</div>
-                      )}
-                    </div>
+                    <EditableField
+                      label="نبذة مختصرة"
+                      value={draft?.bio}
+                      displayValue={form?.bio || "لا يوجد نبذة مضافة بعد"}
+                      placeholder="اكتب نبذة مختصرة عنك"
+                      icon={<IcInfo />}
+                      editing={editing}
+                      onChange={(value) => handleDraftChange("bio", value)}
+                      textarea
+                      dir="rtl"
+                    />
                   </div>
 
                   {editing && (

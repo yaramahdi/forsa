@@ -23,6 +23,20 @@ const deleteSingleFile = (filePath) => {
   }
 };
 
+const parsePriceValue = (value) => {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+
+  const numericPrice = Number(value);
+
+  if (!Number.isFinite(numericPrice) || numericPrice < 1) {
+    return null;
+  }
+
+  return numericPrice;
+};
+
 const buildCraftsmanResponse = (craftsman) => ({
   _id: craftsman._id,
   firstName: craftsman.firstName,
@@ -33,6 +47,7 @@ const buildCraftsmanResponse = (craftsman) => ({
   neighborhood: craftsman.neighborhood,
   phone: craftsman.phone,
   yearsOfExperience: craftsman.yearsOfExperience,
+  price: craftsman.price,
   bio: craftsman.bio,
   profileImage: craftsman.profileImage,
   workImages: craftsman.workImages,
@@ -55,6 +70,7 @@ const registerCraftsman = async (req, res, next) => {
       neighborhood,
       phone,
       yearsOfExperience,
+      price,
       bio,
     } = req.body;
 
@@ -69,7 +85,10 @@ const registerCraftsman = async (req, res, next) => {
       !phone?.trim() ||
       yearsOfExperience === undefined ||
       yearsOfExperience === null ||
-      yearsOfExperience === ""
+      yearsOfExperience === "" ||
+      price === undefined ||
+      price === null ||
+      price === ""
     ) {
       return next(createError(400, "All required fields must be provided"));
     }
@@ -84,6 +103,11 @@ const registerCraftsman = async (req, res, next) => {
 
     if (existingCraftsman) {
       return next(createError(400, "This email is already registered"));
+    }
+
+    const parsedPrice = parsePriceValue(price);
+    if (parsedPrice === null) {
+      return next(createError(400, "Price must be a number greater than or equal to 1"));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -102,6 +126,7 @@ const registerCraftsman = async (req, res, next) => {
       neighborhood: neighborhood.trim(),
       phone: phone.trim(),
       yearsOfExperience: Number(yearsOfExperience),
+      price: parsedPrice,
       bio: bio?.trim() || "",
       workImages,
     });
@@ -248,6 +273,7 @@ const updateMyProfile = async (req, res, next) => {
       neighborhood,
       phone,
       yearsOfExperience,
+      price,
       bio,
     } = req.body;
 
@@ -262,6 +288,15 @@ const updateMyProfile = async (req, res, next) => {
     if (yearsOfExperience !== undefined) {
       updateData.yearsOfExperience = Number(yearsOfExperience);
     }
+    if (price !== undefined) {
+      const parsedPrice = parsePriceValue(price);
+
+      if (parsedPrice === null) {
+        return next(createError(400, "Price must be a number greater than or equal to 1"));
+      }
+
+      updateData.price = parsedPrice;
+    }
     if (bio !== undefined) updateData.bio = bio.trim();
 
     const currentCraftsman = await Craftsman.findById(craftsmanId);
@@ -273,7 +308,6 @@ const updateMyProfile = async (req, res, next) => {
     const profileImageFile = req.files?.profileImage?.[0];
     const workImageFiles = req.files?.workImages || [];
 
-    // تحديث صورة البروفايل
     if (profileImageFile) {
       if (currentCraftsman.profileImage) {
         deleteSingleFile(currentCraftsman.profileImage);
@@ -282,7 +316,6 @@ const updateMyProfile = async (req, res, next) => {
       updateData.profileImage = `/uploads/craftsmen/${profileImageFile.filename}`;
     }
 
-    // إضافة صور أعمال جديدة فوق الصور القديمة
     if (workImageFiles.length > 0) {
       const newWorkImages = workImageFiles.map(
         (file) => `/uploads/craftsmen/${file.filename}`

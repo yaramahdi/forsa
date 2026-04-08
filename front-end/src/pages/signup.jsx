@@ -10,6 +10,7 @@ import {
   MapPin,
   Hammer,
   Briefcase,
+  CircleDollarSign,
   X
 } from 'lucide-react';
 
@@ -42,6 +43,7 @@ export default function Signup() {
     confirmPassword: '',
     phone: '',
     yearsOfExperience: '',
+    price: '',
     city: '',
     neighborhood: '',
     profession: '',
@@ -111,6 +113,12 @@ export default function Signup() {
       newErrors.yearsOfExperience = 'عدد سنين الخبرة مطلوب';
     }
 
+    if (!data.price.trim()) {
+      newErrors.price = 'سعر الساعة مطلوب';
+    } else if (!/^\d+$/.test(data.price) || Number(data.price) < 1) {
+      newErrors.price = 'سعر الساعة يجب أن يكون رقماً أكبر من أو يساوي 1';
+    }
+
     if (!data.city.trim()) {
       newErrors.city = 'المنطقة مطلوبة';
     }
@@ -148,7 +156,7 @@ export default function Signup() {
       if (value.length > 10) return;
     }
 
-    if (name === 'yearsOfExperience') {
+    if (name === 'yearsOfExperience' || name === 'price') {
       if (!/^\d*$/.test(value)) return;
     }
 
@@ -297,6 +305,7 @@ export default function Signup() {
       submitData.append('password', formData.password);
       submitData.append('phone', formData.phone.trim());
       submitData.append('yearsOfExperience', formData.yearsOfExperience);
+      submitData.append('price', formData.price);
       submitData.append('city', formData.city.trim());
       submitData.append('neighborhood', formData.neighborhood.trim());
       submitData.append('profession', professionToSend);
@@ -336,6 +345,7 @@ export default function Signup() {
         confirmPassword: '',
         phone: '',
         yearsOfExperience: '',
+        price: '',
         city: '',
         neighborhood: '',
         profession: '',
@@ -523,6 +533,25 @@ export default function Signup() {
                   <p className="field-error">{errors.yearsOfExperience}</p>
                 )}
               </div>
+            </div>
+
+            <div className="form-group full-width">
+              <label className="signup-label">سعر الساعة (₪)</label>
+              <div className={`input-box ${showError('price') ? 'input-box-error' : ''}`}>
+                <input
+                  type="text"
+                  name="price"
+                  placeholder="مثال: 50"
+                  className="signup-form-control"
+                  value={formData.price}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <span className="icon">
+                  <CircleDollarSign size={18} />
+                </span>
+              </div>
+              {showError('price') && <p className="field-error">{errors.price}</p>}
             </div>
 
             <div className="form-row">

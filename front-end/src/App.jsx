@@ -18,6 +18,7 @@ import ProfilePage from './pages/ProfilePage'
 import CraftsmanProfile from './pages/CraftsmanProfile'
 import SearchResults from './pages/SearchResults'
 import AdminPage from './pages/AdminPage'
+import AllCraftsmen from './pages/AllCraftsmen';
 
 function HomePage() {
   const [searchProfession, setSearchProfession] = useState(null)
@@ -72,6 +73,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/all-craftsmen" element={<AllCraftsmen />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>
