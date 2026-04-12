@@ -200,7 +200,13 @@ export default function LoginPage() {
         <VisualPanel />
 
         <div className="form-panel">
+          
           <div className="form-box" dir="rtl">
+            <div className="login-top-bar">
+  <button onClick={() => navigate('/')} className="back-home-btn">
+     العودة للرئيسية←
+  </button>
+</div>
             <div className="form-header">
               <div className="form-eyebrow">مرحباً بعودتك</div>
               <div className="form-title">تسجيل الدخول</div>

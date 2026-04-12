@@ -27,6 +27,7 @@ const PROFESSION_LABELS = {
   mechanic: 'ميكانيكي',
 };
 
+
 function readJsonSafe(response) {
   return response.json().catch(() => null);
 }
@@ -142,6 +143,7 @@ export default function Signup() {
     return newErrors;
   };
 
+
   const handleChange = (e) => {
     let { name, value } = e.target;
 
@@ -206,7 +208,7 @@ export default function Signup() {
       return;
     }
 
-    const invalidSizeExists = files.some((file) => file.size > 2 * 1024 * 1024);
+     const invalidSizeExists = files.some((file) => file.size > 2 * 1024 * 1024);
     if (invalidSizeExists) {
       setTouched((prev) => ({
         ...prev,
@@ -377,18 +379,43 @@ export default function Signup() {
 
   return (
     <div className="signup-page">
-      <div className="signup-container">
-        <div className="signup-top-bar">
-          <button
-            type="button"
-            className="back-home-btn"
-            onClick={() => navigate('/')}
-          >
-            عودة إلى الرئيسية
-          </button>
+      <div className="signup-layout">
+        <div className="signup-visual-panel">
+          <img
+            src="/images/workers.jpg"
+            alt="workers"
+            className="signup-visual-img"
+          />
+
+          <div className="signup-visual-content" dir="rtl">
+            <h2 className="signup-visual-title">
+              اطلب… واحنا ننفذ
+              <br />
+              أفضل الحرفيين بانتظارك لإنجاز أعمالك بسرعةو ثقة.
+            </h2>
+
+            <p className="signup-visual-subtitle">
+              وصلنا أصحاب المهن بمن يحتاجهم
+              <br />
+              بكل سرعة وثقة
+            </p>
+
+            <div className="signup-visual-tags">
+              <span>نجار 🪚</span>
+              <span>كهربائي 🔌</span>
+              <span>سباك 🪠</span>
+            </div>
+          </div>
         </div>
 
-        <h1 className="signup-title">انشاء حساب للحرفيين</h1>
+        <div className="signup-form-panel">
+          <div className="signup-container">
+            <div className="signup-top-bar">
+              <button onClick={() => navigate("/")} className="back-home-btn">
+                ← العودة للرئيسية
+              </button>
+            </div>
+             <h1 className="signup-title">انشاء حساب للحرفيين</h1>
 
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="signup-form-scroll">
@@ -410,6 +437,7 @@ export default function Signup() {
                   </span>
                 </div>
                 {showError('firstName') && <p className="field-error">{errors.firstName}</p>}
+
               </div>
 
               <div className="form-group">
@@ -431,6 +459,8 @@ export default function Signup() {
                 {showError('lastName') && <p className="field-error">{errors.lastName}</p>}
               </div>
             </div>
+                          </div>
+
 
             <div className="form-group full-width">
               <label className="signup-label">البريد الإلكتروني</label>
@@ -451,276 +481,319 @@ export default function Signup() {
               {showError('email') && <p className="field-error">{errors.email}</p>}
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label className="signup-label">كلمة المرور</label>
-                <div className={`input-box ${showError('password') ? 'input-box-error' : ''}`}>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="أدخل كلمة المرور"
-                    className="signup-form-control"
-                    value={formData.password}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                  <span className="icon">
-                    <Lock size={18} />
-                  </span>
+              {/* كلمة المرور ثم تأكيدها */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="signup-label">كلمة المرور</label>
+                  <div
+                    className={`input-box ${showError("password") ? "input-box-error" : ""}`}
+                  >
+                    <input
+                      type="password"
+                      name="password"
+                      placeholder="أدخل كلمة المرور"
+                      className="signup-form-control"
+                      value={formData.password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <span className="icon">
+                      <Lock size={18} />
+                    </span>
+                  </div>
+                  {showError("password") && (
+                    <p className="field-error">{errors.password}</p>
+                  )}
                 </div>
-                {showError('password') && <p className="field-error">{errors.password}</p>}
+
+                <div className="form-group">
+                  <label className="signup-label">تأكيد كلمة المرور</label>
+                  <div
+                    className={`input-box ${showError("confirmPassword") ? "input-box-error" : ""}`}
+                  >
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="تأكيد كلمة المرور"
+                      className="signup-form-control"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <span className="icon">
+                      <Lock size={18} />
+                    </span>
+                  </div>
+                  {showError("confirmPassword") && (
+                    <p className="field-error">{errors.confirmPassword}</p>
+                  )}
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="signup-label">تأكيد كلمة المرور</label>
-                <div className={`input-box ${showError('confirmPassword') ? 'input-box-error' : ''}`}>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="تأكيد كلمة المرور"
-                    className="signup-form-control"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                  <span className="icon">
-                    <Lock size={18} />
-                  </span>
+              {/* رقم الهاتف قبل عدد سنين الخبرة */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="signup-label">رقم الهاتف</label>
+                  <div
+                    className={`input-box ${showError("phone") ? "input-box-error" : ""}`}
+                  >
+                    <input
+                      type="text"
+                      name="phone"
+                      placeholder="059XXXXXXXX"
+                      className="signup-form-control"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <span className="icon">
+                      <Phone size={18} />
+                    </span>
+                  </div>
+                  {showError("phone") && (
+                    <p className="field-error">{errors.phone}</p>
+                  )}
                 </div>
-                {showError('confirmPassword') && (
-                  <p className="field-error">{errors.confirmPassword}</p>
-                )}
-              </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label className="signup-label">رقم الهاتف</label>
-                <div className={`input-box ${showError('phone') ? 'input-box-error' : ''}`}>
+                <div className="form-group">
+                  <label className="signup-label">عدد سنين الخبرة</label>
+                  <div
+                    className={`input-box ${showError("yearsOfExperience") ? "input-box-error" : ""}`}
+                  >
+                    <input
+                      type="text"
+                      name="yearsOfExperience"
+                      placeholder="ادخل عدد سنين خبرتك"
+                      className="signup-form-control"
+                      value={formData.yearsOfExperience}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <span className="icon">
+                      <Hammer size={18} />
+                    </span>
+                  </div>
+                  {showError("yearsOfExperience") && (
+                    <p className="field-error">{errors.yearsOfExperience}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* سعر الساعة لحالها */}
+              <div className="form-group full-width">
+                <label className="signup-label">سعر الساعة (₪)</label>
+                <div
+                  className={`input-box ${showError("price") ? "input-box-error" : ""}`}
+                >
                   <input
                     type="text"
-                    name="phone"
-                    placeholder="059XXXXXXXX"
+                    name="price"
+                    placeholder="مثال: 50"
                     className="signup-form-control"
-                    value={formData.phone}
+                    value={formData.price}
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
                   <span className="icon">
-                    <Phone size={18} />
+                    <CircleDollarSign size={18} />
                   </span>
                 </div>
-                {showError('phone') && <p className="field-error">{errors.phone}</p>}
-              </div>
-
-              <div className="form-group">
-                <label className="signup-label">عدد سنين الخبرة</label>
-                <div className={`input-box ${showError('yearsOfExperience') ? 'input-box-error' : ''}`}>
-                  <input
-                    type="text"
-                    name="yearsOfExperience"
-                    placeholder="ادخل عدد سنين خبرتك"
-                    className="signup-form-control"
-                    value={formData.yearsOfExperience}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                  <span className="icon">
-                    <Hammer size={18} />
-                  </span>
-                </div>
-                {showError('yearsOfExperience') && (
-                  <p className="field-error">{errors.yearsOfExperience}</p>
+                {showError("price") && (
+                  <p className="field-error">{errors.price}</p>
                 )}
               </div>
-            </div>
 
-            <div className="form-group full-width">
-              <label className="signup-label">سعر الساعة (₪)</label>
-              <div className={`input-box ${showError('price') ? 'input-box-error' : ''}`}>
-                <input
-                  type="text"
-                  name="price"
-                  placeholder="مثال: 50"
-                  className="signup-form-control"
-                  value={formData.price}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-                <span className="icon">
-                  <CircleDollarSign size={18} />
-                </span>
+              {/* المنطقة + عنوان السكن */}
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="signup-label">المنطقة</label>
+                  <div
+                    className={`input-box ${showError("city") ? "input-box-error" : ""}`}
+                  >
+                    <select
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="signup-form-control"
+                    >
+                      <option value="" disabled hidden>
+                        اختر المنطقة
+                      </option>
+                      <option value="غزة">غزة</option>
+                      <option value="شمال غزة">شمال غزة</option>
+                      <option value="الوسطى">الوسطى</option>
+                      <option value="الجنوب">الجنوب</option>
+                    </select>
+                    <span className="icon">
+                      <MapPin size={18} />
+                    </span>
+                  </div>
+                  {showError("city") && (
+                    <p className="field-error">{errors.city}</p>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label className="signup-label">عنوان السكن في غزة</label>
+                  <div
+                    className={`input-box ${showError("neighborhood") ? "input-box-error" : ""}`}
+                  >
+                    <input
+                      type="text"
+                      name="neighborhood"
+                      placeholder="ادخل عنوانك بالتفصيل"
+                      className="signup-form-control"
+                      value={formData.neighborhood}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <span className="icon">
+                      <MapPin size={18} />
+                    </span>
+                  </div>
+                  {showError("neighborhood") && (
+                    <p className="field-error">{errors.neighborhood}</p>
+                  )}
+                </div>
               </div>
-              {showError('price') && <p className="field-error">{errors.price}</p>}
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label className="signup-label">المنطقة</label>
-                <div className={`input-box ${showError('city') ? 'input-box-error' : ''}`}>
+              {/* المهنة تحتهم */}
+              <div className="form-group full-width">
+                <label className="signup-label">المهنة</label>
+                <div
+                  className={`input-box ${showError("profession") ? "input-box-error" : ""}`}
+                >
                   <select
-                    name="city"
-                    value={formData.city}
+                    name="profession"
+                    value={formData.profession}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="signup-form-control"
                   >
                     <option value="" disabled hidden>
-                      اختر المنطقة
+                      اختر مهنتك
                     </option>
-                    <option value="غزة">غزة</option>
-                    <option value="شمال غزة">شمال غزة</option>
-                    <option value="الوسطى">الوسطى</option>
-                    <option value="الجنوب">الجنوب</option>
+                    <option value="engineer">مهندس</option>
+                    <option value="plumber">سباك</option>
+                    <option value="carpenter">نجار</option>
+                    <option value="electrician">كهربائي</option>
+                    <option value="painter">دهان</option>
+                    <option value="technician">فني</option>
+                    <option value="driver">سائق</option>
+                    <option value="mechanic">ميكانيكي</option>
+                    <option value="other">أخرى</option>
                   </select>
                   <span className="icon">
-                    <MapPin size={18} />
+                    <Briefcase size={18} />
                   </span>
                 </div>
-                {showError('city') && <p className="field-error">{errors.city}</p>}
-              </div>
-
-              <div className="form-group">
-                <label className="signup-label">عنوان السكن في غزة</label>
-                <div className={`input-box ${showError('neighborhood') ? 'input-box-error' : ''}`}>
-                  <input
-                    type="text"
-                    name="neighborhood"
-                    placeholder="ادخل عنوانك بالتفصيل"
-                    className="signup-form-control"
-                    value={formData.neighborhood}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                  <span className="icon">
-                    <MapPin size={18} />
-                  </span>
-                </div>
-                {showError('neighborhood') && (
-                  <p className="field-error">{errors.neighborhood}</p>
+                {showError("profession") && (
+                  <p className="field-error">{errors.profession}</p>
                 )}
               </div>
-            </div>
 
-            <div className="form-group full-width">
-              <label className="signup-label">المهنة</label>
-              <div className={`input-box ${showError('profession') ? 'input-box-error' : ''}`}>
-                <select
-                  name="profession"
-                  value={formData.profession}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className="signup-form-control"
-                >
-                  <option value="" disabled hidden>
-                    اختر مهنتك
-                  </option>
-                  <option value="engineer">مهندس</option>
-                  <option value="plumber">سباك</option>
-                  <option value="carpenter">نجار</option>
-                  <option value="electrician">كهربائي</option>
-                  <option value="painter">دهان</option>
-                  <option value="technician">فني</option>
-                  <option value="driver">سائق</option>
-                  <option value="mechanic">ميكانيكي</option>
-                  <option value="other">أخرى</option>
-                </select>
-                <span className="icon">
-                  <Briefcase size={18} />
-                </span>
-              </div>
-              {showError('profession') && <p className="field-error">{errors.profession}</p>}
-            </div>
-
-            {formData.profession === 'other' && (
-              <div className="form-group full-width extra-field">
-                <label className="signup-label">اكتب مهنتك</label>
-                <div className={`input-box ${showError('customProfession') ? 'input-box-error' : ''}`}>
-                  <input
-                    type="text"
-                    name="customProfession"
-                    placeholder="اكتب مهنتك"
-                    className="signup-form-control"
-                    value={formData.customProfession}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                  />
-                </div>
-                {showError('customProfession') && (
-                  <p className="field-error">{errors.customProfession}</p>
-                )}
-              </div>
-            )}
-
-            <div className="form-group full-width">
-              <label className="signup-label">صور أعمالك</label>
-
-              <div className="upload-grid">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                />
-
-                {[...Array(3)].map((_, index) => (
+              {formData.profession === "other" && (
+                <div className="form-group full-width extra-field">
+                  <label className="signup-label">اكتب مهنتك</label>
                   <div
-                    key={index}
-                    className={`upload-box ${showError('workImages') ? 'upload-box-error' : ''}`}
-                    onClick={() => fileInputRef.current?.click()}
+                    className={`input-box ${showError("customProfession") ? "input-box-error" : ""}`}
                   >
-                    {previewImages[index] ? (
-                      <div className="preview-wrapper">
-                        <img src={previewImages[index]} alt={`preview-${index}`} />
-                        <button
-                          type="button"
-                          className="remove-image-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveImage(index);
-                          }}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ) : (
-                      <span>+</span>
-                    )}
+                    <input
+                      type="text"
+                      name="customProfession"
+                      placeholder="اكتب مهنتك"
+                      className="signup-form-control"
+                      value={formData.customProfession}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
                   </div>
-                ))}
+                  {showError("customProfession") && (
+                    <p className="field-error">{errors.customProfession}</p>
+                  )}
+                </div>
+              )}
+
+              <div className="form-group full-width">
+                <label className="signup-label">صور أعمالك</label>
+
+                <div className="upload-grid">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                  />
+
+                  {[...Array(3)].map((_, index) => (
+                    <div
+                      key={index}
+                      className={`upload-box ${showError("workImages") ? "upload-box-error" : ""}`}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {previewImages[index] ? (
+                        <div className="preview-wrapper">
+                          <img
+                            src={previewImages[index]}
+                            alt={`preview-${index}`}
+                          />
+                          <button
+                            type="button"
+                            className="remove-image-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveImage(index);
+                            }}
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <span>+</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {showError("workImages") && (
+                  <p className="field-error">{errors.workImages}</p>
+                )}
               </div>
 
-              {showError('workImages') && <p className="field-error">{errors.workImages}</p>}
-            </div>
+              <div className="signup-actions">
+                <button
+                  type="submit"
+                  className="signup-btn"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "جاري إنشاء الحساب..." : "انشاء حسابي"}
+                </button>
+
+                {serverError && (
+                  <p className="field-error center-text">{serverError}</p>
+                )}
+
+                {successMessage && (
+                  <p className="success-message">{successMessage}</p>
+                )}
+
+                <p className="login-text">
+                  هل لديك حساب بالفعل؟{" "}
+                  <span
+                    className="login-link"
+                    onClick={() => navigate("/login")}
+                  >
+                    تسجيل الدخول
+                  </span>
+                </p>
+              </div>
+            </form>
           </div>
-
-          <div className="signup-actions">
-            <button type="submit" className="signup-btn" disabled={isSubmitting}>
-              {isSubmitting ? 'جاري إنشاء الحساب...' : 'انشاء حسابي'}
-            </button>
-
-            {serverError && (
-              <p className="field-error center-text">
-                {serverError}
-              </p>
-            )}
-
-            {successMessage && <p className="success-message">{successMessage}</p>}
-
-            <p className="login-text">
-              هل لديك حساب بالفعل؟{' '}
-              <span
-                className="login-link"
-                onClick={() => navigate('/login')}
-              >
-                تسجيل الدخول
-              </span>
-            </p>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
+
   );
 }

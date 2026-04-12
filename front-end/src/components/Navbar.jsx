@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router-dom'
 export default function Navbar() {
   const navigate = useNavigate()
   const { language, toggleLanguage } = useLanguage()
-  const t = (key) => translations[language]?.[key] || translations.ar[key] || key
+
+  const t = (key) => translations[language]?.[key] || key
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [craftsmanData, setCraftsmanData] = useState(null)
@@ -47,6 +48,30 @@ export default function Navbar() {
   return (
     <header className="navbar-sticky">
       <div className="container nav-flex">
+        {/* الصورة قبل الشعار فقط عند تسجيل الدخول */}
+        {isLoggedIn && (
+          <div className="profile-right-group">
+            <button
+              type="button"
+              className="profile-avatar-btn"
+              onClick={() => navigate('/profile')}
+              title="الملف الشخصي"
+            >
+              {craftsmanData?.profileImage ? (
+                <img
+                  src={`http://localhost:5000${craftsmanData.profileImage}`}
+                  alt="profile"
+                  className="profile-avatar-image"
+                />
+              ) : avatarLetter ? (
+                <span className="profile-avatar-letter">{avatarLetter}</span>
+              ) : (
+                <User size={18} />
+              )}
+            </button>
+          </div>
+        )}
+
         <div className="logo-container">
           <a
             href="#hero"
@@ -81,7 +106,7 @@ export default function Navbar() {
         </nav>
 
         <div className="auth-group">
-          {!isLoggedIn ? (
+          {!isLoggedIn && (
             <>
               <button className="btn-secondary" onClick={() => navigate('/login')}>
                 <LogIn size={18} />
@@ -93,30 +118,11 @@ export default function Navbar() {
                 <span>{t('signup')}</span>
               </button>
             </>
-          ) : (
-            <button
-              type="button"
-              className="profile-avatar-btn"
-              onClick={() => navigate('/profile')}
-              title="الملف الشخصي"
-            >
-              {craftsmanData?.profileImage ? (
-                <img
-                  src={`http://localhost:5000${craftsmanData.profileImage}`}
-                  alt="profile"
-                  className="profile-avatar-image"
-                />
-              ) : avatarLetter ? (
-                <span className="profile-avatar-letter">{avatarLetter}</span>
-              ) : (
-                <User size={18} />
-              )}
-            </button>
           )}
 
           <button className="btn-language" onClick={toggleLanguage} title="تبديل اللغة">
             <Globe size={18} />
-            <span className="lang-text">{language === 'ar' ? 'EN' : 'AR'}</span>
+<span className="lang-text">{language === 'ar' ? 'EN' : 'AR'}</span>
           </button>
         </div>
       </div>
