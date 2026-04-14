@@ -419,8 +419,8 @@ export default function Signup() {
       if (!isSuccess) {
         setServerError(
           result?.message ||
-            result?.status?.message ||
-            'حدث خطأ أثناء إنشاء الحساب'
+          result?.status?.message ||
+          'حدث خطأ أثناء إنشاء الحساب'
         );
         return;
       }
@@ -482,19 +482,15 @@ export default function Signup() {
               <div className="signup-topbar">
                 <button
                   type="button"
-                  className="signup-home-btn"
+                  className="signup-home-btn signup-home-btn-icon"
                   onClick={() => navigate('/')}
+                  aria-label="العودة للرئيسية"
+                  title="العودة للرئيسية"
                 >
-                  <ArrowLeft size={15} />
-                  الرئيسية
+                  <ArrowLeft size={18} />
                 </button>
 
-                <div className="signup-login-hint">
-                  لديك حساب؟{' '}
-                  <span className="signup-login-link" onClick={() => navigate('/login')}>
-                    سجل الدخول
-                  </span>
-                </div>
+              
               </div>
 
               <div className="signup-step-header">
@@ -868,6 +864,13 @@ export default function Signup() {
                 {successMessage && (
                   <p className="success-message">{successMessage}</p>
                 )}
+                <br />
+                  <div className="signup-login-hint">
+                  لديك حساب؟{' '}
+                  <span className="signup-login-link" onClick={() => navigate('/login')}>
+                    سجل الدخول
+                  </span>
+                </div>
               </form>
             </div>
           </div>
@@ -882,7 +885,7 @@ export default function Signup() {
 
           <div className="signup-side-overlay" />
 
-        
+
 
           <div className="signup-side-body">
             <h2 className="signup-side-title">

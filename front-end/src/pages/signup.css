@@ -130,9 +130,19 @@ body {
   cursor: pointer;
   transition: 0.2s ease;
 }
-
+.signup-home-btn-icon {
+  width: 52px;
+  min-width: 52px;
+  height: 42px;
+  padding: 0;
+  justify-content: center;
+}
 .signup-home-btn:hover {
   background: #f5f8fb;
+}
+.signup-login-hint-bottom {
+  margin-top: 14px;
+  text-align: center;
 }
 
 .signup-login-hint {
@@ -570,6 +580,10 @@ body {
   padding: 0 24px;
   margin-top: auto;
   margin-bottom: auto;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .signup-side-title {
