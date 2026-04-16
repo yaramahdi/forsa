@@ -26,7 +26,6 @@
 html,
 body,
 #root {
-  height: 100%;
 }
 
 body {
@@ -45,18 +44,17 @@ body {
 /* نخلي الكتلة كلها بالنص بدل ما تتمدد على كامل الشاشة */
 .signup-shell {
   min-height: calc(100vh - 20px);
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
   direction: ltr;
-  grid-template-columns: 560px 400px;
+  grid-template-columns: 570px 450px;
   grid-template-areas: "form side";
   justify-content: center;
-  background: linear-gradient(90deg, #f3f7fb 0%, #e9f0f8 55%, #d7e6f4 82%, #cddff1 100%);
-  box-shadow: var(--shadow);
-  overflow: hidden;
   border-radius: 22px;
   position: relative;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 
 /* تدرج خفيف وضيّق بين الفورم والصورة */
@@ -109,40 +107,37 @@ body {
 .signup-topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content:flex-start;
   gap: 12px;
   margin-bottom: 24px;
   flex-wrap: wrap;
+  direction: ltr;
 }
 
 .signup-home-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid #b9c5d3;
+   width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(27, 61, 95, 0.16);
   background: #fff;
-  color: #31475f;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-family: 'Cairo', sans-serif;
-  font-size: 13px;
-  font-weight: 800;
   cursor: pointer;
-  transition: 0.2s ease;
-}
-.signup-home-btn-icon {
-  width: 52px;
-  min-width: 52px;
-  height: 42px;
-  padding: 0;
+  font-size: 20px;
+  color: #1B3D5F;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 14px rgba(27, 61, 95, 0.06);
+  margin-left: 0;
 }
+
 .signup-home-btn:hover {
-  background: #f5f8fb;
+   background: #f1f6fb;
+  transform: translateY(-1px);
 }
 .signup-login-hint-bottom {
   margin-top: 14px;
-  text-align: center;
+  text-align: left;
 }
 
 .signup-login-hint {
@@ -529,13 +524,15 @@ body {
 
 .signup-side-panel {
   grid-area: side;
-  position: relative;
-  min-height: calc(100vh - 20px);
+ position: relative;
   overflow: hidden;
+  min-height: calc(100vh - 20px);
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+    min-height: 500px; /* 🔥 أقل طول */
+
 }
 
 .signup-side-bg-image {
@@ -580,10 +577,12 @@ body {
   padding: 0 24px;
   margin-top: auto;
   margin-bottom: auto;
-  text-align: right;
+  margin-right: 60px; /* 🔥 مسافة من اليمين */
+  text-align: center;      /* 🔥 بدل right */
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;     /* 🔥 بدل flex-end */
+  justify-content: center; /* 🔥 يوسّط عمودي */
 }
 
 .signup-side-title {
@@ -662,7 +661,7 @@ body {
 @media (max-width: 1180px) {
   .signup-shell {
     max-width: 1080px;
-    grid-template-columns: 520px 370px;
+    grid-template-columns: 520px 460px;
   }
 
   .signup-shell::after {
@@ -678,10 +677,8 @@ body {
 @media (max-width: 980px) {
   .signup-shell {
     max-width: 100%;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "side"
-      "form";
+     grid-template-columns: 480px 1fr; /* 🔥 الصورة أعرض */
+
   }
 
   .signup-shell::after {
@@ -696,11 +693,10 @@ body {
     direction: rtl;
   }
 
-  .signup-form-scroll {
-    height: auto;
-    min-height: auto;
-    justify-content: center;
-  }
+ .signup-form-scroll {
+  height: auto; /* 🔥 */
+  overflow: hidden; /* 🔥 */
+}
 
   .signup-form-card {
     max-width: 100%;

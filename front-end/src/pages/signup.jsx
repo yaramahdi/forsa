@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
 
+
 import {
   User,
   Mail,
@@ -76,7 +77,13 @@ export default function Signup() {
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
+useEffect(() => {
+  document.body.style.overflow = "hidden";
 
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, []);
   useEffect(() => {
     const urls = formData.workImages.map((file) => URL.createObjectURL(file));
     setPreviewImages(urls);

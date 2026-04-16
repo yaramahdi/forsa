@@ -32,14 +32,12 @@ body {
   align-items: center;
   justify-content: center;
   padding: 28px;
-  background: linear-gradient(
-    to left,
-    #e6f0fb 0%,
-    #cfe3f7 5%,
-    #b5d3f5 40%,
-    #9cc4ef 75%,
-#7eacdb 90%
-  );
+  background: linear-gradient(to left,
+      #e6f0fb 0%,
+      #cfe3f7 5%,
+      #b5d3f5 40%,
+      #9cc4ef 75%,
+      #7eacdb 90%);
 }
 
 .login-wrapper {
@@ -47,28 +45,31 @@ body {
   max-width: 1455px;
   max-height: 600px;
   display: flex;
-  direction: ltr; /* هذا أهم إصلاح */
+  direction: ltr;
   border-radius: 34px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.18);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
   backdrop-filter: blur(8px);
-  gap: 0px;
+  gap: 0;
 }
 
 .visual-panel {
-  flex: 1.50;
+  flex: 2;
   position: relative;
   overflow: hidden;
   display: flex;
-  align-items: center;}
+  align-items: center;
+  margin: 0;
+  border-top-left-radius: 34px;
+  border-bottom-left-radius: 34px;
+}
 
 .visual-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: left;
-
+  object-position: left center;
 }
 
 .visual-panel::after {
@@ -76,15 +77,19 @@ body {
   position: absolute;
   inset: 0;
   z-index: 1;
+  background: linear-gradient(to right,
+      rgba(126, 172, 219, 0.18),
+      rgba(126, 172, 219, 0.06));
 }
+
 .visual-content {
   position: absolute;
-  right: 10px;
+  right: 30px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
   color: #1B3D5F;
-  max-width: 420px;
+  max-width: 465px;
   text-align: right;
 }
 
@@ -95,27 +100,30 @@ body {
   font-weight: 800;
   line-height: 1.2;
   margin-bottom: 18px;
+  max-width: 560px;
 }
+
 .visual-subtitle {
-  font-size: 16px;
+  font-size: 18px;
   color: #40546a;
   margin-bottom: 22px;
+  max-width: 520px;
 }
 
 /* التاجز */
 .visual-tags {
   display: flex;
-  gap: 3px;
-
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .visual-tags span {
-  background: rgba(255, 255, 255, 0.8);
-  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.88);
+  padding: 7px 16px;
   border-radius: 999px;
-  font-weight: 800;
+  font-weight: 900;
+  box-shadow: 0 6px 18px rgba(27, 61, 95, 0.06);
 }
-
 
 
 
@@ -151,46 +159,34 @@ body {
 }
 
 .form-panel {
-  flex: .97;
+  flex: 1;
   display: flex;
-  align-items:center;
-  justify-content: right;
-  padding-left: 0px;
-  
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.96) 0%,
-    rgba(248, 251, 255, 0.98) 100%
-  );
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  margin: 0;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.96) 0%,
+      rgba(248, 251, 255, 0.98) 100%);
   position: relative;
+  box-shadow: -8px 0 22px rgba(27, 61, 95, 0.05);
+  border-top-right-radius: 34px;
+  border-bottom-right-radius: 34px;
 }
 
-.form-panel::before {
-  content: '';
-  position: absolute;
-  left: -30px;
-  top: 0;
-  width: 150px;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(217, 233, 248, 0.6) 0%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  border-radius: 80px;
-  transform: rotate(8deg);
-}
+
 
 .form-box {
   width: 100%;
-  max-width: 430px;
+  max-width: 500px;
   position: relative;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.94);
-  border-radius: 28px;
-  padding: 65px 35px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 28px 0 0 28px;
+  padding: 65px 26px;
   border: 1px solid rgba(27, 61, 95, 0.08);
   box-shadow: 0 20px 50px rgba(27, 61, 95, 0.10);
+  margin: 0;
 }
 
 .form-header {
@@ -317,10 +313,34 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: all 0.3s ease;
 }
 
 .btn-submit:hover {
   background: linear-gradient(135deg, #2E5A8C 0%, #3F7FBE 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(27, 61, 95, 0.18);
+}
+
+.back-home-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(27, 61, 95, 0.16);
+  background: #fff;
+  cursor: pointer;
+  font-size: 20px;
+  color: #1B3D5F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 14px rgba(27, 61, 95, 0.06);
+}
+
+.back-home-btn:hover {
+  background: #f1f6fb;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 1100px) {
@@ -367,6 +387,7 @@ body {
     font-size: 32px;
   }
 }
+
 .input-wrapper {
   position: relative;
 }
@@ -384,8 +405,10 @@ body {
 }
 
 .input-wrapper input {
-  padding-right: 44px;  /* مساحة للأيقونة */
+  padding-right: 44px;
+  /* مساحة للأيقونة */
 }
+
 .error-msg {
   display: flex;
   align-items: center;
@@ -410,7 +433,9 @@ body {
 .signup-link {
   font-weight: 700;
 }
+
 .login-top-bar {
   display: flex;
+  justify-content: flex-end;
   margin-bottom: 12px;
 }
