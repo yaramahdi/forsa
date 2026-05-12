@@ -47,6 +47,7 @@ function VisualPanel() {
         src="/images/workers.jpg"
         alt="workers"
         className="visual-img"
+        loading="lazy"
       />
 
       <div className="visual-content" dir="rtl">

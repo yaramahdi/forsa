@@ -73,7 +73,7 @@ export default function Categories() {
                 onClick={() => navigate(`/craftsmen/${category.professionKey}`)}
               >
                 <div className="icon-box">
-                  <img src={category.image} alt={category.name} />
+                  <img src={category.image} alt={category.name} loading="lazy" />
                 </div>
                 <p>{category.name}</p>
               </div>

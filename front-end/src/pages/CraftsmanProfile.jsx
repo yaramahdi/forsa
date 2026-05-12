@@ -71,6 +71,7 @@ const IcImages = () => (
   </svg>
 );
 const IcBack = () => <Ic s={16} d="M19 12H5M12 19l-7-7 7-7" />;
+const IcUnlock = () => <Ic s={16} d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 9.9-1" />;
 const IcShekel = ({ s = 17 }) => (
   <svg
     width={s}
@@ -105,6 +106,7 @@ const IcShekel = ({ s = 17 }) => (
 function readJsonSafe(response) {
   return response.json().catch(() => null);
 }
+
 
 function resolveImage(src) {
   if (!src) return "";
@@ -232,6 +234,7 @@ function RequestModal({ craftsman, onClose }) {
   const [done, setDone] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [whatsAppOptions, setWhatsAppOptions] = useState([]);
+  const [resolvedPhone, setResolvedPhone] = useState("");
 
   const setField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -295,6 +298,7 @@ function RequestModal({ craftsman, onClose }) {
       }
 
       const craftsmanPhone = payload?.data?.craftsmanPhone || craftsman.phone;
+      setResolvedPhone(craftsmanPhone);
       setWhatsAppOptions(buildWhatsAppOptions(craftsmanPhone));
       setDone(true);
     } catch (error) {
@@ -318,6 +322,14 @@ function RequestModal({ craftsman, onClose }) {
             <p className="cp-success-text">
               تم تسجيل طلبك وسيظهر للحرفي داخل لوحة الطلبات الخاصة به.
             </p>
+
+            {resolvedPhone && resolvedPhone !== "غير متوفر" ? (
+              <div className="cp-revealed-phone-row">
+                <IcUnlock />
+                <span className="cp-revealed-phone-label">رقم الهاتف:</span>
+                <span className="cp-revealed-phone-num" dir="ltr">{resolvedPhone}</span>
+              </div>
+            ) : null}
 
             <div className="cp-success-actions">
               {whatsAppOptions.length > 0 ? (
@@ -400,6 +412,7 @@ export default function CraftsmanProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
   useEffect(() => {
     const fetchCraftsman = async () => {
@@ -509,6 +522,7 @@ export default function CraftsmanProfile() {
                 src={craftsman.profileImage}
                 alt={`${craftsman.firstName} ${craftsman.lastName}`}
                 className="cp-avatar"
+                loading="lazy"
                 onError={(e) => {
                   e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
                 }}
@@ -567,13 +581,6 @@ export default function CraftsmanProfile() {
                 <div className="cp-info-icon"><IcPin /></div>
               </div>
 
-              <div className="cp-info-row">
-                <div className="cp-info-row-text">
-                  <div className="cp-info-label">رقم الهاتف</div>
-                  <div className="cp-info-value">{craftsman.phone}</div>
-                </div>
-                <div className="cp-info-icon"><IcPhone /></div>
-              </div>
 
               <div className="cp-info-row">
                 <div className="cp-info-row-text">
@@ -630,8 +637,17 @@ export default function CraftsmanProfile() {
             {craftsman.workImages.length > 0 ? (
               <div className="cp-photos-grid">
                 {craftsman.workImages.map((src, index) => (
-                  <div key={`${src}-${index}`} className="cp-photo-item">
+                  <div
+                    key={`${src}-${index}`}
+                    className="cp-photo-item"
+                    onClick={() => setLightboxIndex(index)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(index)}
+                    aria-label={`عرض صورة العمل ${index + 1}`}
+                  >
                     <img src={src} alt={`عمل ${index + 1}`} loading="lazy" />
+                    <div className="cp-photo-overlay"><IcImages /></div>
                   </div>
                 ))}
               </div>
@@ -642,7 +658,63 @@ export default function CraftsmanProfile() {
         </div>
       </div>
 
-      {modalOpen ? <RequestModal craftsman={craftsman} onClose={() => setModalOpen(false)} /> : null}
+      {modalOpen ? (
+        <RequestModal
+          craftsman={craftsman}
+          onClose={() => setModalOpen(false)}
+        />
+      ) : null}
+
+      {lightboxIndex !== null ? (
+        <div
+          className="cp-lightbox-overlay"
+          onClick={() => setLightboxIndex(null)}
+        >
+          <button
+            className="cp-lb-close"
+            onClick={() => setLightboxIndex(null)}
+            aria-label="إغلاق"
+            type="button"
+          >
+            <IcClose />
+          </button>
+
+          <button
+            className="cp-lb-nav cp-lb-prev"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((prev) => (prev - 1 + craftsman.workImages.length) % craftsman.workImages.length);
+            }}
+            aria-label="السابق"
+            type="button"
+          >
+            ‹
+          </button>
+
+          <div className="cp-lb-img-wrap" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={craftsman.workImages[lightboxIndex]}
+              alt={`عمل ${lightboxIndex + 1}`}
+              className="cp-lb-img"
+            />
+            <div className="cp-lb-counter">
+              {lightboxIndex + 1} / {craftsman.workImages.length}
+            </div>
+          </div>
+
+          <button
+            className="cp-lb-nav cp-lb-next"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex((prev) => (prev + 1) % craftsman.workImages.length);
+            }}
+            aria-label="التالي"
+            type="button"
+          >
+            ›
+          </button>
+        </div>
+      ) : null}
     </>
   );
 }

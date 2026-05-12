@@ -155,6 +155,135 @@ body{
   background:rgba(255,100,100,.15);
   color:#ffb4b4;
 }
+.sb-home{
+  margin:0 10px 4px;
+  padding:11px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:rgba(180,220,255,.9);
+  font-size:13.5px;
+  font-weight:600;
+  border:1px solid rgba(100,180,255,.22);
+  background:rgba(100,180,255,.07);
+  transition:all .2s;
+  font-family:'Cairo',sans-serif;
+}
+.sb-home:hover{
+  background:rgba(100,180,255,.18);
+  color:#b4deff;
+}
+.del-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:7px 12px;
+  min-width:80px;
+  border-radius:9px;
+  font-size:12px;
+  font-weight:700;
+  font-family:'Cairo',sans-serif;
+  cursor:pointer;
+  border:1.5px solid var(--red-border);
+  background:var(--red-bg);
+  color:var(--red);
+  transition:all .2s;
+  white-space:nowrap;
+}
+.del-btn:hover{
+  background:#fecaca;
+}
+.del-btn:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
+.confirm-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(10,20,40,.45);
+  backdrop-filter:blur(4px);
+  z-index:9998;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+.confirm-modal{
+  background:var(--white);
+  border-radius:16px;
+  padding:28px 24px 22px;
+  max-width:380px;
+  width:100%;
+  box-shadow:0 20px 60px rgba(10,20,40,.22);
+  text-align:center;
+  direction:rtl;
+}
+.confirm-icon{
+  font-size:38px;
+  margin-bottom:12px;
+}
+.confirm-title{
+  font-family:'Tajawal',sans-serif;
+  font-size:18px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:8px;
+}
+.confirm-desc{
+  font-size:13px;
+  color:var(--gray-text);
+  margin-bottom:20px;
+  line-height:1.6;
+}
+.confirm-name{
+  font-weight:700;
+  color:var(--red);
+}
+.confirm-actions{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+}
+.confirm-cancel{
+  flex:1;
+  padding:11px;
+  border-radius:10px;
+  border:1.5px solid var(--gray-border);
+  background:var(--white);
+  color:var(--gray-text);
+  font-family:'Cairo',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+}
+.confirm-cancel:hover{
+  background:var(--gray-bg);
+}
+.confirm-delete{
+  flex:1;
+  padding:11px;
+  border-radius:10px;
+  border:none;
+  background:var(--red);
+  color:#fff;
+  font-family:'Cairo',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  box-shadow:0 4px 14px rgba(220,38,38,.3);
+}
+.confirm-delete:hover{
+  background:#b91c1c;
+}
+.confirm-delete:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+}
 
 /* ── Main ── */
 .main{
@@ -727,6 +856,8 @@ const IcLogout = () => <Ic s={15} d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 
 const IcGrid = () => <Ic s={17} d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />;
 const IcCheck = () => <Ic s={13} d="M20 6L9 17l-5-5" />;
 const IcX = () => <Ic s={13} d="M18 6L6 18M6 6l12 12" />;
+const IcHome = () => <Ic s={15} d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10" />;
+const IcTrash = () => <Ic s={13} d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />;
 
 function getAuthToken() {
   return (
@@ -833,6 +964,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmTarget, setConfirmTarget] = useState(null);
 
   const showToast = (msg, icon = "✅") => {
     setToast({ msg, icon });
@@ -947,10 +1080,41 @@ export default function AdminPage() {
     }
   };
 
+  const deleteCraftsman = async (craftsman) => {
+    try {
+      setDeletingId(craftsman.id);
+
+      const response = await fetch(`${ADMIN_CRAFTSMEN_ENDPOINT}/${craftsman.id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
+
+      const payload = await readJsonSafe(response);
+
+      if (!response.ok) {
+        throw new Error(payload?.status?.message || payload?.message || "فشل حذف الحرفي");
+      }
+
+      setCraftsmen((prev) => prev.filter((item) => item.id !== craftsman.id));
+      setConfirmTarget(null);
+      showToast(`تم حذف الحرفي ${craftsman.fullName} بنجاح`, "🗑️");
+    } catch (err) {
+      showToast(err.message || "تعذر حذف الحرفي", "❌");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("token");
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("forsaAdmin");
+    localStorage.removeItem("forsaAdminEmail");
+    window.location.href = "/";
+  };
+
+  const handleGoHome = () => {
     window.location.href = "/";
   };
 
@@ -972,6 +1136,10 @@ export default function AdminPage() {
               <IcUsers /> إدارة الحرفيين
             </button>
           </div>
+
+          <button type="button" className="sb-home" onClick={handleGoHome}>
+            <IcHome /> الصفحة الرئيسية
+          </button>
 
           <button type="button" className="sb-logout" onClick={handleLogout}>
             <IcLogout /> تسجيل الخروج
@@ -1088,13 +1256,14 @@ export default function AdminPage() {
                         <th>البريد الإلكتروني</th>
                         <th>صور الأعمال</th>
                         <th className="sticky-featured" style={{ textAlign: "center" }}>مميز؟</th>
+                        <th style={{ textAlign: "center" }}>حذف</th>
                       </tr>
                     </thead>
 
                     <tbody>
                       {filtered.length === 0 ? (
                         <tr>
-                          <td colSpan={9}>
+                          <td colSpan={10}>
                             <div className="state-wrap">
                               <div className="state-ico">🔍</div>
                               <div className="state-title">لا توجد نتائج مطابقة</div>
@@ -1113,6 +1282,7 @@ export default function AdminPage() {
                                   src={getDisplayProfileImage(craftsman)}
                                   alt={craftsman.fullName}
                                   className="user-avatar"
+                                  loading="lazy"
                                 />
                                 <div>
                                   <div className="cell-name">{craftsman.fullName}</div>
@@ -1154,6 +1324,7 @@ export default function AdminPage() {
                                       src={getDisplayWorkImage(src)}
                                       alt="work"
                                       className="photo-mini"
+                                      loading="lazy"
                                     />
                                   ))}
                                   {craftsman.photos.length > 3 ? (
@@ -1183,6 +1354,17 @@ export default function AdminPage() {
                                 )}
                               </button>
                             </td>
+
+                            <td style={{ textAlign: "center" }}>
+                              <button
+                                type="button"
+                                className="del-btn"
+                                onClick={() => setConfirmTarget(craftsman)}
+                                disabled={deletingId === craftsman.id}
+                              >
+                                <IcTrash /> حذف
+                              </button>
+                            </td>
                           </tr>
                         ))
                       )}
@@ -1194,6 +1376,39 @@ export default function AdminPage() {
           </div>
         </main>
       </div>
+
+      {confirmTarget ? (
+        <div className="confirm-overlay" onClick={() => setConfirmTarget(null)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="confirm-icon">🗑️</div>
+            <div className="confirm-title">تأكيد الحذف</div>
+            <div className="confirm-desc">
+              هل أنت متأكد من حذف الحرفي{" "}
+              <span className="confirm-name">{confirmTarget.fullName}</span>؟
+              <br />
+              لا يمكن التراجع عن هذا الإجراء.
+            </div>
+            <div className="confirm-actions">
+              <button
+                type="button"
+                className="confirm-cancel"
+                onClick={() => setConfirmTarget(null)}
+                disabled={deletingId === confirmTarget.id}
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                className="confirm-delete"
+                onClick={() => deleteCraftsman(confirmTarget)}
+                disabled={deletingId === confirmTarget.id}
+              >
+                {deletingId === confirmTarget.id ? "⏳ جاري الحذف..." : "نعم، احذف"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {toast ? <div className="toast">{toast.icon} {toast.msg}</div> : null}
     </>

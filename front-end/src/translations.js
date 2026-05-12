@@ -62,7 +62,7 @@ export const translations = {
     // Search & Results
     searchSuggestions: 'الاقتراحات',
     noResults: 'لم يتم العثور على نتائج',
-    requestService: 'اطلب خدمة',
+    requestService: 'عرض التفاصيل',
     location: 'الموقع',
     rating: 'التقييم',
     rating5Stars: 'تقييم ممتاز',
@@ -150,7 +150,7 @@ export const translations = {
     // Search & Results
     searchSuggestions: 'Suggestions',
     noResults: 'No results found',
-    requestService: 'Request Service',
+    requestService: 'View Details',
     location: 'Location',
     rating: 'Rating',
     rating5Stars: 'Excellent Rating',

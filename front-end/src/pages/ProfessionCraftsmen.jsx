@@ -345,6 +345,7 @@ export default function ProfessionCraftsmen() {
                         <img
                           src={getCraftsmanImage(craftsman)}
                           alt={fullName}
+                          loading="lazy"
                         />
                       ) : (
                         <span>
@@ -386,7 +387,7 @@ export default function ProfessionCraftsmen() {
                           navigate(`/craftsman/${id}`);
                         }}
                       >
-                        اطلب الآن
+                        عرض التفاصيل
                       </button>
                     </div>
                   </div>

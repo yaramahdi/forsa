@@ -52,7 +52,32 @@ const toggleFeaturedForAdmin = async (req, res, next) => {
   }
 };
 
+const deleteCraftsmanForAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const craftsman = await Craftsman.findById(id);
+
+    if (!craftsman) {
+      return next(createError(404, "Craftsman not found"));
+    }
+
+    await Craftsman.findByIdAndDelete(id);
+
+    return global.returnJson(
+      res,
+      200,
+      true,
+      "Craftsman deleted successfully",
+      { _id: id }
+    );
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
 module.exports = {
   getAllCraftsmenForAdmin,
   toggleFeaturedForAdmin,
+  deleteCraftsmanForAdmin,
 };

@@ -388,6 +388,42 @@ body {
   }
 }
 
+@media (max-width: 640px) {
+  .login-root {
+    padding: 0;
+    align-items: flex-start;
+    background: #f3f6fb;
+  }
+
+  .login-wrapper {
+    flex-direction: column;
+    border-radius: 0;
+    max-height: none;
+    min-height: 100vh;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .visual-panel {
+    display: none;
+  }
+
+  .form-panel {
+    flex: 1;
+    padding: 28px 16px;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+    min-height: 100vh;
+  }
+
+  .form-box {
+    border-radius: 20px;
+    padding: 28px 18px;
+    max-width: 100%;
+  }
+}
+
 .input-wrapper {
   position: relative;
 }

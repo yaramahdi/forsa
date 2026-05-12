@@ -36,7 +36,7 @@ export default function Craftsmen() {
 
                 {/* الصورة */}
                 <div className="cta-floating-img-v2">
-                  <img src="images/craftsman.png" alt="Craftsman" />
+                  <img src="images/craftsman.png" alt="Craftsman" loading="lazy" />
                 </div>
               </div>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { LogIn, UserPlus, Globe, User } from 'lucide-react'
+import { LogIn, UserPlus, Globe, User, Menu, X } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
 import { useNavigate } from 'react-router-dom'
@@ -11,9 +11,17 @@ export default function Navbar() {
   const t = (key) => translations[language]?.[key] || key
 
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [craftsmanData, setCraftsmanData] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
+    const adminFlag = localStorage.getItem('forsaAdmin')
+    if (adminFlag === 'true') {
+      setIsAdmin(true)
+      return
+    }
+
     const token = localStorage.getItem('forsaToken')
     const storedCraftsman = localStorage.getItem('forsaCraftsman')
 
@@ -45,87 +53,101 @@ export default function Navbar() {
     }
   }
 
+  const handleNavClick = (sectionId) => {
+    handleScroll(sectionId)
+    setMenuOpen(false)
+  }
+
   return (
     <header className="navbar-sticky">
       <div className="container nav-flex">
-        {/* الصورة قبل الشعار فقط عند تسجيل الدخول */}
-      
-
         <div className="logo-container">
           <a
             href="#hero"
             onClick={(e) => {
               e.preventDefault()
-              handleScroll('hero')
+              handleNavClick('hero')
             }}
           >
-            <img src="/images/logo2.png" alt="لوجو منصة فرصة" className="main-logo-img" />
+            <img src="/images/logo2.png" alt="لوجو منصة فرصة" className="main-logo-img" loading="lazy" />
           </a>
         </div>
 
-        <nav className="nav-links">
-          <button className="nav-link" onClick={() => handleScroll('hero')}>
-            {t('home')}
-          </button>
-          <button className="nav-link" onClick={() => handleScroll('categories')}>
-            {t('categories')}
-          </button>
-          <button className="nav-link" onClick={() => handleScroll('why-forsa')}>
-            {t('whyForsaTitle')}
-          </button>
-          <button className="nav-link" onClick={() => handleScroll('craftsmen')}>
-            {t('iAmCraftsman')}
-          </button>
-          <button className="nav-link" onClick={() => handleScroll('specialists')}>
-            {t('features')}
-          </button>
-          <button className="nav-link" onClick={() => handleScroll('contact')}>
-            {t('contact')}
-          </button>
+        <nav className={`nav-links${menuOpen ? ' nav-links-open' : ''}`}>
+          <button className="nav-link" onClick={() => handleNavClick('hero')}>{t('home')}</button>
+          <button className="nav-link" onClick={() => handleNavClick('categories')}>{t('categories')}</button>
+          <button className="nav-link" onClick={() => handleNavClick('why-forsa')}>{t('whyForsaTitle')}</button>
+          <button className="nav-link" onClick={() => handleNavClick('craftsmen')}>{t('iAmCraftsman')}</button>
+          <button className="nav-link" onClick={() => handleNavClick('specialists')}>{t('features')}</button>
+          <button className="nav-link" onClick={() => handleNavClick('contact')}>{t('contact')}</button>
         </nav>
 
-       <div className="auth-group">
+        <div className="auth-group">
+          {isAdmin ? (
+            <button
+              type="button"
+              className="profile-avatar-btn"
+              onClick={() => navigate('/admin')}
+              title="لوحة الإدارة"
+            >
+              <img
+                src="/images/admin.png"
+                alt="admin"
+                className="profile-avatar-image"
+                loading="lazy"
+              />
+            </button>
+          ) : isLoggedIn ? (
+            <button
+              type="button"
+              className="profile-avatar-btn"
+              onClick={() => navigate('/profile')}
+              title="الملف الشخصي"
+            >
+              {craftsmanData?.profileImage ? (
+                <img
+                  src={`http://localhost:5000${craftsmanData.profileImage}`}
+                  alt="profile"
+                  className="profile-avatar-image"
+                  loading="lazy"
+                />
+              ) : avatarLetter ? (
+                <span className="profile-avatar-letter">{avatarLetter}</span>
+              ) : (
+                <User size={18} />
+              )}
+            </button>
+          ) : (
+            <>
+              <button className="btn-secondary" onClick={() => navigate('/login')}>
+                <LogIn size={18} />
+                <span className="btn-text">{t('login')}</span>
+              </button>
+              <button className="btn-primary" onClick={() => navigate('/signup')}>
+                <UserPlus size={18} />
+                <span className="btn-text">{t('signup')}</span>
+              </button>
+            </>
+          )}
 
-  {isLoggedIn ? (
-    <button
-      type="button"
-      className="profile-avatar-btn"
-      onClick={() => navigate('/profile')}
-      title="الملف الشخصي"
-    >
-      {craftsmanData?.profileImage ? (
-        <img
-          src={`http://localhost:5000${craftsmanData.profileImage}`}
-          alt="profile"
-          className="profile-avatar-image"
-        />
-      ) : avatarLetter ? (
-        <span className="profile-avatar-letter">{avatarLetter}</span>
-      ) : (
-        <User size={18} />
-      )}
-    </button>
-  ) : (
-    <>
-      <button className="btn-secondary" onClick={() => navigate('/login')}>
-        <LogIn size={18} />
-        <span>{t('login')}</span>
-      </button>
+          <button className="btn-language" onClick={toggleLanguage} title="تبديل اللغة">
+            <Globe size={18} />
+            <span className="lang-text">{language === 'ar' ? 'EN' : 'AR'}</span>
+          </button>
 
-      <button className="btn-primary" onClick={() => navigate('/signup')}>
-        <UserPlus size={18} />
-        <span>{t('signup')}</span>
-      </button>
-    </>
-  )}
-
-  <button className="btn-language" onClick={toggleLanguage} title="تبديل اللغة">
-    <Globe size={18} />
-    <span className="lang-text">{language === 'ar' ? 'EN' : 'AR'}</span>
-  </button>
-
-</div>
+          <button
+            className="hamburger-btn"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="القائمة"
+          >
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
+
+      {menuOpen && (
+        <div className="nav-overlay" onClick={() => setMenuOpen(false)} />
+      )}
     </header>
   )
 }

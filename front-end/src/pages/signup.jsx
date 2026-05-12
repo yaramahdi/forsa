@@ -432,37 +432,20 @@ useEffect(() => {
         return;
       }
 
-      setSuccessMessage('تم إنشاء الحساب بنجاح 🎉');
+      const { token, craftsman } = result?.data || {};
 
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        phone: '',
-        yearsOfExperience: '',
-        price: '',
-        city: '',
-        neighborhood: '',
-        profession: '',
-        customProfession: '',
-        bio: '',
-        workImages: [],
-      });
-
-      setErrors({});
-      setTouched({});
-      setSubmitAttempted(false);
-      setCurrentStep(1);
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      if (token) {
+        localStorage.setItem('forsaToken', token);
       }
+      if (craftsman) {
+        localStorage.setItem('forsaCraftsman', JSON.stringify(craftsman));
+      }
+
+      setSuccessMessage('تم إنشاء الحساب بنجاح 🎉');
 
       setTimeout(() => {
         navigate('/');
-      }, 1000);
+      }, 800);
     } catch (error) {
       setServerError('تعذر الاتصال بالسيرفر، تأكد أن الباك شغال');
     } finally {
@@ -792,7 +775,7 @@ useEffect(() => {
                         >
                           {previewImages[index] ? (
                             <div className="preview-wrapper">
-                              <img src={previewImages[index]} alt={`preview-${index}`} />
+                              <img src={previewImages[index]} alt={`preview-${index}`} loading="lazy" />
                               <button
                                 type="button"
                                 className="remove-image-btn"
@@ -888,6 +871,7 @@ useEffect(() => {
             src="/images/sidebarCraftmen.png"
             alt="حرفيون"
             className="signup-side-bg-image"
+            loading="lazy"
           />
 
           <div className="signup-side-overlay" />

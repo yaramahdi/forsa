@@ -803,7 +803,7 @@ export default function AllCraftsmen() {
             years: 'سنة',
             location: 'الموقع',
             phone: 'رقم الهاتف',
-            requestService: 'اطلب الخدمة',
+            requestService: 'عرض التفاصيل',
             clearFilters: 'مسح الفلاتر',
             noResultsTitle: 'لا توجد نتائج مطابقة',
             noResultsDesc: 'جرّبي تعديل الفلاتر أو البحث بكلمة أخرى.',
@@ -840,7 +840,7 @@ export default function AllCraftsmen() {
             years: 'years',
             location: 'Location',
             phone: 'Phone',
-            requestService: 'Request Service',
+            requestService: 'View Details',
             clearFilters: 'Clear Filters',
             noResultsTitle: 'No matching results',
             noResultsDesc: 'Try changing filters or searching with another keyword.',
@@ -1294,6 +1294,7 @@ export default function AllCraftsmen() {
                           src={getProfileImage(craftsman)}
                           alt={craftsman.fullName}
                           className="ac-avatar"
+                          loading="lazy"
                           onError={(e) => {
                             e.currentTarget.src = DEFAULT_PROFILE_IMAGE
                           }}
@@ -1368,6 +1369,7 @@ export default function AllCraftsmen() {
                           src={getProfileImage(craftsman)}
                           alt={craftsman.fullName}
                           className="ac-avatar"
+                          loading="lazy"
                           onError={(e) => {
                             e.currentTarget.src = DEFAULT_PROFILE_IMAGE
                           }}

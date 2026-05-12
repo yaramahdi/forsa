@@ -492,3 +492,41 @@
     width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .profession-page {
+    padding: 14px 10px 20px;
+  }
+
+  .profession-hero {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+
+  .profession-hero-text h1 {
+    font-size: 20px;
+  }
+
+  .profession-hero-text p {
+    font-size: 13px;
+  }
+
+  .profession-hero-badge {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .c-card {
+    padding: 14px 14px;
+    border-radius: 18px;
+  }
+
+  .c-name {
+    font-size: 15px;
+  }
+
+  .req-btn {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+}

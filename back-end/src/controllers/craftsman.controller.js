@@ -131,13 +131,16 @@ const registerCraftsman = async (req, res, next) => {
       workImages,
     });
 
-    return global.returnJson(
-      res,
-      201,
-      true,
-      "Craftsman registered successfully",
-      buildCraftsmanResponse(savedCraftsman)
+    const token = jwt.sign(
+      { id: savedCraftsman._id, email: savedCraftsman.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
     );
+
+    return global.returnJson(res, 201, true, "Craftsman registered successfully", {
+      token,
+      craftsman: buildCraftsmanResponse(savedCraftsman),
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }

@@ -44,10 +44,10 @@ export default function Footer() {
           <h4>{t('followUs')}</h4>
           <div className="social-icons">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label={t('facebook')}>
-              <img src="icons/facebook.png" alt={t('facebook')} />
+              <img src="icons/facebook.png" alt={t('facebook')} loading="lazy" />
             </a>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label={t('instagram')}>
-              <img src="icons/instagram.png" alt={t('instagram')} />
+              <img src="icons/instagram.png" alt={t('instagram')} loading="lazy" />
             </a>
 
           </div>

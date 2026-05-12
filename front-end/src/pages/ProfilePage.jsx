@@ -1273,6 +1273,7 @@ export default function ProfilePage() {
                   src={form.profileImage}
                   alt="Profile"
                   className="avatar"
+                  loading="lazy"
                   onError={(e) => {
                     e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
                   }}
@@ -1529,7 +1530,7 @@ export default function ProfilePage() {
                   {form?.workImages?.length > 0 ? (
                     form.workImages.map((src, i) => (
                       <div className="photo-card" key={i}>
-                        <img src={src} alt={`عمل ${i + 1}`} />
+                        <img src={src} alt={`عمل ${i + 1}`} loading="lazy" />
                         <div className="photo-card-label">صورة العمل {i + 1}</div>
                       </div>
                     ))

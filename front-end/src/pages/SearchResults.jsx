@@ -545,6 +545,7 @@ export default function SearchResults() {
                   <img
                     src={getProfessionBackgroundImage(craftsman)}
                     alt={getCraftsmanProfession(craftsman, language)}
+                    loading="lazy"
                   />
                   <div className="sr-profession-pill">
                     {getCraftsmanProfession(craftsman, language)}
@@ -557,6 +558,7 @@ export default function SearchResults() {
                       <img
                         src={getProfileImage(craftsman)}
                         alt={craftsman.fullName}
+                        loading="lazy"
                         onError={(e) => {
                           e.currentTarget.src = DEFAULT_PROFILE_IMAGE
                         }}

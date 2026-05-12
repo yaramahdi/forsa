@@ -33,15 +33,12 @@ const sectionCss = `
   scroll-behavior: smooth;
   padding: 10px 56px 16px;
   scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.specialists-arrow.left {
-  left: 8px;
-}
-
-.specialists-arrow.right {
-  right: 8px;
-}
+.specialists-arrow.left { left: 8px; }
+.specialists-arrow.right { right: 8px; }
 
 .specialists-scroll::-webkit-scrollbar {
   display: none;
@@ -57,6 +54,7 @@ const sectionCss = `
   border: 1px solid #eef2f7;
   flex-shrink: 0;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  scroll-snap-align: start;
 }
 
 .specialist-card:hover {
@@ -113,20 +111,14 @@ const sectionCss = `
 
 .specialist-verified {
   position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #1ea84a;
-  color: #fff;
-  border: 3px solid #fff;
+  bottom: -5px;
+  right: -5px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: 0 4px 10px rgba(30, 168, 74, 0.25);
+  filter: drop-shadow(0 2px 5px rgba(22, 163, 74, 0.45));
 }
 
 .specialist-name {
@@ -206,13 +198,33 @@ const sectionCss = `
   transition: 0.2s ease;
 }
 
-.specialists-arrow:hover {
-  background: #1b3a5c;
+.specialists-arrow:hover { background: #1b3a5c; }
+.specialists-arrow:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── مؤشر النقاط (يظهر فقط على الموبايل) ── */
+.specialists-dots {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
 }
 
-.specialists-arrow:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.specialists-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #cdd8e6;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s ease;
+}
+
+.specialists-dot.active {
+  background: var(--forsa-blue);
+  width: 22px;
+  border-radius: 4px;
 }
 
 .specialists-empty {
@@ -231,8 +243,8 @@ const sectionCss = `
   }
 
   .specialist-card {
-    min-width: 220px;
-    max-width: 220px;
+    min-width: calc(78vw - 16px);
+    max-width: calc(78vw - 16px);
   }
 
   .specialist-cover {
@@ -241,6 +253,35 @@ const sectionCss = `
 
   .specialists-arrow {
     display: none;
+  }
+
+  .specialists-wrapper {
+    padding: 0;
+  }
+
+  .specialists-scroll {
+    padding: 10px 20px 16px;
+    gap: 14px;
+  }
+
+  .specialists-dots {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .specialists-title {
+    font-size: 1.35rem;
+  }
+
+  .specialist-card {
+    min-width: calc(83vw - 16px);
+    max-width: calc(83vw - 16px);
+  }
+
+  .specialists-scroll {
+    padding: 10px 12px 16px;
+    gap: 12px;
   }
 }
 `
@@ -281,6 +322,19 @@ const professionImageMap = {
   driver: '/images/plumber.png',
   mechanic: '/images/engineer.png'
 }
+
+const VerifiedBadge = () => (
+  <svg viewBox="0 0 22 22" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+    <path
+      fill="#16a34a"
+      d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816z"
+    />
+    <path
+      fill="#fff"
+      d="M9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246-5.683 6.206z"
+    />
+  </svg>
+)
 
 function readJsonSafe(response) {
   return response.json().catch(() => null)
@@ -353,6 +407,7 @@ export default function Specialists({ searchProfession }) {
 
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
+  const [activeDotIndex, setActiveDotIndex] = useState(0)
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -425,6 +480,26 @@ export default function Specialists({ searchProfession }) {
 
     setCanScrollLeft(hasMoreOnLeft)
     setCanScrollRight(hasMoreOnRight)
+
+    // تحديد البطاقة الأقرب لمركز الحاوية لمؤشر النقاط
+    const containerCenter = containerRect.left + containerRect.width / 2
+    let closestIndex = 0
+    let closestDist = Infinity
+    cards.forEach((card, i) => {
+      const rect = card.getBoundingClientRect()
+      const dist = Math.abs(rect.left + rect.width / 2 - containerCenter)
+      if (dist < closestDist) { closestDist = dist; closestIndex = i }
+    })
+    setActiveDotIndex(closestIndex)
+  }
+
+  const scrollToCard = (index) => {
+    const container = scrollContainerRef.current
+    if (!container) return
+    const cards = container.querySelectorAll('.specialist-card')
+    if (cards[index]) {
+      cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+    }
   }
 
   useEffect(() => {
@@ -515,6 +590,7 @@ export default function Specialists({ searchProfession }) {
                     <img
                       src={getProfessionBackgroundImage(specialist)}
                       alt={getSpecialistProfession(specialist)}
+                      loading="lazy"
                     />
                   </div>
 
@@ -524,11 +600,14 @@ export default function Specialists({ searchProfession }) {
                         <img
                           src={getProfileImage(specialist)}
                           alt={getSpecialistName(specialist)}
+                          loading="lazy"
                         />
                       </div>
 
                       {specialist.verified && (
-                        <span className="specialist-verified">✓</span>
+                        <span className="specialist-verified">
+                          <VerifiedBadge />
+                        </span>
                       )}
                     </div>
 
@@ -568,7 +647,23 @@ export default function Specialists({ searchProfession }) {
               <ChevronRight size={24} />
             </button>
           </div>
-        ) : (
+        ) : null}
+
+        {!loading && displayedSpecialists.length > 0 && displayedSpecialists.length <= 12 && (
+          <div className="specialists-dots">
+            {displayedSpecialists.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                className={`specialists-dot${i === activeDotIndex ? ' active' : ''}`}
+                onClick={() => scrollToCard(i)}
+                aria-label={`بطاقة ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {!loading && displayedSpecialists.length === 0 && (
           <div className="specialists-empty">
             <p>{t('noResults')}</p>
           </div>
