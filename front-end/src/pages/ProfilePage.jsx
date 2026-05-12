@@ -629,6 +629,25 @@ function SBItem({ id, icon, label, count, tab, setTab }) {
 export default function ProfilePage() {
   const navigate = useNavigate();
 
+  const apiFetch = (url, options = {}) => {
+    const token = getToken();
+    const headers = {
+      ...options.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    return fetch(url, { ...options, headers }).then((res) => {
+      if (res.status === 401) {
+        localStorage.removeItem("forsaToken");
+        localStorage.removeItem("token");
+        localStorage.removeItem("forsaCraftsman");
+        localStorage.removeItem("forsaAdmin");
+        localStorage.removeItem("forsaAdminEmail");
+        navigate("/login");
+      }
+      return res;
+    });
+  };
+
   const [tab, setTab] = useState("data");
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(null);
@@ -689,12 +708,7 @@ export default function ProfilePage() {
       setLoadingProfile(true);
       setPageError("");
 
-      const response = await fetch(PROFILE_ENDPOINT, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(PROFILE_ENDPOINT, { method: "GET" });
 
       const result = await response.json();
 
@@ -703,6 +717,7 @@ export default function ProfilePage() {
         (result?.success === true || result?.status?.status === true);
 
       if (!isSuccess) {
+        if (response.status === 401) return;
         setPageError(
           result?.message ||
             result?.status?.message ||
@@ -737,12 +752,7 @@ export default function ProfilePage() {
       setLoadingRequests(true);
       setRequestsError("");
 
-      const response = await fetch(MY_REQUESTS_ENDPOINT, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch(MY_REQUESTS_ENDPOINT, { method: "GET" });
 
       const result = await response.json();
 
@@ -845,12 +855,9 @@ export default function ProfilePage() {
     try {
       setSavingProfile(true);
 
-      const response = await fetch(PROFILE_ENDPOINT, {
+      const response = await apiFetch(PROFILE_ENDPOINT, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName: draft.firstName.trim(),
           lastName: draft.lastName.trim(),
@@ -928,11 +935,8 @@ export default function ProfilePage() {
       const submitData = new FormData();
       submitData.append("profileImage", file);
 
-      const response = await fetch(PROFILE_ENDPOINT, {
+      const response = await apiFetch(PROFILE_ENDPOINT, {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: submitData,
       });
 
@@ -999,11 +1003,8 @@ export default function ProfilePage() {
         submitData.append("workImages", file);
       });
 
-      const response = await fetch(PROFILE_ENDPOINT, {
+      const response = await apiFetch(PROFILE_ENDPOINT, {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: submitData,
       });
 
@@ -1049,17 +1050,12 @@ export default function ProfilePage() {
     try {
       setConfirmingId(requestId);
 
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_BASE_URL}/api/service-requests/${requestId}/status`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            status: "confirmed",
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "confirmed" }),
         }
       );
 
