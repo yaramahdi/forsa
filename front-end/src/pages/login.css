@@ -26,12 +26,6 @@ body {
   font-family: 'Cairo', sans-serif;
   color: var(--text-dark);
   overflow-x: hidden;
-  background: linear-gradient(to left,
-      #e6f0fb 0%,
-      #cfe3f7 5%,
-      #b5d3f5 40%,
-      #9cc4ef 75%,
-      #7eacdb 90%) !important;
 }
 
 .login-root {
