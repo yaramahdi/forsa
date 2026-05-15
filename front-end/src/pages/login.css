@@ -18,16 +18,25 @@
   --input-bg: #f5f7fa;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   font-family: 'Cairo', sans-serif;
-  background: #f3f6fb;
   color: var(--text-dark);
-  min-height: 100vh;
   overflow-x: hidden;
+  background: linear-gradient(to left,
+      #e6f0fb 0%,
+      #cfe3f7 5%,
+      #b5d3f5 40%,
+      #9cc4ef 75%,
+      #7eacdb 90%) !important;
 }
 
 .login-root {
-  min-height: 100vh;
+  /* App.css applies html{zoom:0.8} → to fill the full viewport: 100 / 0.8 = 125vh */
+  height: 125vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,8 +102,6 @@ body {
   text-align: right;
 }
 
-
-
 .visual-title {
   font-size: 40px;
   font-weight: 800;
@@ -110,7 +117,6 @@ body {
   max-width: 520px;
 }
 
-/* التاجز */
 .visual-tags {
   display: flex;
   gap: 10px;
@@ -125,9 +131,6 @@ body {
   box-shadow: 0 6px 18px rgba(27, 61, 95, 0.06);
 }
 
-
-
-
 .stat-card strong {
   display: block;
   font-size: 25px;
@@ -140,8 +143,6 @@ body {
   color: #6b7280;
   font-size: 12px;
 }
-
-
 
 .decor-top-left {
   top: 44px;
@@ -173,8 +174,6 @@ body {
   border-top-right-radius: 34px;
   border-bottom-right-radius: 34px;
 }
-
-
 
 .form-box {
   width: 100%;
@@ -347,19 +346,25 @@ body {
   .login-wrapper {
     flex-direction: column;
     min-height: auto;
+    max-height: none;
   }
 
   .visual-panel {
-    min-height: 380px;
+    min-height: 320px;
+    border-radius: 34px 34px 0 0;
   }
 
-  .visual-copy {
-    right: 30px;
-    max-width: 300px;
+  .form-panel {
+    border-radius: 0 0 34px 34px;
+  }
+
+  .form-box {
+    border-radius: 0 0 28px 28px;
+    padding: 36px 24px;
   }
 
   .visual-title {
-    font-size: 42px;
+    font-size: 32px;
   }
 }
 
@@ -376,23 +381,17 @@ body {
     padding: 28px 20px;
   }
 
-  .visual-copy {
-    position: absolute;
-    right: 20px;
-    left: 20px;
-    max-width: none;
-  }
-
   .visual-title {
-    font-size: 32px;
+    font-size: 26px;
   }
 }
 
 @media (max-width: 640px) {
   .login-root {
+    height: auto;
+    min-height: 125vh;
     padding: 0;
     align-items: flex-start;
-    background: #f3f6fb;
   }
 
   .login-wrapper {
@@ -442,7 +441,6 @@ body {
 
 .input-wrapper input {
   padding-right: 44px;
-  /* مساحة للأيقونة */
 }
 
 .error-msg {

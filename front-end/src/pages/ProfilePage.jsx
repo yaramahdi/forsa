@@ -42,61 +42,74 @@ body{overflow-x:hidden}
 .app{display:flex;min-height:100vh;width:100%}
 
 /* Sidebar */
-.sidebar{width:230px;background:var(--blue-dark);display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100;box-shadow:var(--shadow-lg)}
-.sb-brand{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:10px}
-.sb-brand-icon{width:38px;height:38px;background:var(--blue-mid);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;transform:rotate(-3deg);flex-shrink:0}
-.sb-brand-name{font-family:'Tajawal',sans-serif;font-size:20px;font-weight:800;color:#fff}
+.sidebar{width:230px;background:#fff;display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:100;box-shadow:0 0 24px rgba(0,0,0,0.09);border-left:1px solid #e8ecf3}
+.sb-brand{padding:0 18px;height:56px;background:#1B3A5C;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sb-brand-icon{width:32px;height:32px;background:rgba(255,255,255,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-brand-name{font-family:'Tajawal',sans-serif;font-size:19px;font-weight:800;color:#fff}
 .sb-brand-name span{color:#7DC8FF}
-.sb-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
-.sb-item{display:flex;align-items:center;justify-content:space-between;gap:11px;padding:11px 13px;border-radius:11px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,0.62);font-size:14px;font-weight:500;border:none;background:none;width:100%;text-align:right;font-family:'Cairo',sans-serif}
-.sb-item:hover{background:rgba(255,255,255,0.08);color:#fff}
-.sb-item.active{background:var(--blue-mid);color:#fff;box-shadow:0 4px 14px rgba(58,123,213,0.4)}
-.sb-item-main{display:flex;align-items:center;gap:11px}
-.sb-count{min-width:24px;height:24px;border-radius:999px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;padding:0 7px}
-.sb-logout{margin:10px;padding:11px 13px;border-radius:11px;cursor:pointer;display:flex;align-items:center;gap:10px;color:rgba(255,110,110,0.85);font-size:14px;font-weight:600;border:1px solid rgba(255,100,100,0.22);background:rgba(255,100,100,0.07);transition:all .2s;font-family:'Cairo',sans-serif}
-.sb-logout:hover{background:rgba(255,100,100,0.15);color:#ff8888}
+.sb-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sb-divider{height:1px;background:#EEF1F6;margin:8px 4px}
+.sb-section-label{font-size:10px;font-weight:700;color:#A0AABF;letter-spacing:.8px;padding:6px 10px 2px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .18s;color:#4B5675;font-size:13.5px;font-weight:600;border:none;background:none;width:100%;text-align:right;font-family:'Cairo',sans-serif}
+.sb-item:hover{background:#EBF3FF;color:#2563A8}
+.sb-item.active{background:#2563A8;color:#fff;box-shadow:0 4px 14px rgba(37,99,168,0.22)}
+.sb-item-main{display:flex;align-items:center;gap:9px}
+.sb-count{min-width:20px;height:20px;border-radius:999px;background:#2563A8;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;padding:0 6px}
+.sb-item.active .sb-count{background:rgba(255,255,255,0.25);color:#fff}
+.sb-footer{border-top:1px solid #EEF1F6;padding:12px 10px}
+.sb-footer-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#F4F7FB}
+.sb-footer-avatar-img{width:38px;height:38px;border-radius:50%;border:2px solid #e2e8f0;object-fit:cover;flex-shrink:0}
+.sb-footer-avatar-letter{width:38px;height:38px;border-radius:50%;border:2px solid #e2e8f0;background:#2563A8;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0}
+.sb-footer-info{flex:1;min-width:0}
+.sb-footer-name{font-size:13px;font-weight:700;color:#1A2740;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.sb-footer-role{font-size:11px;color:#6B7A99;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-footer-logout{width:30px;height:30px;border-radius:8px;border:none;background:#FEE2E2;color:#DC2626;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .2s}
+.sb-footer-logout:hover{background:#FECACA;color:#B91C1C}
 
 /* Main */
 .main{margin-right:230px;flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
 
-/* Cover */
-.cover{height:170px;background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue) 55%,var(--blue-mid) 100%);position:relative;overflow:hidden}
-.cover-lines{position:absolute;inset:0;opacity:.06;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:22px 22px}
-.cover-circle{position:absolute;bottom:-70px;right:-50px;width:260px;height:260px;background:radial-gradient(circle,rgba(125,200,255,0.22) 0%,transparent 70%)}
-.cover-circle2{position:absolute;top:-40px;left:80px;width:160px;height:160px;background:radial-gradient(circle,rgba(255,255,255,0.06) 0%,transparent 70%)}
+/* Page top header */
+.page-top{height:56px;background:#1B3A5C;display:flex;align-items:center;padding:0 28px;box-shadow:0 2px 10px rgba(27,58,92,0.25);flex-shrink:0}
+.page-top-title{font-family:'Tajawal',sans-serif;font-size:16px;font-weight:800;color:#fff;letter-spacing:.2px}
 
-/* Profile bar */
-.profile-bar{background:var(--white);padding:0 36px 22px;border-bottom:1px solid var(--gray-border);position:relative}
-.avatar-wrap{position:relative;display:inline-block;margin-top:-52px}
-.avatar{width:102px;height:102px;border-radius:50%;border:4px solid var(--white);object-fit:cover;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--blue);box-shadow:0 4px 20px rgba(37,99,168,0.2);font-weight:800}
-.avatar-edit-btn{position:absolute;bottom:4px;left:0;width:30px;height:30px;background:var(--blue);border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,168,0.35);transition:background .2s}
+/* Profile card */
+.profile-card{background:var(--white);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);border:1px solid var(--gray-border);margin-bottom:18px}
+.avatar-wrap{position:relative;display:inline-block;flex-shrink:0}
+.avatar{width:72px;height:72px;border-radius:50%;border:3px solid var(--blue-light);object-fit:cover;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--blue);font-weight:800}
+.avatar-edit-btn{position:absolute;bottom:1px;left:0;width:24px;height:24px;background:var(--blue);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,168,0.35);transition:background .2s}
 .avatar-edit-btn:hover{background:var(--blue-mid)}
-.profile-info{margin-top:12px}
-.profile-name{font-family:'Tajawal',sans-serif;font-size:22px;font-weight:800;color:var(--text)}
-.profile-meta{display:flex;align-items:center;gap:14px;margin-top:7px;flex-wrap:wrap}
-.meta-chip{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--gray-text);font-weight:500}
-.badge-pro{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);border-radius:20px;padding:3px 13px;font-size:12px;font-weight:700}
+.profile-info{flex:1;min-width:0}
+.profile-name{font-family:'Tajawal',sans-serif;font-size:18px;font-weight:800;color:var(--text)}
+.profile-meta{display:flex;align-items:center;gap:10px;margin-top:5px;flex-wrap:wrap}
+.meta-chip{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--gray-text);font-weight:500}
+.badge-pro{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);border-radius:20px;padding:2px 11px;font-size:12px;font-weight:700}
 
 /* Content */
-.content{flex:1;padding:28px 36px;animation:fadeIn .35s ease;min-width:0}
+.content{flex:1;padding:20px 26px;animation:fadeIn .35s ease;min-width:0}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.sec-title{font-family:'Tajawal',sans-serif;font-size:19px;font-weight:800;color:var(--blue-dark);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.sec-title{font-family:'Tajawal',sans-serif;font-size:16px;font-weight:800;color:var(--blue-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .sec-title::after{content:'';flex:1;height:2px;background:linear-gradient(to left,transparent,var(--blue-border))}
-.card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);padding:26px;border:1px solid var(--gray-border)}
+.card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:20px 22px;border:1px solid var(--gray-border)}
 
-.fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}
-.fg{display:flex;flex-direction:column;gap:6px}
+.fields-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--gray-border)}
+.fg{display:flex;flex-direction:column;gap:5px;padding:18px 0;border-bottom:1px solid var(--gray-border)}
 .fg.full{grid-column:1/-1}
-.flabel{font-size:13px;font-weight:700;color:var(--blue-dark);display:flex;align-items:center;gap:6px}
-.fval{background:var(--gray-bg);border:1.5px solid var(--gray-border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text)}
-.fval.muted{color:var(--gray-text)}
+.flabel{font-size:12px;font-weight:600;color:var(--gray-text);display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.3px}
+.flabel svg{color:var(--blue)}
+.fval{font-size:15px;font-weight:700;color:var(--text);padding:1px 0}
+.fval.muted{color:var(--text);font-weight:600}
 .finput{background:var(--blue-light);border:1.5px solid var(--blue-border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Cairo',sans-serif;outline:none;width:100%;direction:rtl;transition:border-color .2s,box-shadow .2s}
 .finput:focus,.ftextarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,168,0.12)}
 .ftextarea{background:var(--blue-light);border:1.5px solid var(--blue-border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Cairo',sans-serif;outline:none;width:100%;direction:rtl;transition:border-color .2s,box-shadow .2s;resize:vertical;min-height:110px}
 .edit-bar{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
 .notice{background:var(--blue-light);border:1px solid var(--blue-border);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--blue);display:flex;align-items:center;gap:8px;margin-bottom:16px}
-.edit-toggle{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue-border);transition:all .2s;margin-bottom:18px}
-.edit-toggle:hover{background:var(--blue);color:#fff}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;padding-bottom:18px}
+.card-title{font-family:'Tajawal',sans-serif;font-size:17px;font-weight:800;color:var(--blue-dark);display:flex;align-items:center;gap:8px}
+.card-title svg{color:var(--blue)}
+.edit-toggle{display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;background:var(--blue);color:#fff;border:none;transition:all .2s;box-shadow:0 2px 8px rgba(37,99,168,0.22)}
+.edit-toggle:hover{background:var(--blue-dark)}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--blue-dark);color:#fff;padding:13px 28px;border-radius:14px;font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;box-shadow:0 8px 28px rgba(27,58,92,0.3);z-index:9999;white-space:nowrap;animation:fadeIn .25s ease}
 
 .btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;border:none;transition:all .2s}
 .btn-primary{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(37,99,168,0.28)}
@@ -319,13 +332,13 @@ body{overflow-x:hidden}
 }
 
 @media(max-width:768px){
-  .requests-shell{
-    max-height:58vh;
-  }
-
-  .fields-grid{
-    grid-template-columns:1fr;
-  }
+  .sidebar{display:none}
+  .main{margin-right:0}
+  .page-top{padding:0 16px}
+  .content{padding:14px 16px}
+  .profile-card{flex-direction:column;align-items:flex-start;gap:12px}
+  .requests-shell{max-height:58vh}
+  .fields-grid{grid-template-columns:1fr}
 }
 `;
 
@@ -578,9 +591,10 @@ function EditableField({
   inputMode = "text",
   dir = "rtl",
   textarea = false,
+  className = "",
 }) {
   return (
-    <div className="fg">
+    <div className={`fg${className ? ` ${className}` : ""}`}>
       <div className="flabel">
         {icon && <span style={{ color: "var(--blue)" }}>{icon}</span>}
         {label}
@@ -649,7 +663,7 @@ export default function ProfilePage() {
   };
 
   const [tab, setTab] = useState("data");
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(null); // null | 'personal' | 'work'
   const [form, setForm] = useState(null);
   const [draft, setDraft] = useState(null);
   const [toast, setToast] = useState(null);
@@ -891,7 +905,7 @@ export default function ProfilePage() {
 
       setForm(normalized);
       setDraft(normalized);
-      setEditing(false);
+      setEditing(null);
 
       localStorage.setItem("forsaCraftsman", JSON.stringify(updatedCraftsman));
       showToast("تم حفظ التغييرات بنجاح");
@@ -904,7 +918,7 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     setDraft(form);
-    setEditing(false);
+    setEditing(null);
   };
 
   const handleProfileImageChange = async (e) => {
@@ -1243,101 +1257,105 @@ export default function ProfilePage() {
       <div className="app">
         <div className="sidebar">
           <div className="sb-brand">
-            <div className="sb-brand-icon">🔨</div>
+            <div className="sb-brand-icon">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
             <div className="sb-brand-name">فُر<span>صة</span></div>
           </div>
 
           <div className="sb-nav">
+            <div className="sb-section-label">الحساب</div>
             <SBItem id="data" icon={<IcPerson />} label="بياناتي الشخصية" tab={tab} setTab={setTab} />
+            <SBItem id="photos" icon={<IcGrid />} label="صور أعمالي" tab={tab} setTab={setTab} />
+            <div className="sb-divider" />
+            <div className="sb-section-label">الطلبات</div>
             <SBItem id="requests" icon={<IcBell />} label="طلبات قيد الانتظار" count={pendingRequests.length} tab={tab} setTab={setTab} />
             <SBItem id="confirmed" icon={<IcCheckCircle />} label="الطلبات المؤكدة" count={confirmedRequests.length} tab={tab} setTab={setTab} />
-            <SBItem id="photos" icon={<IcGrid />} label="صور أعمالي" tab={tab} setTab={setTab} />
           </div>
 
-          <button className="sb-logout" onClick={handleLogout}>
-            <IcLogout /> تسجيل الخروج
-          </button>
-        </div>
-
-        <div className="main">
-          <div className="cover">
-            <div className="cover-lines" />
-            <div className="cover-circle" />
-            <div className="cover-circle2" />
-          </div>
-
-          <div className="profile-bar">
-            <div className="avatar-wrap">
+          <div className="sb-footer">
+            <div className="sb-footer-row">
               {form?.profileImage ? (
                 <img
                   src={form.profileImage}
-                  alt="Profile"
-                  className="avatar"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
-                  }}
+                  alt=""
+                  className="sb-footer-avatar-img"
+                  onError={(e) => { e.currentTarget.style.display = "none"; }}
                 />
               ) : (
-                <div className="avatar">{avatarLetter}</div>
+                <div className="sb-footer-avatar-letter">{avatarLetter}</div>
               )}
-
-              <div
-                className="avatar-edit-btn"
-                onClick={() => avatarRef.current?.click()}
-                title={uploadingAvatar ? "جاري الرفع..." : "تغيير الصورة الشخصية"}
-              >
-                <IcCam />
+              <div className="sb-footer-info">
+                <div className="sb-footer-name">{form?.firstName} {form?.lastName}</div>
+                <div className="sb-footer-role">{form?.profession}</div>
               </div>
+              <button className="sb-footer-logout" onClick={handleLogout} title="تسجيل الخروج">
+                <IcLogout />
+              </button>
             </div>
+          </div>
+        </div>
 
-            <div className="profile-info">
-              <div className="profile-name">
-                {form?.firstName} {form?.lastName}
-              </div>
-
-              <div className="profile-meta">
-                <span className="badge-pro">{form?.profession}</span>
-                <span className="meta-chip">
-                  <IcPin />
-                  {form?.city}
-                </span>
-                <span className="meta-chip">
-                  <IcPhone />
-                  {form?.phone}
-                </span>
-                <span className="meta-chip">
-                  <IcShekel />
-                  {formatPrice(form?.price)}
-                </span>
-              </div>
-            </div>
+        <div className="main">
+          <div className="page-top">
+            <div className="page-top-title">ملفي الشخصي</div>
           </div>
 
           <div className="content">
-            {tab === "data" && (
-              <>
-                <div className="sec-title">
-                  <IcPerson /> البيانات الشخصية
+            <div className="profile-card">
+              <div className="avatar-wrap">
+                {form?.profileImage ? (
+                  <img
+                    src={form.profileImage}
+                    alt="Profile"
+                    className="avatar"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
+                    }}
+                  />
+                ) : (
+                  <div className="avatar">{avatarLetter}</div>
+                )}
+
+                <div
+                  className="avatar-edit-btn"
+                  onClick={() => avatarRef.current?.click()}
+                  title={uploadingAvatar ? "جاري الرفع..." : "تغيير الصورة الشخصية"}
+                >
+                  <IcCam />
                 </div>
+              </div>
 
-                <div className="card">
-                  {!editing && (
-                    <button
-                      className="edit-toggle"
-                      onClick={() => {
-                        setDraft(form);
-                        setEditing(true);
-                      }}
-                    >
-                      <IcEdit /> تعديل البيانات
-                    </button>
-                  )}
+              <div className="profile-info">
+                <div className="profile-name">
+                  {form?.firstName} {form?.lastName}
+                </div>
+                <div className="profile-meta">
+                  <span className="badge-pro">{form?.profession}</span>
+                  <span className="meta-chip"><IcPin /> {form?.city}</span>
+                  <span className="meta-chip"><IcPhone /> {form?.phone}</span>
+                  <span className="meta-chip"><IcShekel s={13} /> {formatPrice(form?.price)}</span>
+                </div>
+              </div>
+            </div>
+            {tab === "data" && (
+              <div style={{ width: "96%", maxWidth: "980px", marginLeft: "auto", marginRight: "auto" }}>
+                {/* Card 1: Personal info */}
+                <div className="card" style={{ marginBottom: "18px" }}>
+                  <div className="card-header">
+                    <div className="card-title"><IcPerson /> البيانات الشخصية</div>
+                    {editing === null && (
+                      <button className="edit-toggle" onClick={() => { setDraft(form); setEditing("personal"); }}>
+                        <IcEdit /> تعديل
+                      </button>
+                    )}
+                  </div>
 
-                  {editing && (
-                    <div className="notice">
-                      <IcInfo /> الحقول المحاطة بإطار أزرق قابلة للتعديل
-                    </div>
+                  {editing === "personal" && (
+                    <div className="notice"><IcInfo /> الحقول المحاطة بإطار أزرق قابلة للتعديل</div>
                   )}
 
                   <div className="fields-grid">
@@ -1346,7 +1364,7 @@ export default function ProfilePage() {
                       value={draft?.firstName}
                       placeholder="أدخل الاسم الأول"
                       icon={<IcPerson />}
-                      editing={editing}
+                      editing={editing === "personal"}
                       onChange={(value) => handleDraftChange("firstName", value)}
                     />
 
@@ -1355,7 +1373,7 @@ export default function ProfilePage() {
                       value={draft?.lastName}
                       placeholder="أدخل الاسم الثاني"
                       icon={<IcPerson />}
-                      editing={editing}
+                      editing={editing === "personal"}
                       onChange={(value) => handleDraftChange("lastName", value)}
                     />
 
@@ -1366,12 +1384,39 @@ export default function ProfilePage() {
                       value={draft?.phone}
                       placeholder="059XXXXXXXX"
                       icon={<IcPhone />}
-                      editing={editing}
+                      editing={editing === "personal"}
                       onChange={(value) => handleDraftChange("phone", value)}
                       inputMode="numeric"
                       dir="ltr"
                     />
+                  </div>
 
+                  {editing === "personal" && (
+                    <div className="edit-bar">
+                      <button className="btn btn-ghost" onClick={handleCancel} disabled={savingProfile}>إلغاء</button>
+                      <button className="btn btn-primary" onClick={handleSave} disabled={savingProfile}>
+                        <IcCheck /> {savingProfile ? "جاري الحفظ..." : "حفظ التغييرات"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Card 2: Professional info */}
+                <div className="card">
+                  <div className="card-header">
+                    <div className="card-title"><IcBag /> بيانات المهنة والموقع</div>
+                    {editing === null && (
+                      <button className="edit-toggle" onClick={() => { setDraft(form); setEditing("work"); }}>
+                        <IcEdit /> تعديل
+                      </button>
+                    )}
+                  </div>
+
+                  {editing === "work" && (
+                    <div className="notice"><IcInfo /> الحقول المحاطة بإطار أزرق قابلة للتعديل</div>
+                  )}
+
+                  <div className="fields-grid">
                     <ReadonlyField label="المهنة" value={form?.profession} icon={<IcBag />} />
 
                     <EditableField
@@ -1380,7 +1425,7 @@ export default function ProfilePage() {
                       displayValue={form?.yearsOfExperience ? `${form.yearsOfExperience} سنوات` : "—"}
                       placeholder="أدخل سنوات الخبرة"
                       icon={<IcClock />}
-                      editing={editing}
+                      editing={editing === "work"}
                       onChange={(value) => handleDraftChange("yearsOfExperience", value)}
                       inputMode="numeric"
                     />
@@ -1391,7 +1436,7 @@ export default function ProfilePage() {
                       displayValue={formatPrice(form?.price)}
                       placeholder="مثال: 50"
                       icon={<IcShekel />}
-                      editing={editing}
+                      editing={editing === "work"}
                       onChange={(value) => handleDraftChange("price", value)}
                       inputMode="numeric"
                     />
@@ -1401,17 +1446,16 @@ export default function ProfilePage() {
                       value={draft?.city}
                       placeholder="أدخل المنطقة"
                       icon={<IcPin />}
-                      editing={editing}
+                      editing={editing === "work"}
                       onChange={(value) => handleDraftChange("city", value)}
                     />
 
-                    <div className="fg full">
+                    <div className="fg">
                       <div className="flabel">
                         <span style={{ color: "var(--blue)" }}><IcPin /></span>
                         عنوان السكن بالتفصيل
                       </div>
-
-                      {editing ? (
+                      {editing === "work" ? (
                         <input
                           className="finput"
                           value={draft?.neighborhood || ""}
@@ -1429,25 +1473,23 @@ export default function ProfilePage() {
                       displayValue={form?.bio || "لا يوجد نبذة مضافة بعد"}
                       placeholder="اكتب نبذة مختصرة عنك"
                       icon={<IcInfo />}
-                      editing={editing}
+                      editing={editing === "work"}
                       onChange={(value) => handleDraftChange("bio", value)}
                       textarea
                       dir="rtl"
                     />
                   </div>
 
-                  {editing && (
+                  {editing === "work" && (
                     <div className="edit-bar">
-                      <button className="btn btn-ghost" onClick={handleCancel} disabled={savingProfile}>
-                        إلغاء
-                      </button>
+                      <button className="btn btn-ghost" onClick={handleCancel} disabled={savingProfile}>إلغاء</button>
                       <button className="btn btn-primary" onClick={handleSave} disabled={savingProfile}>
                         <IcCheck /> {savingProfile ? "جاري الحفظ..." : "حفظ التغييرات"}
                       </button>
                     </div>
                   )}
                 </div>
-              </>
+              </div>
             )}
 
             {tab === "requests" && (

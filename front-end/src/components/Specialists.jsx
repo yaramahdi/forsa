@@ -55,6 +55,8 @@ const sectionCss = `
   flex-shrink: 0;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
 }
 
 .specialist-card:hover {
@@ -80,6 +82,9 @@ const sectionCss = `
   position: relative;
   padding: 42px 16px 18px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .specialist-avatar-wrap {
@@ -138,6 +143,15 @@ const sectionCss = `
   font-size: 0.95rem;
   font-weight: 600;
   margin-bottom: 10px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.specialist-location span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .specialist-profession-text {

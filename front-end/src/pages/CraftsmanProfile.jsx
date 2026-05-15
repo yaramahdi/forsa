@@ -15,6 +15,25 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").r
 const DEFAULT_PROFILE_IMAGE = "/images/default-user.png";
 const SERVICE_REQUESTS_ENDPOINT = `${API_BASE_URL}/api/service-requests`;
 
+const PROFESSION_BG_MAP = {
+  "مهندس": "/images/engineer.png",
+  "engineer": "/images/engineer.png",
+  "سباك": "/images/plumber.png",
+  "plumber": "/images/plumber.png",
+  "نجار": "/images/carpenter.png",
+  "carpenter": "/images/carpenter.png",
+  "كهربائي": "/images/electrician.png",
+  "electrician": "/images/electrician.png",
+  "دهان": "/images/painter.png",
+  "painter": "/images/painter.png",
+  "فني": "/images/technician.png",
+  "technician": "/images/technician.png",
+  "سائق": "/images/driver.png",
+  "driver": "/images/driver.png",
+  "ميكانيكي": "/images/mechanic.png",
+  "mechanic": "/images/mechanic.png",
+};
+
 const Ic = ({ d, s = 16, sw = 2 }) => (
   <svg
     width={s}
@@ -463,6 +482,14 @@ export default function CraftsmanProfile() {
     return `https://www.google.com/maps?q=${encodeURIComponent(getMapQuery(craftsman))}&z=14&output=embed`;
   }, [craftsman]);
 
+  const coverBg = useMemo(() => {
+    if (!craftsman) return DEFAULT_PROFILE_IMAGE;
+    if (craftsman.profileImage && craftsman.profileImage !== DEFAULT_PROFILE_IMAGE) {
+      return craftsman.profileImage;
+    }
+    return PROFESSION_BG_MAP[craftsman.profession] || DEFAULT_PROFILE_IMAGE;
+  }, [craftsman]);
+
   if (loading) {
     return (
       <div className="cp-state-page">
@@ -503,29 +530,34 @@ export default function CraftsmanProfile() {
 
   return (
     <>
-      <div className="cp-page">
-        <div className="cp-cover">
-          <div className="cp-cover-lines" />
-          <div className="cp-cover-glow" />
+      <div className="cp-page" dir="rtl">
+
+        {/* ── HERO BANNER ── */}
+        <div className="cp-hero">
+          <img
+            src={coverBg}
+            alt=""
+            className="cp-hero-bg"
+            onError={(e) => { e.currentTarget.style.opacity = "0"; }}
+          />
+          <div className="cp-hero-overlay" />
+          <div className="cp-hero-topbar">
+            <button type="button" className="cp-back-btn cp-back-glass" onClick={() => navigate(-1)}>
+              <IcBack /> رجوع
+            </button>
+          </div>
         </div>
 
-        <div className="cp-header-tools">
-          <button type="button" className="cp-back-btn" onClick={() => navigate(-1)}>
-            <IcBack /> رجوع
-          </button>
-        </div>
-
-        <div className="cp-header">
-          <div className="cp-header-right">
+        {/* ── PROFILE CARD (overlaps hero) ── */}
+        <div className="cp-profile-card">
+          <div className="cp-profile-card-inner">
             <div className="cp-avatar-wrap">
               <img
                 src={craftsman.profileImage}
                 alt={`${craftsman.firstName} ${craftsman.lastName}`}
                 className="cp-avatar"
                 loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.src = DEFAULT_PROFILE_IMAGE;
-                }}
+                onError={(e) => { e.currentTarget.src = DEFAULT_PROFILE_IMAGE; }}
               />
             </div>
 
@@ -533,107 +565,88 @@ export default function CraftsmanProfile() {
               <div className="cp-name">
                 {craftsman.firstName} {craftsman.lastName}
               </div>
-
+              <div className="cp-meta">
+                <span className="cp-meta-tag cp-meta-prof">{craftsman.profession}</span>
+                <span className="cp-meta-sep">•</span>
+                <span className="cp-meta-tag"><IcPin /> {craftsman.address}</span>
+                <span className="cp-meta-sep">•</span>
+                <span className="cp-meta-tag"><IcWrench /> {craftsman.yearsOfExperience} سنوات خبرة</span>
+                <span className="cp-meta-sep">•</span>
+                <span className="cp-meta-tag"><IcShekel /> {formatPrice(craftsman.price)}</span>
+              </div>
               {craftsman.bio?.trim() ? (
                 <p className="cp-header-bio">{craftsman.bio}</p>
               ) : null}
-
-              <div className="cp-meta">
-                <span className="cp-badge">{craftsman.profession}</span>
-
-                <span className="cp-meta-chip">
-                  <IcPin />
-                  {craftsman.address}
-                </span>
-
-                <span className="cp-meta-chip">
-                  <IcWrench />
-                  {craftsman.yearsOfExperience} سنوات خبرة
-                </span>
-
-                <span className="cp-meta-chip">
-                  <IcShekel />
-                  {formatPrice(craftsman.price)}
-                </span>
-              </div>
             </div>
-          </div>
 
-          <div className="cp-header-left">
-            <button className="cp-cta-btn" onClick={() => setModalOpen(true)} type="button">
-              <IcArrow /> اطلب الخدمة
-            </button>
+            <div className="cp-header-left">
+              <button className="cp-cta-btn" onClick={() => setModalOpen(true)} type="button">
+                <IcArrow /> اطلب الخدمة
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* ── BODY ── */}
         <div className="cp-body">
-          <div className="cp-card">
-            <div className="cp-section-title">
-              <IcPhone /> التواصل
-            </div>
 
-            <div className="cp-contact-stack">
-              <div className="cp-info-row">
-                <div className="cp-info-row-text">
-                  <div className="cp-info-label">العنوان</div>
-                  <div className="cp-info-value rtl">{craftsman.address}</div>
-                </div>
-                <div className="cp-info-icon"><IcPin /></div>
-              </div>
+          {/* Two-column: info (left) + map (right) */}
+          <div className="cp-two-col">
 
+            {/* LEFT — contact info */}
+            <div className="cp-two-col-item">
+              <div className="cp-col-title"><IcPhone /> التواصل</div>
+              <div className="cp-card">
+                <div className="cp-contact-stack">
 
-              <div className="cp-info-row">
-                <div className="cp-info-row-text">
-                  <div className="cp-info-label">البريد الإلكتروني</div>
-                  <div className="cp-info-value">{craftsman.email}</div>
-                </div>
-                <div className="cp-info-icon"><IcMail /></div>
-              </div>
-
-              <div className="cp-info-row">
-                <div className="cp-info-row-text">
-                  <div className="cp-info-label">سعر الساعة</div>
-                  <div className="cp-info-value">
-                    <span
-                      className="cp-exp-badge"
-                      style={{
-                        background: "#eef5ff",
-                        color: "#2563A8",
-                        border: "1px solid #d7e6fb"
-                      }}
-                    >
-                      <IcShekel />
-                      {formatPrice(craftsman.price)}
-                    </span>
+                  <div className="cp-info-row">
+                    <div className="cp-info-row-head">
+                      <span className="cp-info-icon-sm"><IcPin /></span>
+                      <span className="cp-info-label">العنوان</span>
+                    </div>
+                    <div className="cp-info-value rtl">{craftsman.address}</div>
                   </div>
-                </div>
-                <div className="cp-info-icon"><IcShekel /></div>
-              </div>
 
-              <div className="cp-info-row cp-no-border">
-                <div className="cp-info-row-text">
-                  <div className="cp-info-label">سنوات الخبرة</div>
-                  <div className="cp-info-value">
-                    <span className="cp-exp-badge">
-                      <IcStar />
-                      {craftsman.yearsOfExperience} سنوات خبرة
-                    </span>
+                  <div className="cp-info-row">
+                    <div className="cp-info-row-head">
+                      <span className="cp-info-icon-sm"><IcMail /></span>
+                      <span className="cp-info-label">البريد الإلكتروني</span>
+                    </div>
+                    <div className="cp-info-value">{craftsman.email}</div>
                   </div>
+
+                  <div className="cp-info-row cp-info-row-last">
+                    <div className="cp-info-row-head">
+                      <span className="cp-info-icon-sm"><IcShekel /></span>
+                      <span className="cp-info-label">سعر الساعة</span>
+                    </div>
+                    <div className="cp-info-value">{formatPrice(craftsman.price)}</div>
+                  </div>
+
                 </div>
-                <div className="cp-info-icon"><IcWrench /></div>
               </div>
             </div>
 
-            <div className="cp-map-panel">
-              <iframe title="خريطة موقع الحرفي" src={mapSrc} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+            {/* RIGHT — map */}
+            <div className="cp-two-col-item">
+              <div className="cp-col-title"><IcPin /> المنطقة</div>
+              <div className="cp-card">
+                <div className="cp-map-panel">
+                  <iframe
+                    title="خريطة موقع الحرفي"
+                    src={mapSrc}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </div>
             </div>
+
           </div>
 
+          {/* Work images */}
           <div className="cp-card">
-            <div className="cp-section-title">
-              <IcImages /> نماذج من الأعمال السابقة
-            </div>
-
+            <div className="cp-section-title"><IcImages /> نماذج من الأعمال السابقة</div>
             {craftsman.workImages.length > 0 ? (
               <div className="cp-photos-grid">
                 {craftsman.workImages.map((src, index) => (
@@ -655,64 +668,33 @@ export default function CraftsmanProfile() {
               <div className="cp-photos-empty">لا توجد صور أعمال مرفوعة لهذا الحرفي حالياً</div>
             )}
           </div>
+
         </div>
       </div>
 
       {modalOpen ? (
-        <RequestModal
-          craftsman={craftsman}
-          onClose={() => setModalOpen(false)}
-        />
+        <RequestModal craftsman={craftsman} onClose={() => setModalOpen(false)} />
       ) : null}
 
       {lightboxIndex !== null ? (
-        <div
-          className="cp-lightbox-overlay"
-          onClick={() => setLightboxIndex(null)}
-        >
-          <button
-            className="cp-lb-close"
-            onClick={() => setLightboxIndex(null)}
-            aria-label="إغلاق"
-            type="button"
-          >
+        <div className="cp-lightbox-overlay" onClick={() => setLightboxIndex(null)}>
+          <button className="cp-lb-close" onClick={() => setLightboxIndex(null)} aria-label="إغلاق" type="button">
             <IcClose />
           </button>
-
           <button
             className="cp-lb-nav cp-lb-prev"
-            onClick={(e) => {
-              e.stopPropagation();
-              setLightboxIndex((prev) => (prev - 1 + craftsman.workImages.length) % craftsman.workImages.length);
-            }}
-            aria-label="السابق"
-            type="button"
-          >
-            ‹
-          </button>
-
+            onClick={(e) => { e.stopPropagation(); setLightboxIndex((prev) => (prev - 1 + craftsman.workImages.length) % craftsman.workImages.length); }}
+            aria-label="السابق" type="button"
+          >‹</button>
           <div className="cp-lb-img-wrap" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={craftsman.workImages[lightboxIndex]}
-              alt={`عمل ${lightboxIndex + 1}`}
-              className="cp-lb-img"
-            />
-            <div className="cp-lb-counter">
-              {lightboxIndex + 1} / {craftsman.workImages.length}
-            </div>
+            <img src={craftsman.workImages[lightboxIndex]} alt={`عمل ${lightboxIndex + 1}`} className="cp-lb-img" />
+            <div className="cp-lb-counter">{lightboxIndex + 1} / {craftsman.workImages.length}</div>
           </div>
-
           <button
             className="cp-lb-nav cp-lb-next"
-            onClick={(e) => {
-              e.stopPropagation();
-              setLightboxIndex((prev) => (prev + 1) % craftsman.workImages.length);
-            }}
-            aria-label="التالي"
-            type="button"
-          >
-            ›
-          </button>
+            onClick={(e) => { e.stopPropagation(); setLightboxIndex((prev) => (prev + 1) % craftsman.workImages.length); }}
+            aria-label="التالي" type="button"
+          >›</button>
         </div>
       ) : null}
     </>

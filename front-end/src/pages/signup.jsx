@@ -77,13 +77,6 @@ export default function Signup() {
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState('');
-useEffect(() => {
-  document.body.style.overflow = "hidden";
-
-  return () => {
-    document.body.style.overflow = "auto";
-  };
-}, []);
   useEffect(() => {
     const urls = formData.workImages.map((file) => URL.createObjectURL(file));
     setPreviewImages(urls);

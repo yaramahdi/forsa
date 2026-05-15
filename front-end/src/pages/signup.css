@@ -34,23 +34,25 @@ body {
 .signup-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #edf3f8 0%, #e7eef6 100%);
-  padding: 10px;
+  padding: 24px 24px 40px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 /* نخلي الكتلة كلها بالنص بدل ما تتمدد على كامل الشاشة */
 .signup-shell {
-  min-height: calc(100vh - 20px);
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1020px;
   margin: 0 auto;
   display: grid;
   direction: ltr;
-  grid-template-columns: 570px 450px;
+  grid-template-columns: 570px 1fr;
   grid-template-areas: "form side";
-  justify-content: center;
   border-radius: 22px;
-  position: relative;
-  padding-top: 1px;
-  padding-bottom: 1px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(17, 40, 72, 0.14);
+  align-self: flex-start;
 }
 
 /* تدرج خفيف وضيّق بين الفورم والصورة */
@@ -68,7 +70,7 @@ body {
 }
 
 .signup-form-scroll {
-  height: 100vh;
+  height: auto;
   overflow-y: auto;
   padding: 26px 18px 32px 18px;
   scrollbar-width: thin;
@@ -520,15 +522,13 @@ body {
 
 .signup-side-panel {
   grid-area: side;
- position: relative;
+  position: relative;
   overflow: hidden;
-  min-height: calc(100vh - 20px);
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-    min-height: 500px; /* 🔥 أقل طول */
-
+  min-height: 560px;
 }
 
 .signup-side-bg-image {
@@ -673,26 +673,16 @@ body {
 @media (max-width: 980px) {
   .signup-shell {
     max-width: 100%;
-     grid-template-columns: 480px 1fr; /* 🔥 الصورة أعرض */
-
-  }
-
-  .signup-shell::after {
-    display: none;
-  }
-
-  .signup-side-panel {
-    min-height: 320px;
+    grid-template-columns: 1fr 1fr;
   }
 
   .signup-form-panel {
     direction: rtl;
   }
 
- .signup-form-scroll {
-  height: auto; /* 🔥 */
-  overflow: hidden; /* 🔥 */
-}
+  .signup-form-scroll {
+    height: auto;
+  }
 
   .signup-form-card {
     max-width: 100%;
@@ -702,15 +692,18 @@ body {
 @media (max-width: 768px) {
   .signup-page {
     padding: 0;
+    align-items: stretch;
   }
 
   .signup-shell {
     min-height: 100vh;
     border-radius: 0;
+    align-self: stretch;
+    grid-template-columns: 1fr 1fr;
   }
 
   .signup-form-scroll {
-    padding: 18px 14px 24px;
+    padding: 18px 14px 32px;
   }
 
   .signup-form-card {
@@ -766,19 +759,45 @@ body {
 @media (max-width: 640px) {
   .signup-shell {
     grid-template-columns: 1fr;
-    grid-template-areas: "form";
+    grid-template-areas:
+      "side"
+      "form";
     min-height: 100vh;
   }
 
   .signup-side-panel {
+    display: flex;
+    min-height: 200px;
+    max-height: 220px;
+  }
+
+  .signup-side-body {
+    margin-right: 0;
+    padding: 0 16px;
+  }
+
+  .signup-side-title {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .signup-side-subtitle {
+    display: none;
+  }
+
+  .signup-side-steps {
+    display: none;
+  }
+
+  .signup-side-footer {
     display: none;
   }
 
   .signup-form-scroll {
     height: auto;
-    min-height: 100vh;
+    min-height: auto;
     overflow: visible;
-    padding: 16px 12px 28px;
+    padding: 16px 12px 40px;
   }
 
   .signup-form-card {
