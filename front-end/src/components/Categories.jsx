@@ -58,38 +58,36 @@ export default function Categories() {
   ]
 
   return (
-    <section className="categories" id="categories">
+    <section className="categories" id="categories" style={{ padding: '50px 0 60px' }}>
       <style>{categoriesExtraCss}</style>
 
-      <div className="white-card-bg">
-        <h2 className="section-title">{t('categoriesTitle')}</h2>
+      <h2 className="section-title">{t('categoriesTitle')}</h2>
 
-        <div className="categories-slider-wrapper">
-          <div className="grid-categories">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="cat-item"
-                onClick={() => navigate(`/craftsmen/${category.professionKey}`)}
-              >
-                <div className="icon-box">
-                  <img src={category.image} alt={category.name} loading="lazy" />
-                </div>
-                <p>{category.name}</p>
+      <div className="categories-slider-wrapper">
+        <div className="grid-categories">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="cat-item"
+              onClick={() => navigate(`/craftsmen/${category.professionKey}`)}
+            >
+              <div className="icon-box">
+                <img src={category.image} alt={category.name} loading="lazy" />
               </div>
-            ))}
-          </div>
+              <p>{category.name}</p>
+            </div>
+          ))}
         </div>
+      </div>
 
-        <div className="categories-footer-actions">
-          <button
-            type="button"
-            className="view-all-craftsmen-btn"
-            onClick={() => navigate('/all-craftsmen')}
-          >
-            {allCraftsmenButtonLabel}
-          </button>
-        </div>
+      <div className="categories-footer-actions">
+        <button
+          type="button"
+          className="view-all-craftsmen-btn"
+          onClick={() => navigate('/all-craftsmen')}
+        >
+          {allCraftsmenButtonLabel}
+        </button>
       </div>
     </section>
   )
