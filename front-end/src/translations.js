@@ -9,7 +9,7 @@ export const translations = {
     signup: 'إنشاء حساب',
 
     // Hero
-    heroTitle: 'من الركام.. نبني الأحلام',
+    heroTitle: 'خطوة نحو الاعمار .. تبدأ بالحرفي المناسب',
     heroSubtitle: ' حرفيون محترفون بالقرب منك لجميع مشاريعك',
     searchPlaceholder: 'ابحث عن الحرفي',
     searchBtn: '  ابحث  ',
@@ -97,7 +97,7 @@ export const translations = {
     signup: 'Sign Up',
 
     // Hero
-    heroTitle: 'From ruins... We build dreams',
+    heroTitle: 'A step toward reconstruction... begins with the right craftsman',
     heroSubtitle: 'Certified professionals near you for all your projects',
     searchPlaceholder: 'Search for a specialist',
     searchBtn: 'Search',

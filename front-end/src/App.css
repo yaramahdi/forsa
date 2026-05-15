@@ -317,14 +317,23 @@ display: flex;
     overflow: visible;
     position: relative;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 /* تأثير ظهور الكلمات للعنوان */
 .animated-title {
-    font-size: 3.5rem;
+    font-size: 2.5rem;
     font-weight: 900;
     margin-bottom: 10px;
     white-space: nowrap;
+}
+
+.animated-title.rtl-title {
+    direction: rtl;
+    text-align: right;
 }
 
 .word {
@@ -362,6 +371,7 @@ display: flex;
     border-radius: 15px; /* جعله أكثر استدارة */
     padding: 20px 25px; /* مساحة أكبر حول المحتوى */
     width: fit-content;
+    margin: 0 auto;
 }
 
 .action-btn-green {
@@ -1112,6 +1122,11 @@ footer {
         white-space: normal;
     }
     
+    .animated-title.rtl-title {
+        direction: rtl;
+        text-align: right;
+    }
+    
     .search-wrapper { 
         flex-direction: row;
         width: 100%;
@@ -1228,6 +1243,11 @@ footer {
 
     .animated-title {
         font-size: 1.5rem;
+    }
+    
+    .animated-title.rtl-title {
+        direction: rtl;
+        text-align: right;
     }
 
     .grid-categories {
