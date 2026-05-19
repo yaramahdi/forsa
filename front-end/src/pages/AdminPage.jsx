@@ -842,10 +842,18 @@ export default function AdminPage() {
     window.__forsaToastTimer = window.setTimeout(() => setToast(null), 2600);
   };
 
+  const redirectToLogin = () => {
+    ["adminToken", "token", "accessToken", "forsaAdmin", "forsaAdminEmail"].forEach(
+      (k) => localStorage.removeItem(k)
+    );
+    window.location.replace("/login");
+  };
+
   const fetchCraftsmen = async () => {
     try {
       setLoading(true); setError("");
-      const res     = await fetch(ADMIN_CRAFTSMEN_ENDPOINT, { method: "GET", headers: getHeaders() });
+      const res = await fetch(ADMIN_CRAFTSMEN_ENDPOINT, { method: "GET", headers: getHeaders() });
+      if (res.status === 401) { redirectToLogin(); return; }
       const payload = await readJsonSafe(res);
       if (!res.ok) throw new Error(payload?.status?.message || payload?.message || "فشل جلب بيانات الحرفيين");
       setCraftsmen(extractCraftsmen(payload).map(normalizeCraftsman));
@@ -855,7 +863,10 @@ export default function AdminPage() {
     } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchCraftsmen(); }, []);
+  useEffect(() => {
+    if (!getAuthToken()) { redirectToLogin(); return; }
+    fetchCraftsmen();
+  }, []);
 
   const professions    = useMemo(() => uniqueProfessions(craftsmen), [craftsmen]);
   const featuredCount  = useMemo(() => craftsmen.filter((c) => c.featured).length, [craftsmen]);
@@ -902,6 +913,7 @@ export default function AdminPage() {
         headers: getHeaders(true),
         body: JSON.stringify({ featured: nextFeatured, isFeatured: nextFeatured }),
       });
+      if (res.status === 401) { redirectToLogin(); return; }
       const payload = await readJsonSafe(res);
       if (!res.ok) throw new Error(payload?.status?.message || payload?.message || "فشل تحديث حالة الترشيح");
       const serverFeatured = Boolean(
@@ -918,7 +930,8 @@ export default function AdminPage() {
   const deleteCraftsman = async (craftsman) => {
     try {
       setDeletingId(craftsman.id);
-      const res     = await fetch(`${ADMIN_CRAFTSMEN_ENDPOINT}/${craftsman.id}`, { method: "DELETE", headers: getHeaders() });
+      const res = await fetch(`${ADMIN_CRAFTSMEN_ENDPOINT}/${craftsman.id}`, { method: "DELETE", headers: getHeaders() });
+      if (res.status === 401) { redirectToLogin(); return; }
       const payload = await readJsonSafe(res);
       if (!res.ok) throw new Error(payload?.status?.message || payload?.message || "فشل حذف الحرفي");
       setCraftsmen((prev) => prev.filter((c) => c.id !== craftsman.id));

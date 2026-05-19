@@ -355,6 +355,34 @@ const updateMyProfile = async (req, res, next) => {
   }
 };
 
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email?.trim() || !newPassword?.trim()) {
+      return next(createError(400, "البريد الإلكتروني وكلمة المرور مطلوبان"));
+    }
+
+    if (newPassword.length < 8) {
+      return next(createError(400, "كلمة المرور يجب أن تكون 8 أحرف على الأقل"));
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const craftsman = await Craftsman.findOne({ email: normalizedEmail });
+
+    if (!craftsman) {
+      return next(createError(404, "لا يوجد حساب مرتبط بهذا البريد الإلكتروني"));
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await Craftsman.updateOne({ email: normalizedEmail }, { $set: { password: hashedPassword } });
+
+    return global.returnJson(res, 200, true, "تمت إعادة تعيين كلمة المرور بنجاح", null);
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
 const getFeaturedCraftsmen = async (req, res, next) => {
   try {
     const featuredCraftsmen = await Craftsman.find({ featured: true })
@@ -380,5 +408,6 @@ module.exports = {
   getCraftsmanById,
   getMyProfile,
   updateMyProfile,
-  getFeaturedCraftsmen
+  getFeaturedCraftsmen,
+  resetPassword,
 };

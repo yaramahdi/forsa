@@ -109,72 +109,79 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const newErrors = validate();
-  setErrors(newErrors);
-  setServerError("");
+    const newErrors = validate();
+    setErrors(newErrors);
+    setServerError("");
 
-  if (newErrors.email || newErrors.password) return;
+    if (newErrors.email || newErrors.password) return;
 
-  const email = formData.email.trim().toLowerCase();
-  const password = formData.password;
+    const email = formData.email.trim().toLowerCase();
+    const password = formData.password;
 
-  // دخول الأدمن المباشر
-  if (email === "admin@gmail.com" && password === "a123456@") {
-    localStorage.setItem("forsaAdmin", "true");
-    localStorage.setItem("forsaAdminEmail", email);
-    navigate("/admin");
-    return;
-  }
+    setLoading(true);
 
-  setLoading(true);
+    try {
+      // Try admin login first; on success store the JWT and redirect to admin panel
+      const adminRes = await fetch("http://localhost:5000/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-  try {
-    const response = await fetch("http://localhost:5000/api/craftsmen/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+      if (adminRes.ok) {
+        const adminData = await adminRes.json();
+        const token = adminData?.data?.token;
+        if (token) {
+          localStorage.setItem("adminToken", token);
+          localStorage.setItem("forsaAdmin", "true");
+          localStorage.setItem("forsaAdminEmail", email);
+        }
+        navigate("/admin");
+        return;
+      }
 
-    const result = await response.json();
+      // Not admin — try craftsman login
+      const response = await fetch("http://localhost:5000/api/craftsmen/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const isSuccess =
-      response.ok &&
-      (result?.success === true || result?.status?.status === true);
+      const result = await response.json();
 
-    if (!isSuccess) {
-      setServerError(
-        result?.message ||
-          result?.status?.message ||
-          "بيانات الدخول غير صحيحة"
-      );
-      return;
+      const isSuccess =
+        response.ok &&
+        (result?.success === true || result?.status?.status === true);
+
+      if (!isSuccess) {
+        setServerError(
+          result?.message ||
+            result?.status?.message ||
+            "بيانات الدخول غير صحيحة"
+        );
+        return;
+      }
+
+      const token = result?.data?.token || result?.token;
+      const craftsman = result?.data?.craftsman || result?.craftsman;
+
+      if (token) {
+        localStorage.setItem("forsaToken", token);
+      }
+
+      if (craftsman) {
+        localStorage.setItem("forsaCraftsman", JSON.stringify(craftsman));
+      }
+
+      navigate("/");
+    } catch (error) {
+      setServerError("تعذر الاتصال بالسيرفر");
+    } finally {
+      setLoading(false);
     }
-
-    const token = result?.data?.token || result?.token;
-    const craftsman = result?.data?.craftsman || result?.craftsman;
-
-    if (token) {
-      localStorage.setItem("forsaToken", token);
-    }
-
-    if (craftsman) {
-      localStorage.setItem("forsaCraftsman", JSON.stringify(craftsman));
-    }
-
-    navigate("/");
-  } catch (error) {
-    setServerError("تعذر الاتصال بالسيرفر");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   
 
 

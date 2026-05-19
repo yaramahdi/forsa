@@ -7,7 +7,8 @@ const {
   getCraftsmanById,
   getMyProfile,
   updateMyProfile,
-  getFeaturedCraftsmen
+  getFeaturedCraftsmen,
+  resetPassword,
 } = require("../controllers/craftsman.controller");
 
 const { verifyToken } = require("../middlewares/auth.middleware");
@@ -22,6 +23,7 @@ router.post(
 );
 
 router.post("/login", loginCraftsman);
+router.patch("/reset-password", resetPassword);
 
 router.get("/me", verifyToken, getMyProfile);
 

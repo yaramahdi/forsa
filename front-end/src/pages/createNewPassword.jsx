@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./createNewPassword.css";
 
 const EmailIcon = () => (
@@ -58,6 +58,12 @@ function getPasswordStrength(password) {
 }
 
 export default function CreateNewPassword() {
+  useEffect(() => {
+    const prev = document.body.style.background;
+    document.body.style.background = "linear-gradient(135deg, #89aacb 0%, #a1bddc 35%, #a4c2e4 68%, #a4c6e8 100%)";
+    return () => { document.body.style.background = prev; };
+  }, []);
+
   const [formData, setFormData] = useState({
     email: "",
     newPassword: "",
@@ -73,6 +79,7 @@ export default function CreateNewPassword() {
 });
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const [serverError, setServerError] = useState("");
 
   
   
@@ -132,23 +139,53 @@ export default function CreateNewPassword() {
 
     const validationErrors = validate();
     setErrors(validationErrors);
+    setServerError("");
 
-if (
-  validationErrors.email ||
-  validationErrors.newPassword ||
-  validationErrors.confirmPassword
-)
-  return;
+    if (
+      validationErrors.email ||
+      validationErrors.newPassword ||
+      validationErrors.confirmPassword
+    )
+      return;
+
     setLoading(true);
     setSuccessMsg("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      setSuccessMsg("تمت إعادة تعيين كلمة المرور بنجاح");
-      setFormData({
-        newPassword: "",
-        confirmPassword: "",
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/craftsmen/reset-password",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email.trim().toLowerCase(),
+            newPassword: formData.newPassword,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        const msg =
+          result?.status?.message ||
+          result?.message ||
+          "حدث خطأ، حاول مرة أخرى";
+        if (response.status === 404) {
+          setErrors((prev) => ({ ...prev, email: msg }));
+        } else {
+          setServerError(msg);
+        }
+        return;
+      }
+
+      setSuccessMsg("تمت إعادة تعيين كلمة المرور بنجاح ✅");
+      setFormData({ email: "", newPassword: "", confirmPassword: "" });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
+    } catch {
+      setServerError("تعذر الاتصال بالسيرفر");
     } finally {
       setLoading(false);
     }
@@ -272,6 +309,13 @@ if (
           </div>
           </div>
 
+
+          {serverError && (
+            <div className="reset-error" style={{ marginBottom: "12px" }}>
+              <AlertIcon />
+              <span>{serverError}</span>
+            </div>
+          )}
 
           <button type="submit" className="reset-btn" disabled={loading}>
             {loading ? "جاري إعادة التعيين..." : "إعادة تعيين ←"}
