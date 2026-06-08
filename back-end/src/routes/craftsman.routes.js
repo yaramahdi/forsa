@@ -13,6 +13,8 @@ const {
 
 const { verifyToken } = require("../middlewares/auth.middleware");
 const uploadCraftsmanImages = require("../middlewares/upload.middleware");
+const { handleValidation } = require("../middlewares/validate.middleware");
+const { paginationValidator } = require("../validators/shared.validators");
 
 const router = express.Router();
 
@@ -38,7 +40,7 @@ router.patch(
 );
 router.get("/featured", getFeaturedCraftsmen);
 
-router.get("/", getAllCraftsmen);
+router.get("/", paginationValidator, handleValidation, getAllCraftsmen);
 router.get("/:id", getCraftsmanById);
 
 module.exports = router;

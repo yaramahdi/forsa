@@ -4,15 +4,9 @@ const Craftsman = require("../models/craftsman.model");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
-
-const deleteFiles = (files = []) => {
-  files.forEach((filePath) => {
-    const fullPath = path.join(__dirname, "..", filePath);
-    if (fs.existsSync(fullPath)) {
-      fs.unlinkSync(fullPath);
-    }
-  });
-};
+const escapeRegex = require("../utils/escapeRegex");
+const { returnJson } = require("../utils/response");
+const { deleteFiles } = require("../utils/fileCleanup");
 
 const deleteSingleFile = (filePath) => {
   if (!filePath) return;
@@ -116,20 +110,26 @@ const registerCraftsman = async (req, res, next) => {
       (file) => `/uploads/craftsmen/${file.filename}`
     );
 
-    const savedCraftsman = await Craftsman.create({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: normalizedEmail,
-      password: hashedPassword,
-      profession: profession.trim(),
-      city: city.trim(),
-      neighborhood: neighborhood.trim(),
-      phone: phone.trim(),
-      yearsOfExperience: Number(yearsOfExperience),
-      price: parsedPrice,
-      bio: bio?.trim() || "",
-      workImages,
-    });
+    let savedCraftsman;
+    try {
+      savedCraftsman = await Craftsman.create({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: normalizedEmail,
+        password: hashedPassword,
+        profession: profession.trim(),
+        city: city.trim(),
+        neighborhood: neighborhood.trim(),
+        phone: phone.trim(),
+        yearsOfExperience: Number(yearsOfExperience),
+        price: parsedPrice,
+        bio: bio?.trim() || "",
+        workImages,
+      });
+    } catch (err) {
+      await deleteFiles(workImages);
+      throw err;
+    }
 
     const token = jwt.sign(
       { id: savedCraftsman._id, email: savedCraftsman.email },
@@ -137,7 +137,7 @@ const registerCraftsman = async (req, res, next) => {
       { expiresIn: "7d" }
     );
 
-    return global.returnJson(res, 201, true, "Craftsman registered successfully", {
+    return returnJson(res, 201, true, "Craftsman registered successfully", {
       token,
       craftsman: buildCraftsmanResponse(savedCraftsman),
     });
@@ -173,7 +173,7 @@ const loginCraftsman = async (req, res, next) => {
       { expiresIn: "7d" }
     );
 
-    return global.returnJson(res, 200, true, "Login successful", {
+    return returnJson(res, 200, true, "Login successful", {
       token,
       craftsman: buildCraftsmanResponse(craftsman),
     });
@@ -185,36 +185,40 @@ const loginCraftsman = async (req, res, next) => {
 const getAllCraftsmen = async (req, res, next) => {
   try {
     const { profession, city, search } = req.query;
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 20;
+    const skip = (page - 1) * limit;
 
     const filter = {};
 
-    if (profession) {
-      filter.profession = profession;
-    }
-
-    if (city) {
-      filter.city = city;
-    }
+    if (profession) filter.profession = String(profession);
+    if (city) filter.city = String(city);
 
     if (search) {
+      const safeSearch = escapeRegex(search);
       filter.$or = [
-        { firstName: { $regex: search, $options: "i" } },
-        { lastName: { $regex: search, $options: "i" } },
-        { profession: { $regex: search, $options: "i" } },
-        { city: { $regex: search, $options: "i" } },
-        { neighborhood: { $regex: search, $options: "i" } },
+        { firstName: { $regex: safeSearch, $options: "i" } },
+        { lastName: { $regex: safeSearch, $options: "i" } },
+        { profession: { $regex: safeSearch, $options: "i" } },
+        { city: { $regex: safeSearch, $options: "i" } },
+        { neighborhood: { $regex: safeSearch, $options: "i" } },
       ];
     }
 
-    const craftsmen = await Craftsman.find(filter).select("-password");
+    const [craftsmen, total] = await Promise.all([
+      Craftsman.find(filter).select("-password").skip(skip).limit(limit),
+      Craftsman.countDocuments(filter),
+    ]);
 
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "Craftsmen fetched successfully",
-      craftsmen
-    );
+    return returnJson(res, 200, true, "Craftsmen fetched successfully", {
+      craftsmen,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -230,13 +234,7 @@ const getCraftsmanById = async (req, res, next) => {
       return next(createError(404, "Craftsman not found"));
     }
 
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "Craftsman fetched successfully",
-      craftsman
-    );
+    return returnJson(res, 200, true, "Craftsman fetched successfully", craftsman);
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -252,13 +250,7 @@ const getMyProfile = async (req, res, next) => {
       return next(createError(404, "Craftsman not found"));
     }
 
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "My profile fetched successfully",
-      craftsman
-    );
+    return returnJson(res, 200, true, "My profile fetched successfully", craftsman);
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -312,10 +304,6 @@ const updateMyProfile = async (req, res, next) => {
     const workImageFiles = req.files?.workImages || [];
 
     if (profileImageFile) {
-      if (currentCraftsman.profileImage) {
-        deleteSingleFile(currentCraftsman.profileImage);
-      }
-
       updateData.profileImage = `/uploads/craftsmen/${profileImageFile.filename}`;
     }
 
@@ -327,29 +315,42 @@ const updateMyProfile = async (req, res, next) => {
       const mergedImages = [...(currentCraftsman.workImages || []), ...newWorkImages];
 
       if (mergedImages.length > 12) {
-        deleteFiles(newWorkImages);
+        await deleteFiles(newWorkImages);
         return next(createError(400, "You can upload up to 12 work images only"));
       }
 
       updateData.workImages = mergedImages;
     }
 
-    const updatedProfile = await Craftsman.findByIdAndUpdate(
-      craftsmanId,
-      updateData,
-      {
-        new: true,
-        runValidators: true,
-      }
-    ).select("-password");
+    // Collect new uploaded files for cleanup if DB update fails
+    const newFilePaths = [
+      ...(profileImageFile ? [`/uploads/craftsmen/${profileImageFile.filename}`] : []),
+      ...workImageFiles.map((f) => `/uploads/craftsmen/${f.filename}`),
+    ];
 
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "My profile updated successfully",
-      updatedProfile
-    );
+    const oldProfileImage = profileImageFile ? currentCraftsman.profileImage : null;
+
+    let updatedProfile;
+    try {
+      updatedProfile = await Craftsman.findByIdAndUpdate(
+        craftsmanId,
+        updateData,
+        {
+          new: true,
+          runValidators: true,
+        }
+      ).select("-password");
+    } catch (err) {
+      await deleteFiles(newFilePaths);
+      throw err;
+    }
+
+    // DB succeeded — safe to delete the replaced profile image
+    if (oldProfileImage) {
+      deleteSingleFile(oldProfileImage);
+    }
+
+    return returnJson(res, 200, true, "My profile updated successfully", updatedProfile);
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -377,7 +378,7 @@ const resetPassword = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await Craftsman.updateOne({ email: normalizedEmail }, { $set: { password: hashedPassword } });
 
-    return global.returnJson(res, 200, true, "تمت إعادة تعيين كلمة المرور بنجاح", null);
+    return returnJson(res, 200, true, "تمت إعادة تعيين كلمة المرور بنجاح", null);
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -389,7 +390,7 @@ const getFeaturedCraftsmen = async (req, res, next) => {
       .select("-password")
       .sort({ createdAt: -1 });
 
-    return global.returnJson(
+    return returnJson(
       res,
       200,
       true,

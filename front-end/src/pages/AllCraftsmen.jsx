@@ -891,7 +891,7 @@ export default function AllCraftsmen() {
       setLoading(true)
       setError('')
 
-      const response = await fetch(ALL_CRAFTSMEN_ENDPOINT)
+      const response = await fetch(`${ALL_CRAFTSMEN_ENDPOINT}?limit=100`)
       const payload = await readJsonSafe(response)
 
       if (!response.ok) {

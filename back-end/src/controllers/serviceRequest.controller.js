@@ -3,6 +3,15 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const Craftsman = require("../models/craftsman.model");
 const ServiceRequest = require("../models/serviceRequest.model");
+const { returnJson } = require("../utils/response");
+
+const ALLOWED_TRANSITIONS = {
+  pending:   ["confirmed", "contacted", "cancelled"],
+  confirmed: ["contacted", "completed", "cancelled"],
+  contacted: ["completed", "cancelled"],
+  completed: [],
+  cancelled: [],
+};
 
 function normalizePhone(value) {
   const map = {
@@ -66,6 +75,7 @@ const createServiceRequest = async (req, res, next) => {
     const clientName = String(req.body?.clientName || "").trim();
     const clientPhone = normalizePhone(req.body?.clientPhone);
     const craftsmanId = String(req.body?.craftsmanId || "").trim();
+    const jobDetails = String(req.body?.jobDetails || "").trim();
 
     if (!clientName) {
       return next(createError(400, "Client name is required"));
@@ -106,19 +116,14 @@ const createServiceRequest = async (req, res, next) => {
       clientName,
       clientPhone,
       craftsmanId: craftsman._id,
+      jobDetails,
       status: "pending",
     });
 
-    return global.returnJson(
-      res,
-      201,
-      true,
-      "Service request created successfully",
-      {
-        serviceRequest: savedRequest,
-        craftsmanPhone: craftsman.phone,
-      }
-    );
+    return returnJson(res, 201, true, "Service request created successfully", {
+      serviceRequest: savedRequest,
+      craftsmanPhone: craftsman.phone,
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -133,20 +138,26 @@ const getMyServiceRequests = async (req, res, next) => {
       return next(createError(401, "Unauthorized"));
     }
 
-    const serviceRequests = await ServiceRequest.find({ craftsmanId })
-      .sort({ createdAt: -1 })
-      .lean();
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 20;
+    const skip = (page - 1) * limit;
 
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "My service requests fetched successfully",
-      {
-        serviceRequests,
-        total: serviceRequests.length,
-      }
-    );
+    const filter = { craftsmanId };
+
+    const [serviceRequests, total] = await Promise.all([
+      ServiceRequest.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      ServiceRequest.countDocuments(filter),
+    ]);
+
+    return returnJson(res, 200, true, "My service requests fetched successfully", {
+      serviceRequests,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -167,13 +178,7 @@ const updateMyServiceRequestStatus = async (req, res, next) => {
       return next(createError(400, "Request id is invalid"));
     }
 
-    const allowedStatuses = [
-      "pending",
-      "confirmed",
-      "contacted",
-      "completed",
-      "cancelled",
-    ];
+    const allowedStatuses = Object.keys(ALLOWED_TRANSITIONS);
 
     if (!allowedStatuses.includes(nextStatus)) {
       return next(createError(400, "Invalid status"));
@@ -188,18 +193,26 @@ const updateMyServiceRequestStatus = async (req, res, next) => {
       return next(createError(404, "Service request not found"));
     }
 
+    const currentStatus = request.status;
+
+    if (currentStatus === nextStatus) {
+      return returnJson(res, 200, true, "Service request status updated successfully", {
+        serviceRequest: request,
+      });
+    }
+
+    if (!ALLOWED_TRANSITIONS[currentStatus].includes(nextStatus)) {
+      return next(
+        createError(400, `Cannot transition from '${currentStatus}' to '${nextStatus}'`)
+      );
+    }
+
     request.status = nextStatus;
     await request.save();
 
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "Service request status updated successfully",
-      {
-        serviceRequest: request,
-      }
-    );
+    return returnJson(res, 200, true, "Service request status updated successfully", {
+      serviceRequest: request,
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }

@@ -588,6 +588,12 @@ border-bottom: 1px solid #D8DEE8;
 
 .cp-form-input::placeholder { color: rgba(107, 122, 153, 0.55); }
 
+.cp-form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.8;
+}
+
 .cp-form-input:focus {
   border-color: var(--blue);
   background: var(--blue-light);

@@ -2,6 +2,8 @@ const createError = require("http-errors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Craftsman = require("../models/craftsman.model");
+const ServiceRequest = require("../models/serviceRequest.model");
+const { returnJson } = require("../utils/response");
 
 const loginAdmin = async (req, res, next) => {
   try {
@@ -31,9 +33,7 @@ const loginAdmin = async (req, res, next) => {
       { expiresIn: "1d" }
     );
 
-    return global.returnJson(res, 200, true, "Admin login successful", {
-      token,
-    });
+    return returnJson(res, 200, true, "Admin login successful", { token });
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -41,17 +41,24 @@ const loginAdmin = async (req, res, next) => {
 
 const getAllCraftsmenForAdmin = async (req, res, next) => {
   try {
-    const craftsmen = await Craftsman.find()
-      .select("-password")
-      .sort({ createdAt: -1 });
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 20;
+    const skip = (page - 1) * limit;
 
-    return global.returnJson(
-      res,
-      200,
-      true,
-      "Craftsmen fetched successfully for admin",
-      craftsmen
-    );
+    const [craftsmen, total] = await Promise.all([
+      Craftsman.find().select("-password").sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Craftsman.countDocuments(),
+    ]);
+
+    return returnJson(res, 200, true, "Craftsmen fetched successfully for admin", {
+      craftsmen,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -75,7 +82,7 @@ const toggleFeaturedForAdmin = async (req, res, next) => {
     craftsman.featured = featured;
     await craftsman.save();
 
-    return global.returnJson(
+    return returnJson(
       res,
       200,
       true,
@@ -102,11 +109,12 @@ const deleteCraftsmanForAdmin = async (req, res, next) => {
       return next(createError(404, "Craftsman not found"));
     }
 
-    await Craftsman.findByIdAndDelete(id);
+    await Promise.all([
+      Craftsman.findByIdAndDelete(id),
+      ServiceRequest.deleteMany({ craftsmanId: id }),
+    ]);
 
-    return global.returnJson(res, 200, true, "Craftsman deleted successfully", {
-      _id: id,
-    });
+    return returnJson(res, 200, true, "Craftsman deleted successfully", { _id: id });
   } catch (error) {
     return next(createError(500, error.message));
   }

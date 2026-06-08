@@ -422,6 +422,18 @@ function getProfileImage(craftsman) {
   return craftsman?.profileImage || DEFAULT_PROFILE_IMAGE
 }
 
+function getCurrentLoggedInCraftsmanId() {
+  if (typeof window === 'undefined') return ''
+  try {
+    const raw = window.localStorage.getItem('forsaCraftsman')
+    if (!raw) return ''
+    const parsed = JSON.parse(raw)
+    return String(parsed?._id || parsed?.id || '').trim()
+  } catch {
+    return ''
+  }
+}
+
 export default function SearchResults() {
   const { language } = useLanguage()
   const t = (key) => translations[language]?.[key] || translations.ar[key] || key
@@ -430,6 +442,7 @@ export default function SearchResults() {
 
   const queryParams = new URLSearchParams(location.search)
   const searchQuery = (queryParams.get('q') || '').trim()
+  const currentLoggedInCraftsmanId = useMemo(() => getCurrentLoggedInCraftsmanId(), [])
 
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(true)
@@ -452,8 +465,8 @@ export default function SearchResults() {
         setError('')
 
         const url = searchQuery
-          ? `${API_BASE_URL}/api/craftsmen?search=${encodeURIComponent(searchQuery)}`
-          : `${API_BASE_URL}/api/craftsmen`
+          ? `${API_BASE_URL}/api/craftsmen?limit=100&search=${encodeURIComponent(searchQuery)}`
+          : `${API_BASE_URL}/api/craftsmen?limit=100`
 
         const response = await fetch(url)
         const payload = await readJsonSafe(response)
@@ -471,7 +484,10 @@ export default function SearchResults() {
         }
 
         const normalized = extractCraftsmen(payload).map(normalizeCraftsman)
-        setResults(normalized)
+        const filtered = currentLoggedInCraftsmanId
+          ? normalized.filter((c) => String(c.id) !== currentLoggedInCraftsmanId)
+          : normalized
+        setResults(filtered)
       } catch (err) {
         setResults([])
         setError(err.message || 'تعذر الاتصال بالسيرفر')

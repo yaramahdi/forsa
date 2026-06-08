@@ -1,0 +1,29 @@
+[1mdiff --git a/front-end/src/App.jsx b/front-end/src/App.jsx[m
+[1mindex 50efb06..5a4cc1e 100644[m
+[1m--- a/front-end/src/App.jsx[m
+[1m+++ b/front-end/src/App.jsx[m
+[36m@@ -19,6 +19,7 @@[m [mimport CraftsmanProfile from './pages/CraftsmanProfile'[m
+ import SearchResults from './pages/SearchResults'[m
+ import AdminPage from './pages/AdminPage'[m
+ import AllCraftsmen from './pages/AllCraftsmen';[m
+[32m+[m[32mimport ProtectedAdminRoute from './components/ProtectedAdminRoute'[m
+ [m
+ function HomePage() {[m
+   const [searchProfession, setSearchProfession] = useState(null)[m
+[36m@@ -70,10 +71,14 @@[m [mfunction App() {[m
+ [m
+           <Route path="/search-results" element={<SearchResults />} />[m
+           <Route path="/profile" element={<ProfilePage />} />[m
+[31m-          <Route path="/admin" element={<AdminPage />} />[m
+[32m+[m[32m          <Route path="/admin" element={[m
+[32m+[m[32m            <ProtectedAdminRoute>[m
+[32m+[m[32m              <AdminPage />[m
+[32m+[m[32m            </ProtectedAdminRoute>[m
+[32m+[m[32m          } />[m
+ [m
+[31m-          <Route path="*" element={<Navigate to="/" replace />} />[m
+           <Route path="/all-craftsmen" element={<AllCraftsmen />} />[m
+[32m+[m[32m          <Route path="*" element={<Navigate to="/" replace />} />[m
+         </Routes>[m
+       </BrowserRouter>[m
+     </LanguageProvider>[m

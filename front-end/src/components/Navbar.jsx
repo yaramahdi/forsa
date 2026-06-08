@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
+
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '')
 import { LogIn, UserPlus, Globe, User, Menu, X } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
@@ -106,7 +108,7 @@ export default function Navbar() {
             >
               {craftsmanData?.profileImage ? (
                 <img
-                  src={`http://localhost:5000${craftsmanData.profileImage}`}
+                  src={craftsmanData.profileImage.startsWith('http') ? craftsmanData.profileImage : `${API_BASE_URL}${craftsmanData.profileImage}`}
                   alt="profile"
                   className="profile-avatar-image"
                   loading="lazy"

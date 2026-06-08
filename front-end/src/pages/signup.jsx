@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
-
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
 import {
   User,
@@ -556,6 +556,9 @@ export default function Signup() {
                           <span className="icon"><Lock size={18} /></span>
                         </div>
                         {showError('password') && <p className="field-error">{errors.password}</p>}
+                        {!showError('password') && (
+                          <PasswordStrengthIndicator password={formData.password} />
+                        )}
                       </div>
 
                       <div className="form-group">

@@ -1,6 +1,6 @@
 //هاي صفحة الادمن اللي بظهر فيها الجدول وهو بكون مسؤول عن ترشيح الحرفي او لا
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 /* ═══════════════════════════════════════════
    CONFIG
@@ -836,10 +836,11 @@ export default function AdminPage() {
 
   useEffect(() => { setPage(1); }, [profession, search]);
 
+  const toastTimerRef = useRef(null);
   const showToast = (msg, icon = "✅") => {
     setToast({ msg, icon });
-    window.clearTimeout(window.__forsaToastTimer);
-    window.__forsaToastTimer = window.setTimeout(() => setToast(null), 2600);
+    clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast(null), 2600);
   };
 
   const redirectToLogin = () => {
@@ -852,7 +853,7 @@ export default function AdminPage() {
   const fetchCraftsmen = async () => {
     try {
       setLoading(true); setError("");
-      const res = await fetch(ADMIN_CRAFTSMEN_ENDPOINT, { method: "GET", headers: getHeaders() });
+      const res = await fetch(`${ADMIN_CRAFTSMEN_ENDPOINT}?limit=100`, { method: "GET", headers: getHeaders() });
       if (res.status === 401) { redirectToLogin(); return; }
       const payload = await readJsonSafe(res);
       if (!res.ok) throw new Error(payload?.status?.message || payload?.message || "فشل جلب بيانات الحرفيين");

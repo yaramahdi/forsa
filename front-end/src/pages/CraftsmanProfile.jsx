@@ -247,7 +247,7 @@ function buildWhatsAppOptions(phone) {
 }
 
 function RequestModal({ craftsman, onClose }) {
-  const [form, setForm] = useState({ clientName: "", clientPhone: "" });
+  const [form, setForm] = useState({ clientName: "", clientPhone: "", jobDetails: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -307,6 +307,7 @@ function RequestModal({ craftsman, onClose }) {
           clientName: form.clientName.trim(),
           clientPhone: form.clientPhone.trim(),
           craftsmanId: craftsman.id,
+          jobDetails: form.jobDetails.trim(),
         }),
       });
 
@@ -407,6 +408,17 @@ function RequestModal({ craftsman, onClose }) {
                 {errors.clientPhone ? (
                   <span className="cp-err-msg"><IcAlert /> {errors.clientPhone}</span>
                 ) : null}
+              </div>
+
+              <div className="cp-form-group">
+                <label className="cp-form-label"><IcWrench /> تفاصيل العمل المطلوب</label>
+                <textarea
+                  className="cp-form-input cp-form-textarea"
+                  placeholder="اكتب وصفاً للعمل الذي تحتاجه... (اختياري)"
+                  value={form.jobDetails}
+                  onChange={(e) => setField("jobDetails", e.target.value)}
+                  rows={4}
+                />
               </div>
 
               {submitError ? <div className="cp-submit-error">❌ {submitError}</div> : null}

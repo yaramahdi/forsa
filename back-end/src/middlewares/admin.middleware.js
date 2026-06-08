@@ -19,7 +19,7 @@ const verifyAdmin = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     if (decoded.role !== "admin") {
-      return next(createError(401, "Access denied. Admin privileges required"));
+      return next(createError(403, "Access denied. Admin privileges required"));
     }
 
     req.admin = decoded;

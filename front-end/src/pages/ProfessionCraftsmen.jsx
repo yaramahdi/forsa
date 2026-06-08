@@ -147,7 +147,7 @@ export default function ProfessionCraftsmen() {
         setLoading(true);
         setError("");
 
-        let url = `${API_BASE_URL}/api/craftsmen?profession=${encodeURIComponent(normalizedProfession)}`;
+        let url = `${API_BASE_URL}/api/craftsmen?limit=100&profession=${encodeURIComponent(normalizedProfession)}`;
 
         if (selectedCity) {
           url += `&city=${encodeURIComponent(selectedCity)}`;
@@ -312,7 +312,6 @@ export default function ProfessionCraftsmen() {
               <option value="شمال غزة">شمال غزة</option>
               <option value="الوسطى">الوسطى</option>
               <option value="الجنوب">الجنوب</option>
-              ))
             </select>
           </div>
         </div>

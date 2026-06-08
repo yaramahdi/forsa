@@ -21,6 +21,12 @@ const serviceRequestSchema = new mongoose.Schema(
       index: true,
     },
 
+    jobDetails: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     status: {
       type: String,
       enum: ["pending", "confirmed", "contacted", "completed", "cancelled"],

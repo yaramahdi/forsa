@@ -90,12 +90,17 @@ const craftsmanSchema = new mongoose.Schema(
     featured: {
       type: Boolean,
       default: false,
+      index: true,
     },
   },
   {
     timestamps: true,
   }
 );
+
+craftsmanSchema.index({ profession: 1 });
+craftsmanSchema.index({ city: 1 });
+craftsmanSchema.index({ profession: 1, city: 1 });
 
 const Craftsman = mongoose.model("Craftsman", craftsmanSchema);
 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { LanguageProvider } from './context/LanguageContext'
+import ErrorBoundary from './components/ErrorBoundary'
+import ProtectedAdminRoute from './components/ProtectedAdminRoute'
 
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -70,10 +72,14 @@ function App() {
 
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/all-craftsmen" element={<AllCraftsmen />} />
+          <Route path="/admin" element={
+            <ProtectedAdminRoute>
+              <AdminPage />
+            </ProtectedAdminRoute>
+          } />
 
           <Route path="*" element={<Navigate to="/" replace />} />
-          <Route path="/all-craftsmen" element={<AllCraftsmen />} />
         </Routes>
       </BrowserRouter>
     </LanguageProvider>

@@ -22,7 +22,7 @@ const css = `
   --blue-light:#EBF3FF;
   --blue-border:#C5D9F2;
   --white:#FFFFFF;
-  --gray-bg:#F4F7FC;
+  --gray-bg:#D6E8FF;
   --gray-text:#6B7A99;
   --gray-border:#DDE4EF;
   --text:#1A2740;
@@ -562,6 +562,7 @@ function normalizeRequest(item) {
     id: item?._id || item?.id || Math.random().toString(36),
     clientName: item?.clientName || "بدون اسم",
     clientPhone: item?.clientPhone || "-",
+    jobDetails: item?.jobDetails || "",
     status: item?.status || "pending",
     createdAt: item?.createdAt || "",
   };
@@ -796,6 +797,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchMyProfile();
+    fetchMyServiceRequests();
 
     return () => {
       if (toastTimerRef.current) {
@@ -803,12 +805,6 @@ export default function ProfilePage() {
       }
     };
   }, []);
-
-  useEffect(() => {
-    if ((tab === "requests" || tab === "confirmed") && !requestsFetched) {
-      fetchMyServiceRequests();
-    }
-  }, [tab, requestsFetched]);
 
   const handleDraftChange = (key, value) => {
     let nextValue = value;
@@ -1150,7 +1146,14 @@ export default function ProfilePage() {
 
           return (
             <div className="request-row-item" key={request.id}>
-              <div className="request-cell name">{request.clientName}</div>
+              <div className="request-cell name">
+                <div>{request.clientName}</div>
+                {request.jobDetails ? (
+                  <div style={{ fontSize: "12px", color: "var(--gray-text)", marginTop: "4px", fontWeight: 500, lineHeight: 1.6 }}>
+                    {request.jobDetails}
+                  </div>
+                ) : null}
+              </div>
 
               <div className="request-cell phone">{request.clientPhone}</div>
 
@@ -1500,10 +1503,7 @@ export default function ProfilePage() {
 
                 <div className="requests-wrap">
                   <div className="requests-toolbar">
-                    <div className="notice" style={{ marginBottom: 0 }}>
-                      <IcInfo />
-                      تم تصغير عرض القسم وإضافة سكرول داخلي حتى لا يتمدد بشكل مزعج عند كثرة الطلبات
-                    </div>
+                   
 
                     <button
                       className="requests-refresh"

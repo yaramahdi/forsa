@@ -6,6 +6,8 @@ const {
   deleteCraftsmanForAdmin,
 } = require("../controllers/admin.controller");
 const { verifyAdmin } = require("../middlewares/admin.middleware");
+const { handleValidation } = require("../middlewares/validate.middleware");
+const { paginationValidator } = require("../validators/shared.validators");
 
 const router = express.Router();
 
@@ -13,7 +15,7 @@ const router = express.Router();
 router.post("/login", loginAdmin);
 
 // Protected — valid admin JWT required for all routes below
-router.get("/craftsmen", verifyAdmin, getAllCraftsmenForAdmin);
+router.get("/craftsmen", verifyAdmin, paginationValidator, handleValidation, getAllCraftsmenForAdmin);
 router.patch("/craftsmen/:id/featured", verifyAdmin, toggleFeaturedForAdmin);
 router.delete("/craftsmen/:id", verifyAdmin, deleteCraftsmanForAdmin);
 

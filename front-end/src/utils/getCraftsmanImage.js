@@ -1,9 +1,10 @@
-//هاي الفنكشن البسيطة عشان يظهر صورة الحرفي لو موجوجة, ولو مش موجودة بظهر الصورة الديفولت
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 export function getCraftsmanImage(craftsman) {
   if (craftsman?.profileImage) {
-    return `http://localhost:5000${craftsman.profileImage}`;
+    const src = craftsman.profileImage;
+    if (src.startsWith('http')) return src;
+    return `${API_BASE_URL}${src}`;
   }
-
-  return "/images/default-user.png";
+  return '/images/default-user.png';
 }

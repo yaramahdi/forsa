@@ -7,6 +7,8 @@ const {
 } = require("../controllers/serviceRequest.controller");
 
 const { verifyToken } = require("../middlewares/auth.middleware");
+const { handleValidation } = require("../middlewares/validate.middleware");
+const { paginationValidator } = require("../validators/shared.validators");
 
 const router = express.Router();
 
@@ -14,7 +16,7 @@ const router = express.Router();
 router.post("/", createServiceRequest);
 
 // جلب الطلبات الخاصة بالحرفي الحالي
-router.get("/me", verifyToken, getMyServiceRequests);
+router.get("/me", verifyToken, paginationValidator, handleValidation, getMyServiceRequests);
 
 // تحديث حالة طلب خدمة خاص بالحرفي الحالي
 router.patch("/:requestId/status", verifyToken, updateMyServiceRequestStatus);
