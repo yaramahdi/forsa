@@ -442,6 +442,7 @@ export default function CraftsmanProfile() {
   const [craftsman, setCraftsman] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [retryKey, setRetryKey] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null);
 
@@ -466,7 +467,8 @@ export default function CraftsmanProfile() {
 
         setCraftsman(normalized);
       } catch (err) {
-        setError(err.message || "حدث خطأ أثناء تحميل الصفحة");
+        const isOffline = !navigator.onLine || (err?.message || '').toLowerCase().includes('failed to fetch');
+        setError(isOffline ? 'لا يوجد اتصال بالإنترنت، تحقق من شبكتك ثم أعد المحاولة' : (err.message || 'حدث خطأ أثناء تحميل الصفحة'));
       } finally {
         setLoading(false);
       }
@@ -475,7 +477,7 @@ export default function CraftsmanProfile() {
     if (id) {
       fetchCraftsman();
     }
-  }, [id]);
+  }, [id, retryKey]);
 
   const isOwnProfile = useMemo(() => {
     if (!craftsman?.id || !currentLoggedInCraftsmanId) return false;
@@ -520,9 +522,16 @@ export default function CraftsmanProfile() {
           <div className="cp-state-emoji">❌</div>
           <h2>تعذر فتح صفحة الحرفي</h2>
           <p>{error || "الحرفي غير موجود"}</p>
-          <button type="button" className="cp-back-btn" onClick={() => navigate(-1)}>
-            <IcBack /> رجوع
-          </button>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {error && (
+              <button type="button" className="cp-back-btn" onClick={() => setRetryKey(k => k + 1)}>
+                إعادة المحاولة
+              </button>
+            )}
+            <button type="button" className="cp-back-btn" onClick={() => navigate(-1)}>
+              <IcBack /> رجوع
+            </button>
+          </div>
         </div>
       </div>
     );

@@ -79,6 +79,8 @@ body{overflow-x:hidden}
 .avatar{width:72px;height:72px;border-radius:50%;border:3px solid var(--blue-light);object-fit:cover;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--blue);font-weight:800}
 .avatar-edit-btn{position:absolute;bottom:1px;left:0;width:24px;height:24px;background:var(--blue);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(37,99,168,0.35);transition:background .2s}
 .avatar-edit-btn:hover{background:var(--blue-mid)}
+.avatar-del-btn{position:absolute;top:1px;left:0;width:24px;height:24px;background:var(--red);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(229,62,62,0.35);transition:background .2s}
+.avatar-del-btn:hover{background:#C53030}
 .profile-info{flex:1;min-width:0}
 .profile-name{font-family:'Tajawal',sans-serif;font-size:18px;font-weight:800;color:var(--text)}
 .profile-meta{display:flex;align-items:center;gap:10px;margin-top:5px;flex-wrap:wrap}
@@ -368,6 +370,7 @@ const IcCheck = () => <Ic s={14} d="M20 6L9 17l-5-5" />;
 const IcPin = () => <Ic s={14} d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" />;
 const IcPhone = () => <Ic s={14} d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.69h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.1a16 16 0 0 0 6 6l.93-.93a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 17.5z" />;
 const IcCam = () => <Ic s={13} d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />;
+const IcX = () => <Ic s={12} d="M18 6L6 18M6 6l12 12" />;
 const IcInfo = () => <Ic s={14} d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zM12 8v4M12 16h.01" />;
 const IcMail = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -672,6 +675,7 @@ export default function ProfilePage() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [addingPhotos, setAddingPhotos] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [deletingAvatar, setDeletingAvatar] = useState(false);
   const [pageError, setPageError] = useState("");
 
   const [serviceRequests, setServiceRequests] = useState([]);
@@ -749,7 +753,8 @@ export default function ProfilePage() {
 
       localStorage.setItem("forsaCraftsman", JSON.stringify(craftsman));
     } catch (error) {
-      setPageError("تعذر الاتصال بالسيرفر");
+      const isOffline = !navigator.onLine || (error?.message || '').toLowerCase().includes('failed to fetch');
+      setPageError(isOffline ? 'لا يوجد اتصال بالإنترنت، تحقق من شبكتك ثم أعد المحاولة' : 'تعذر الاتصال بالسيرفر');
     } finally {
       setLoadingProfile(false);
     }
@@ -978,6 +983,43 @@ export default function ProfilePage() {
       showToast("تعذر الاتصال بالسيرفر", "⚠️");
     } finally {
       setUploadingAvatar(false);
+    }
+  };
+
+  const handleDeleteProfileImage = async () => {
+    const token = getToken();
+    if (!token) { navigate("/login"); return; }
+
+    try {
+      setDeletingAvatar(true);
+
+      const response = await apiFetch(`${API_BASE_URL}/api/craftsmen/me/profile-image`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      const isSuccess =
+        response.ok &&
+        (result?.success === true || result?.status?.status === true);
+
+      if (!isSuccess) {
+        showToast(result?.message || result?.status?.message || "فشل حذف الصورة", "⚠️");
+        return;
+      }
+
+      const updatedCraftsman = result?.data || {};
+      const normalized = normalizeCraftsman(updatedCraftsman);
+
+      setForm(normalized);
+      setDraft(normalized);
+
+      localStorage.setItem("forsaCraftsman", JSON.stringify(updatedCraftsman));
+      showToast("تم حذف الصورة الشخصية");
+    } catch {
+      showToast("تعذر الاتصال بالسيرفر", "⚠️");
+    } finally {
+      setDeletingAvatar(false);
     }
   };
 
@@ -1229,6 +1271,12 @@ export default function ProfilePage() {
           <div className="main" style={{ marginRight: 0 }}>
             <div className="content">
               <div className="error-box">{pageError}</div>
+              <button
+                onClick={fetchMyProfile}
+                style={{ marginTop: '14px', padding: '10px 22px', background: '#2563A8', color: '#fff', border: 'none', borderRadius: '10px', fontFamily: 'Cairo, sans-serif', fontSize: '14px', fontWeight: '700', cursor: 'pointer' }}
+              >
+                إعادة المحاولة
+              </button>
             </div>
           </div>
         </div>
@@ -1330,6 +1378,16 @@ export default function ProfilePage() {
                 >
                   <IcCam />
                 </div>
+
+                {form?.profileImage && (
+                  <div
+                    className="avatar-del-btn"
+                    onClick={handleDeleteProfileImage}
+                    title={deletingAvatar ? "جاري الحذف..." : "حذف الصورة الشخصية"}
+                  >
+                    <IcX />
+                  </div>
+                )}
               </div>
 
               <div className="profile-info">

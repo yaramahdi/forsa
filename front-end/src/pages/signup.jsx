@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import { SECURITY_QUESTIONS } from '../constants/securityQuestions';
 
 import {
   User,
@@ -68,6 +69,8 @@ export default function Signup() {
     customProfession: '',
     bio: '',
     workImages: [],
+    securityQuestion: '',
+    securityAnswer: '',
   });
 
   const [previewImages, setPreviewImages] = useState([]);
@@ -163,12 +166,20 @@ export default function Signup() {
       newErrors.workImages = 'يجب إضافة 3 صور أعمال بالضبط';
     }
 
+    if (!data.securityQuestion) {
+      newErrors.securityQuestion = 'سؤال الأمان مطلوب';
+    }
+
+    if (!data.securityAnswer.trim()) {
+      newErrors.securityAnswer = 'إجابة سؤال الأمان مطلوبة';
+    }
+
     return newErrors;
   };
 
   const getStepFields = (step, data = formData) => {
     if (step === 1) {
-      return ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'phone'];
+      return ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'phone', 'securityQuestion', 'securityAnswer'];
     }
 
     if (step === 2) {
@@ -400,6 +411,8 @@ export default function Signup() {
       submitData.append('neighborhood', formData.neighborhood.trim());
       submitData.append('profession', professionToSend);
       submitData.append('bio', formData.bio.trim());
+      submitData.append('securityQuestion', formData.securityQuestion);
+      submitData.append('securityAnswer', formData.securityAnswer.trim());
 
       formData.workImages.forEach((file) => {
         submitData.append('workImages', file);
@@ -594,6 +607,41 @@ export default function Signup() {
                         <span className="icon"><Phone size={18} /></span>
                       </div>
                       {showError('phone') && <p className="field-error">{errors.phone}</p>}
+                    </div>
+
+                    <div className="form-group full-width">
+                      <label className="signup-label">سؤال الأمان</label>
+                      <div className={`input-box ${showError('securityQuestion') ? 'input-box-error' : ''}`}>
+                        <select
+                          name="securityQuestion"
+                          value={formData.securityQuestion}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        >
+                          <option value="" disabled hidden>اختر سؤال الأمان</option>
+                          {SECURITY_QUESTIONS.map((q) => (
+                            <option key={q} value={q}>{q}</option>
+                          ))}
+                        </select>
+                        <span className="icon"><Lock size={18} /></span>
+                      </div>
+                      {showError('securityQuestion') && <p className="field-error">{errors.securityQuestion}</p>}
+                    </div>
+
+                    <div className="form-group full-width">
+                      <label className="signup-label">إجابة سؤال الأمان</label>
+                      <div className={`input-box ${showError('securityAnswer') ? 'input-box-error' : ''}`}>
+                        <input
+                          type="text"
+                          name="securityAnswer"
+                          placeholder="اكتب إجابتك هنا"
+                          value={formData.securityAnswer}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        />
+                        <span className="icon"><Lock size={18} /></span>
+                      </div>
+                      {showError('securityAnswer') && <p className="field-error">{errors.securityAnswer}</p>}
                     </div>
                   </div>
                 )}

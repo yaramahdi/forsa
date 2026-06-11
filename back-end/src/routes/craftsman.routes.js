@@ -7,7 +7,9 @@ const {
   getCraftsmanById,
   getMyProfile,
   updateMyProfile,
+  deleteProfileImage,
   getFeaturedCraftsmen,
+  getSecurityQuestion,
   resetPassword,
 } = require("../controllers/craftsman.controller");
 
@@ -15,6 +17,7 @@ const { verifyToken } = require("../middlewares/auth.middleware");
 const uploadCraftsmanImages = require("../middlewares/upload.middleware");
 const { handleValidation } = require("../middlewares/validate.middleware");
 const { paginationValidator } = require("../validators/shared.validators");
+const { loginLimiter } = require("../middlewares/rateLimiters.middleware");
 
 const router = express.Router();
 
@@ -25,9 +28,11 @@ router.post(
 );
 
 router.post("/login", loginCraftsman);
-router.patch("/reset-password", resetPassword);
+router.post("/get-security-question", loginLimiter, getSecurityQuestion);
+router.patch("/reset-password", loginLimiter, resetPassword);
 
 router.get("/me", verifyToken, getMyProfile);
+router.delete("/me/profile-image", verifyToken, deleteProfileImage);
 
 router.patch(
   "/me",

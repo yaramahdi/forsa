@@ -62,6 +62,14 @@ const craftsmanSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    securityQuestion: {
+      type: String,
+      default: null,
+    },
+    securityAnswer: {
+      type: String,
+      default: null,
+    },
     profileImage: {
       type: String,
       default: "",

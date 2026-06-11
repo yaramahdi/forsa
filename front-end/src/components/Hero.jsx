@@ -113,7 +113,7 @@ export default function Hero() {
   return (
     <section className="hero-section" id="search-hero">
       <div className="hero-overlay">
-        <h1 className={`animated-title ${language === 'ar' ? 'rtl-title' : ''}`}>
+        <h1 className={`animated-title ${language === 'ar' ? 'rtl-title' : ''}`} dir={language === 'ar' ? 'rtl' : 'ltr'}>
           {words.map((word, index) => (
             <span
               key={index}

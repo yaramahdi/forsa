@@ -7,6 +7,7 @@ const path = require("path");
 const escapeRegex = require("../utils/escapeRegex");
 const { returnJson } = require("../utils/response");
 const { deleteFiles } = require("../utils/fileCleanup");
+const { SECURITY_QUESTIONS } = require("../constants/securityQuestions");
 
 const deleteSingleFile = (filePath) => {
   if (!filePath) return;
@@ -66,6 +67,8 @@ const registerCraftsman = async (req, res, next) => {
       yearsOfExperience,
       price,
       bio,
+      securityQuestion,
+      securityAnswer,
     } = req.body;
 
     if (
@@ -87,6 +90,14 @@ const registerCraftsman = async (req, res, next) => {
       return next(createError(400, "All required fields must be provided"));
     }
 
+    if (!securityQuestion || !SECURITY_QUESTIONS.includes(securityQuestion)) {
+      return next(createError(400, "سؤال الأمان غير صالح أو غير موجود في القائمة المسموح بها"));
+    }
+
+    if (!securityAnswer?.trim()) {
+      return next(createError(400, "إجابة سؤال الأمان مطلوبة"));
+    }
+
     if (!req.files || req.files.length !== 3) {
       return next(createError(400, "Exactly 3 work images are required"));
     }
@@ -105,6 +116,7 @@ const registerCraftsman = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedAnswer = await bcrypt.hash(securityAnswer.trim().toLowerCase(), 10);
 
     const workImages = req.files.map(
       (file) => `/uploads/craftsmen/${file.filename}`
@@ -124,6 +136,8 @@ const registerCraftsman = async (req, res, next) => {
         yearsOfExperience: Number(yearsOfExperience),
         price: parsedPrice,
         bio: bio?.trim() || "",
+        securityQuestion,
+        securityAnswer: hashedAnswer,
         workImages,
       });
     } catch (err) {
@@ -356,12 +370,40 @@ const updateMyProfile = async (req, res, next) => {
   }
 };
 
+const getSecurityQuestion = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email?.trim()) {
+      return next(createError(400, "البريد الإلكتروني مطلوب"));
+    }
+
+    const craftsman = await Craftsman.findOne({ email: email.toLowerCase().trim() });
+
+    // Return same generic response whether email not found or account has no question,
+    // to prevent email enumeration.
+    if (!craftsman || !craftsman.securityQuestion) {
+      return returnJson(res, 200, true, "تم معالجة الطلب", { question: null });
+    }
+
+    return returnJson(res, 200, true, "تم جلب السؤال بنجاح", {
+      question: craftsman.securityQuestion,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
 const resetPassword = async (req, res, next) => {
   try {
-    const { email, newPassword } = req.body;
+    const { email, securityAnswer, newPassword } = req.body;
 
     if (!email?.trim() || !newPassword?.trim()) {
       return next(createError(400, "البريد الإلكتروني وكلمة المرور مطلوبان"));
+    }
+
+    if (!securityAnswer?.trim()) {
+      return next(createError(400, "إجابة سؤال الأمان مطلوبة"));
     }
 
     if (newPassword.length < 8) {
@@ -373,6 +415,17 @@ const resetPassword = async (req, res, next) => {
 
     if (!craftsman) {
       return next(createError(404, "لا يوجد حساب مرتبط بهذا البريد الإلكتروني"));
+    }
+
+    if (!craftsman.securityQuestion || !craftsman.securityAnswer) {
+      return next(createError(400, "هذا الحساب لا يملك سؤال أمان، تواصل مع الإدارة لإعادة تعيين كلمة المرور"));
+    }
+
+    const normalizedAnswer = securityAnswer.trim().toLowerCase();
+    const isAnswerCorrect = await bcrypt.compare(normalizedAnswer, craftsman.securityAnswer);
+
+    if (!isAnswerCorrect) {
+      return next(createError(400, "إجابة سؤال الأمان غير صحيحة"));
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -402,6 +455,36 @@ const getFeaturedCraftsmen = async (req, res, next) => {
   }
 };
 
+const deleteProfileImage = async (req, res, next) => {
+  try {
+    const craftsmanId = req.user.id;
+
+    const craftsman = await Craftsman.findById(craftsmanId);
+
+    if (!craftsman) {
+      return next(createError(404, "Craftsman not found"));
+    }
+
+    if (!craftsman.profileImage) {
+      return next(createError(400, "No profile image to delete"));
+    }
+
+    const oldImage = craftsman.profileImage;
+
+    const updated = await Craftsman.findByIdAndUpdate(
+      craftsmanId,
+      { $unset: { profileImage: "" } },
+      { new: true }
+    ).select("-password");
+
+    deleteSingleFile(oldImage);
+
+    return returnJson(res, 200, true, "Profile image deleted successfully", updated);
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
 module.exports = {
   registerCraftsman,
   loginCraftsman,
@@ -409,6 +492,8 @@ module.exports = {
   getCraftsmanById,
   getMyProfile,
   updateMyProfile,
+  deleteProfileImage,
   getFeaturedCraftsmen,
+  getSecurityQuestion,
   resetPassword,
 };

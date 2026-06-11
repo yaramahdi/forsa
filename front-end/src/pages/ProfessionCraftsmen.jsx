@@ -110,6 +110,7 @@ export default function ProfessionCraftsmen() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [retryKey, setRetryKey] = useState(0);
 
   const professionMap = useMemo(
     () => ({
@@ -172,7 +173,8 @@ export default function ProfessionCraftsmen() {
 
         setCraftsmen(extractCraftsmen(result));
       } catch (err) {
-        setError("تعذر الاتصال بالسيرفر");
+        const isOffline = !navigator.onLine || (err?.message || '').toLowerCase().includes('failed to fetch');
+        setError(isOffline ? 'لا يوجد اتصال بالإنترنت، تحقق من شبكتك ثم أعد المحاولة' : 'تعذر الاتصال بالسيرفر');
         setCraftsmen([]);
       } finally {
         setLoading(false);
@@ -186,7 +188,7 @@ export default function ProfessionCraftsmen() {
       setCraftsmen([]);
       setError("المهنة غير صحيحة");
     }
-  }, [normalizedProfession, selectedCity]);
+  }, [normalizedProfession, selectedCity, retryKey]);
 
   const visibleCraftsmen = useMemo(() => {
     if (!currentLoggedInCraftsmanId) return craftsmen;
@@ -317,7 +319,14 @@ export default function ProfessionCraftsmen() {
         </div>
 
         {loading && <p className="page-state">جاري تحميل الحرفيين...</p>}
-        {error && <p className="page-state error-text">{error}</p>}
+        {error && (
+          <div className="page-state">
+            <p className="error-text">{error}</p>
+            <button className="req-btn" style={{ marginTop: '16px' }} onClick={() => setRetryKey(k => k + 1)}>
+              إعادة المحاولة
+            </button>
+          </div>
+        )}
 
         {!loading && !error && filteredCraftsmen.length === 0 && (
           <p className="page-state">لا يوجد حرفيون ضمن هذه المهنة حاليًا.</p>

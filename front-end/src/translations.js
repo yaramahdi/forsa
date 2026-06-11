@@ -47,6 +47,10 @@ export const translations = {
     areYouCraftsman: 'هل أنت حرفي؟',
     craftsmanSubtitle: 'انضم إلى آلاف الحرفيين الذين يعملون عبر منصة فرصة ووسّع نطاق عملك',
     registerNow: 'سجل الآن',
+    craftsmanWelcome: 'مرحباً،',
+    craftsmanFallback: 'عزيزي الحرفي',
+    craftsmanLoggedInSubtitle: ' أدر ملفك الشخصي واستعرض طلبات الخدمة الواردة اليك',
+    goToProfile: 'الذهاب إلى ملفك الشخصي',
 
     // Footer
     footerDesc: 'المنصة الاولى للعثور على الحرفيين في قطاع غزة',
@@ -135,6 +139,10 @@ export const translations = {
     areYouCraftsman: 'Are you a Craftsman?',
     craftsmanSubtitle: 'Join thousands of craftsmen working through Forsa platform and expand your business',
     registerNow: 'Register Now',
+    craftsmanWelcome: 'Welcome,',
+    craftsmanFallback: 'dear craftsman',
+    craftsmanLoggedInSubtitle: 'Manage your profile and view incoming service requests from your dashboard',
+    goToProfile: 'Go to Dashboard',
 
     // Footer
     footerDesc: 'The first platform to find craftsmen in the Gaza Strip',

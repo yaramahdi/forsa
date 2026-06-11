@@ -447,6 +447,7 @@ export default function SearchResults() {
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [retryKey, setRetryKey] = useState(0)
 
   const pageTitle = useMemo(() => {
     if (!searchQuery) {
@@ -490,7 +491,8 @@ export default function SearchResults() {
         setResults(filtered)
       } catch (err) {
         setResults([])
-        setError(err.message || 'تعذر الاتصال بالسيرفر')
+        const isOffline = !navigator.onLine || (err?.message || '').toLowerCase().includes('failed to fetch')
+        setError(isOffline ? 'لا يوجد اتصال بالإنترنت، تحقق من شبكتك ثم أعد المحاولة' : (err.message || 'تعذر الاتصال بالسيرفر'))
       } finally {
         setLoading(false)
       }
@@ -498,7 +500,7 @@ export default function SearchResults() {
 
     fetchResults()
     window.scrollTo(0, 0)
-  }, [searchQuery])
+  }, [searchQuery, retryKey])
 
   return (
     <div className="sr-page">
@@ -549,9 +551,14 @@ export default function SearchResults() {
               {language === 'ar' ? 'تعذر تحميل النتائج' : 'Failed to load results'}
             </h2>
             <p className="sr-empty-text">{error}</p>
-            <button className="sr-primary-btn" onClick={() => navigate('/')}>
-              {language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="sr-primary-btn" onClick={() => setRetryKey(k => k + 1)}>
+                {language === 'ar' ? 'إعادة المحاولة' : 'Try Again'}
+              </button>
+              <button className="sr-primary-btn" style={{ background: '#6a7c90' }} onClick={() => navigate('/')}>
+                {language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
+              </button>
+            </div>
           </div>
         ) : results.length > 0 ? (
           <div className="sr-grid">
