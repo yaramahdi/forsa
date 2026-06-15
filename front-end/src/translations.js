@@ -5,6 +5,8 @@ export const translations = {
     categories: 'الفئات',
     features: 'المميزات',
     contact: 'اتصل بنا',
+    team: 'فريق العمل',
+    back: 'العودة',
     login: 'تسجيل الدخول',
     signup: 'إنشاء حساب',
 
@@ -89,7 +91,23 @@ export const translations = {
     mahmoud2: 'محمود أبو عيشة',
     rami: 'رامي النجار',
     khaled: 'خالد مصطفى',
-    youssef: 'يوسف عبدالله'
+    youssef: 'يوسف عبدالله',
+
+    // Team Page
+    teamTitle: 'فريق العمل',
+    teamSubtitle: 'التعريف بفريقنا الذي يعمل بجد لتقديم أفضل الخدمات',
+    teamMember1Name: 'أحمد علي',
+    teamMember1Role: 'مدير المشروع',
+    teamMember1Desc: 'مسؤول عن إدارة المشروع والتنسيق بين الفريق',
+    teamMember2Name: 'فاطمة محمد',
+    teamMember2Role: 'مصممة الواجهة',
+    teamMember2Desc: 'تصميم واجهة المستخدم وتحسين تجربة المستخدم',
+    teamMember3Name: 'محمود سالم',
+    teamMember3Role: 'مطور الواجهة الأمامية',
+    teamMember3Desc: 'تطوير واجهة المستخدم والتكامل مع الخادم',
+    teamMember4Name: 'ليلى خليل',
+    teamMember4Role: 'مطورة الخادم',
+    teamMember4Desc: 'تطوير الخادم وقاعدة البيانات والـ APIs'
   },
   en: {
     // Navbar
@@ -97,6 +115,8 @@ export const translations = {
     categories: 'Categories',
     features: 'Features',
     contact: 'Contact Us',
+    team: 'Team',
+    back: 'Back',
     login: 'Login',
     signup: 'Sign Up',
 
@@ -181,7 +201,23 @@ export const translations = {
     mahmoud2: 'Mahmoud Abu Aisha',
     rami: 'Rami Al-Najar',
     khaled: 'Khaled Mustafa',
-    youssef: 'Youssef Abdullah'
+    youssef: 'Youssef Abdullah',
+
+    // Team Page
+    teamTitle: 'Our Team',
+    teamSubtitle: 'Meet our dedicated team working hard to provide you with the best services',
+    teamMember1Name: 'Ahmed Ali',
+    teamMember1Role: 'Project Manager',
+    teamMember1Desc: 'Responsible for project management and team coordination',
+    teamMember2Name: 'Fatima Mohammed',
+    teamMember2Role: 'UI/UX Designer',
+    teamMember2Desc: 'Designing user interfaces and improving user experience',
+    teamMember3Name: 'Mahmoud Salem',
+    teamMember3Role: 'Frontend Developer',
+    teamMember3Desc: 'Developing user interfaces and integrating with backend services',
+    teamMember4Name: 'Leila Khalil',
+    teamMember4Role: 'Backend Developer',
+    teamMember4Desc: 'Developing backend services, database management, and APIs'
   }
 }
 

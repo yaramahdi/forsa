@@ -81,6 +81,7 @@ export default function Navbar() {
           <button className="nav-link" onClick={() => handleNavClick('why-forsa')}>{t('whyForsaTitle')}</button>
           <button className="nav-link" onClick={() => handleNavClick('craftsmen')}>{t('iAmCraftsman')}</button>
           <button className="nav-link" onClick={() => handleNavClick('specialists')}>{t('features')}</button>
+          <button className="nav-link" onClick={() => { navigate('/team'); setMenuOpen(false) }}>{t('team')}</button>
           <button className="nav-link" onClick={() => handleNavClick('contact')}>{t('contact')}</button>
         </nav>
 
