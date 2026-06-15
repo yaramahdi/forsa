@@ -11,6 +11,7 @@
   padding: 60px 12px;
   position: relative;
   overflow-x: hidden;
+  overflow-y: hidden;
   margin: 0;
   box-sizing: border-box;
   padding-bottom: 80px;
@@ -176,7 +177,7 @@
 
 .team-card-image-container {
   width: 100%;
-  height: 280px;
+  height: 340px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
@@ -189,12 +190,16 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top;
+  object-position: center top;
   transition: transform 0.5s ease;
 }
 
 .team-card:hover .team-card-image {
   transform: scale(1.1);
+}
+
+.team-card:nth-child(3) .team-card-image {
+  object-position: 50% -60px;
 }
 
 .team-card-image-placeholder {
@@ -334,7 +339,7 @@
   }
 
   .team-card-image-container {
-    height: 200px;
+    height: 240px;
   }
 
   .placeholder-initial {

@@ -33,16 +33,18 @@ export default function Team() {
     },
     {
       id: 3,
-      name:  ' Ruba Hamada',
-      role: t('teamMember3Role') || 'UI/UX designer  ',
-      description: t('teamMember3Desc') || 'تطوير واجهة المستخدم والتكامل مع الخادم',
-      image: null
+      name: 'Eng.Sozan Waleed Ashour',
+      role: 'Full-STACK DEVELOPER',
+      description: 'I developed the login page, account creation page, and password reset page — including full frontend implementation and UI design. I also contributed designs for several other pages across the application.',
+      image: '/images/sozan.jpg?v=4',
+      linkedin: 'https://www.linkedin.com/in/sozan-ashour-528784389?utm_source=share_via&utm_content=profile&utm_medium=member_ios',
+      instagram: 'https://www.instagram.com/sozan_ashour?igsh=MnFmbjlwZWExMWkz&utm_source=qr'
     },
     {
       id: 4,
-      name: t('teamMember4Name') || 'ليلى خليل',
-      role: t('teamMember4Role') || 'مطورة الخادم',
-      description: t('teamMember4Desc') || 'تطوير الخادم وقاعدة البيانات والـ APIs',
+      name: 'Ruba Hamada',
+      role: 'UI/UX Designer',
+      description: '',
       image: null
     }
   ]
