@@ -24,15 +24,17 @@ export default function Team() {
     },
     {
       id: 2,
-      name: t('teamMember2Name') || 'فاطمة محمد',
-      role: t('teamMember2Role') || 'مصممة الواجهة',
-      description: t('teamMember2Desc') || 'تصميم واجهة المستخدم وتحسين تجربة المستخدم',
-      image: null
+      name: 'Eng.Yara Hatem Mahdi',
+      role: 'Full-Stack Developer',
+      description: 'Built the back-end architecture and database structure, and developed multiple front-end pages including the Admin dashboard, Craftsman details, User profile, and All Craftsmen listing.',
+      image: '/images/yara.png',
+      linkedin: 'https://www.linkedin.com/in/yara-hatem-mahdi-552083410/',
+      instagram: 'https://www.instagram.com/yaramahdi18?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=='
     },
     {
       id: 3,
-      name: t('teamMember3Name') || 'محمود سالم',
-      role: t('teamMember3Role') || 'مطور الواجهة الأمامية',
+      name:  ' Ruba Hamada',
+      role: t('teamMember3Role') || 'UI/UX designer  ',
       description: t('teamMember3Desc') || 'تطوير واجهة المستخدم والتكامل مع الخادم',
       image: null
     },
