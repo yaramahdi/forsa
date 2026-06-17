@@ -528,8 +528,8 @@ export default function CraftsmanProfile() {
                 إعادة المحاولة
               </button>
             )}
-            <button type="button" className="cp-back-btn" onClick={() => navigate(-1)}>
-              <IcBack /> رجوع
+            <button type="button" className="cp-back-btn" onClick={() => navigate("/")}>
+              <IcBack /> الرئيسية
             </button>
           </div>
         </div>
@@ -563,8 +563,8 @@ export default function CraftsmanProfile() {
           />
           <div className="cp-hero-overlay" />
           <div className="cp-hero-topbar">
-            <button type="button" className="cp-back-btn cp-back-glass" onClick={() => navigate(-1)}>
-              <IcBack /> رجوع
+            <button type="button" className="cp-back-btn cp-back-glass" onClick={() => navigate("/")}>
+              <IcBack /> الرئيسية
             </button>
           </div>
         </div>

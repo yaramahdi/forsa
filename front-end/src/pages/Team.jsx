@@ -16,7 +16,7 @@ export default function Team() {
     {
       id: 1,
       name: 'Eng.Nora Ayman Al-Batsh',
-      role: 'Software Engineer & Front-end Developer',
+      role: 'Full-Stack Developer',
       description: 'I developed and implemented interactive user interfaces, connected pages to the server, improved user experience, and ensured design compatibility across different devices ',
       image: '/images/Nora5.jpeg',
       linkedin: 'https://www.linkedin.com/in/nora-albatsh-25a8093b9',
@@ -42,10 +42,12 @@ export default function Team() {
     },
     {
       id: 4,
-      name: 'Ruba Hamada',
+      name: 'Eng.Roba Adnan Hamada',
       role: 'UI/UX Designer',
-      description: '',
-      image: null
+      description: 'I am Roba Hamada, the UI/UX Designer of the Forsa project. I was responsible for designing the user interface, creating wireframes and prototypes, and improving the user experience',
+      image: '/images/roba2.jpg',
+      linkedin: 'https://www.linkedin.com/in/roba-hamada-a77480417',
+      instagram: 'https://www.instagram.com/rouba._.hamada?igsh=NW4wZDhvZ3U0Mjlt&utm_source=qr'
     }
   ]
 

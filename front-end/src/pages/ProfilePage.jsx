@@ -70,8 +70,10 @@ body{overflow-x:hidden}
 .main{margin-right:230px;flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
 
 /* Page top header */
-.page-top{height:56px;background:#1B3A5C;display:flex;align-items:center;padding:0 28px;box-shadow:0 2px 10px rgba(27,58,92,0.25);flex-shrink:0}
-.page-top-title{font-family:'Tajawal',sans-serif;font-size:16px;font-weight:800;color:#fff;letter-spacing:.2px}
+.page-top{height:56px;background:#1B3A5C;display:flex;align-items:center;padding:0 28px;box-shadow:0 2px 10px rgba(27,58,92,0.25);flex-shrink:0;gap:12px}
+.page-top-title{font-family:'Tajawal',sans-serif;font-size:16px;font-weight:800;color:#fff;letter-spacing:.2px;flex:1}
+.page-top-back{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:none;background:rgba(255,255,255,0.15);color:#fff;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap;flex-shrink:0}
+.page-top-back:hover{background:rgba(255,255,255,0.28)}
 
 /* Profile card */
 .profile-card{background:var(--white);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);border:1px solid var(--gray-border);margin-bottom:18px}
@@ -396,6 +398,8 @@ const IcWhatsApp = () => (
     <path d="M16.02 3.2c-7.05 0-12.77 5.72-12.77 12.77 0 2.25.59 4.45 1.71 6.39L3 29l6.83-1.79a12.72 12.72 0 0 0 6.19 1.58h.01c7.05 0 12.77-5.72 12.77-12.77S23.08 3.2 16.02 3.2Zm0 23.35h-.01a10.54 10.54 0 0 1-5.38-1.47l-.39-.23-4.05 1.06 1.08-3.95-.25-.41a10.58 10.58 0 1 1 9 4.99Z"/>
   </svg>
 );
+
+const IcBack = () => <Ic s={16} d="M19 12H5M12 19l-7-7 7-7" />;
 
 const IcShekel = ({ s = 17 }) => (
   <svg
@@ -1352,6 +1356,9 @@ export default function ProfilePage() {
         <div className="main">
           <div className="page-top">
             <div className="page-top-title">ملفي الشخصي</div>
+            <button type="button" className="page-top-back" onClick={() => navigate("/")}>
+              <IcBack /> الرئيسية
+            </button>
           </div>
 
           <div className="content">

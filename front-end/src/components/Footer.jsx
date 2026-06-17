@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { translations } from '../translations'
 export default function Footer() {
@@ -21,8 +22,8 @@ export default function Footer() {
           <h4>{t('links')}</h4>
           <ul>
     <li><a href="#hero">{t('home')}</a></li>
-    <li><a href="#why-forsa">{t('about')}</a></li>
-    <li><a href="#categories">{t('footerCraftsmen')}</a></li>
+    <li><Link to="/about-us">{t('about')}</Link></li>
+    <li><Link to="/terms-of-use">{t('terms')}</Link></li>
            
             
           </ul>
@@ -32,10 +33,10 @@ export default function Footer() {
         <div className="footer-col">
           <h4>{t('categories')}</h4>
           <ul>
-            <li>{t('plumber')}</li>
-            <li>{t('electrician')}</li>
-            <li>{t('painter')}</li>
-            <li>{t('more')}</li>
+            <li><Link to="/craftsmen/engineer">{t('engineer')}</Link></li>
+            <li><Link to="/craftsmen/electrician">{t('electrician')}</Link></li>
+            <li><Link to="/craftsmen/painter">{t('painter')}</Link></li>
+            <li><Link to="/all-craftsmen">{t('more')}</Link></li>
           </ul>
         </div>
 

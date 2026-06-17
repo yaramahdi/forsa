@@ -22,6 +22,8 @@ import SearchResults from './pages/SearchResults'
 import AdminPage from './pages/AdminPage'
 import AllCraftsmen from './pages/AllCraftsmen'
 import Team from './pages/Team';
+import AboutUs from './pages/AboutUs';
+import Terms from './pages/Terms';
 
 function HomePage() {
   const [searchProfession, setSearchProfession] = useState(null)
@@ -75,6 +77,8 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/all-craftsmen" element={<AllCraftsmen />} />
           <Route path="/team" element={<Team />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/terms-of-use" element={<Terms />} />
           <Route path="/admin" element={
             <ProtectedAdminRoute>
               <AdminPage />
