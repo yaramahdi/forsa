@@ -622,7 +622,7 @@ export default function CraftsmanProfile() {
 
                   <div className="cp-info-row">
                     <div className="cp-info-row-head">
-                      <span className="cp-info-icon-sm"><IcPin /></span>
+                      <span className="cp-info-icon-sm cp-icon-green"><IcPin /></span>
                       <span className="cp-info-label">العنوان</span>
                     </div>
                     <div className="cp-info-value rtl">{craftsman.address}</div>
@@ -630,7 +630,7 @@ export default function CraftsmanProfile() {
 
                   <div className="cp-info-row">
                     <div className="cp-info-row-head">
-                      <span className="cp-info-icon-sm"><IcMail /></span>
+                      <span className="cp-info-icon-sm cp-icon-purple"><IcMail /></span>
                       <span className="cp-info-label">البريد الإلكتروني</span>
                     </div>
                     <div className="cp-info-value">{craftsman.email}</div>
@@ -638,7 +638,7 @@ export default function CraftsmanProfile() {
 
                   <div className="cp-info-row cp-info-row-last">
                     <div className="cp-info-row-head">
-                      <span className="cp-info-icon-sm"><IcShekel /></span>
+                      <span className="cp-info-icon-sm cp-icon-amber"><IcShekel /></span>
                       <span className="cp-info-label">سعر الساعة</span>
                     </div>
                     <div className="cp-info-value">{formatPrice(craftsman.price)}</div>
